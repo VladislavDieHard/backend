@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
+}
+
+model Department {
+  id      Int     @id @default(autoincrement())
+  title   String
+  slug    String  @unique
+  entries Entry[]
+}
+
+model Entry {
+  id           Int        @id @default(autoincrement())
+  preview      String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  publishedAt  DateTime
+  title        String
+  desc         String?
+  content      String?
+  slug         String     @unique
+  published    Boolean    @default(false)
+  department   Department @relation(fields: [departmentId], references: [id])
+  departmentId Int
+  rubric       Rubric?    @relation(fields: [rubricId], references: [id])
+  rubricId     Int?
+  affiche      Affiche?   @relation(fields: [afficheId], references: [id])
+  afficheId    Int?       @unique
+  MenuItem     MenuItem[]
+}
+
+model Document {
+  id       Int        @id @default(autoincrement())
+  title    String
+  content  String
+  preview  String?
+  MenuItem MenuItem[]
+}
+
+model Affiche {
+  id          Int      @id @default(autoincrement())
+  eventDate   DateTime @default(now())
+  title       String
+  description String
+  eventPlace  String
+  phone       String
+  slug        String   @unique
+  entry       Entry?
+}
+
+model Rubric {
+  id      Int     @id @default(autoincrement())
+  title   String
+  slug    String  @unique
+  entries Entry[]
+}
+
+enum MenuType {
+  COMMON
+  ABOUT
+  COLLEAGUES
+  DOCUMENTS
+}
+
+model Menu {
+  id        Int        @id @default(autoincrement())
+  title     String
+  menuType  MenuType
+  menuItems MenuItem[]
+}
+
+enum MenuItemType {
+  ENTRY
+  DOCUMENT
+  LINK
+}
+
+model MenuItem {
+  id           Int          @id @default(autoincrement())
+  title        String
+  menu         Menu         @relation(fields: [menuId], references: [id])
+  menuId       Int
+  menuItemType MenuItemType
+  slug         String
+  document     Document?    @relation(fields: [documentId], references: [id])
+  documentId   Int?
+  entry        Entry?       @relation(fields: [entryId], references: [id])
+  entryId      Int?
+  link         String?
+
+  @@map("menuItems")
+}
+
+model MainSlider {
+  id          Int    @id @default(autoincrement())
+  title       String
+  description String
+  image       String
+}
