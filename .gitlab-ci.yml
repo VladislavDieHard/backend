@@ -1,7 +1,7 @@
 image: docker:latest
 
-before_script:
-  - echo ${CI_JOB_TOKEN}
+services:
+        - docker:dind
 
 stages:          # List of stages for jobs, and their order of execution
   - build
