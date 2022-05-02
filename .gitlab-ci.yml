@@ -28,7 +28,7 @@ docker-build:
     #
     # CHANGEME: You can use some other Docker registry though by changing the
     # login and image name.
-    - docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker build -t "$CI_REGISTRY_IMAGE" .
     - docker push "$CI_REGISTRY_IMAGE"
 
