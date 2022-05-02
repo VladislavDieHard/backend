@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
-import { Menu } from '@prisma/client';
 import { parseIdOrSlug, parseIncludeArrString } from '../utils';
+import { PrismaService } from '../prisma.service';
 import { GetMenusOptions } from './menu.types';
+import { Menu } from '@prisma/client';
 
 @Injectable()
 export class MenuService {
@@ -14,19 +14,18 @@ export class MenuService {
         where: {
           menuType: options.type,
         },
+        include: parseIncludeArrString(options.includes),
       });
     } catch {
       throw new HttpException('Error with query', HttpStatus.BAD_REQUEST);
     }
   }
 
-  async getMenu(idOrSlug, includesString): Promise<Menu> {
-    const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
-
+  async getMenu(id, includesString): Promise<Menu> {
     try {
       return await this.prismaService.menu.findUnique({
         where: {
-          ...parsedIdOrSlug,
+          id: id,
         },
         include: parseIncludeArrString(includesString),
       });
@@ -45,26 +44,24 @@ export class MenuService {
     }
   }
 
-  async updateMenu(newEntry: Menu, idOrSlug): Promise<Menu> {
-    const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
+  async updateMenu(newMenu: Menu, id): Promise<Menu> {
     try {
       return await this.prismaService.menu.update({
         where: {
-          ...parsedIdOrSlug,
+          id: id,
         },
-        data: newEntry,
+        data: newMenu,
       });
     } catch {
       throw new HttpException('Error with data', HttpStatus.BAD_REQUEST);
     }
   }
 
-  async deleteMenu(idOrSlug) {
-    const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
+  async deleteMenu(id): Promise<Menu> {
     try {
       return await this.prismaService.menu.delete({
         where: {
-          ...parsedIdOrSlug,
+          id: id,
         },
       });
     } catch (e) {

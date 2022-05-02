@@ -7,4 +7,5 @@ export enum MenuType {
 
 export type GetMenusOptions = {
   type: MenuType;
+  includes: string | undefined;
 };
