@@ -45,5 +45,6 @@ build:docker:
     - echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
 
   script:
+    - docker ps
     - docker build -t ${DOCKER_USER}/infomania_backend .
     - docker push ${DOCKER_USER}/infomania_backend
