@@ -3,6 +3,7 @@ version: '3.8'
 services:
   db:
     image: mysql:8.0
+    container_name: db
     restart: always
     environment:
       MYSQL_DATABASE: 'db'
@@ -21,6 +22,24 @@ services:
       # Where our data will be persisted
     volumes:
       - my-db:/var/lib/mysql
+
+  web:
+    build: .
+    image: vladdamage/infomania_backend
+    container_name: web
+    restart: always
+    ports:
+      - "3333:3000"
+    environment:
+      DATABASE_URL: "mysql://root:example@host.docker.internal:3306/db"
+    depends_on:
+      - db
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
 # Names our volume
 volumes:
   my-db:
