@@ -2,7 +2,7 @@ image: docker:latest
 
 before_script:
   - git config --global url."http://gitlab-ci-token:${CI_JOB_TOKEN}@git.infomania.ru/DieHard/backend.git”.insteadOf git@git.infomania.ru:DieHard/backend.git
-
+  - echo "1"
 
 stages:          # List of stages for jobs, and their order of execution
   - build
