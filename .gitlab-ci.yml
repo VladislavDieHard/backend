@@ -42,9 +42,9 @@ build:docker:
       command: ["--tls=false"]
 
   before_script:
-    - echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
+    - docker ps
 
   script:
-    - docker ps
+    - echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
     - docker build -t ${DOCKER_USER}/infomania_backend .
     - docker push ${DOCKER_USER}/infomania_backend
