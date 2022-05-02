@@ -10,10 +10,17 @@ import {
 } from '@nestjs/common';
 import { MenuItem, MenuItemType } from '@prisma/client';
 import { MenuItemService } from './menu-item.service';
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { MenuDto } from '../menu/dto/menu.dto';
 import { MenuType } from '../menu/menu.types';
 
+@ApiTags('MenuItem')
 @Controller('menu-item')
 export class MenuItemController {
   constructor(private menuItemService: MenuItemService) {}
@@ -31,11 +38,11 @@ export class MenuItemController {
 
   @ApiResponse({
     status: 200,
-    description: 'Возвращает одну запись модели Menu',
+    description: 'Возвращает одну запись модели MenuItem',
     type: MenuDto,
   })
   @ApiOperation({
-    summary: 'Возвращает одну запись модели Menu',
+    summary: 'Возвращает одну запись модели MenuItem',
   })
   @ApiQuery({
     name: 'type',
@@ -63,11 +70,11 @@ export class MenuItemController {
 
   @ApiResponse({
     status: 200,
-    description: 'Создаёт запись модели Menu',
+    description: 'Создаёт запись модели MenuItem',
     type: MenuDto,
   })
   @ApiOperation({
-    summary: 'Создаёт запись модели Menu',
+    summary: 'Создаёт запись модели MenuItem',
   })
   @Post()
   createEntry(@Body() newMenuItem: MenuItem) {
@@ -76,11 +83,11 @@ export class MenuItemController {
 
   @ApiResponse({
     status: 200,
-    description: 'Обновляет запись модели Menu',
+    description: 'Обновляет запись модели MenuItem',
     type: MenuDto,
   })
   @ApiOperation({
-    summary: 'Обновляет запись модели Menu',
+    summary: 'Обновляет запись модели MenuItem',
   })
   @ApiParam({
     name: 'Id or Slug',
@@ -96,11 +103,11 @@ export class MenuItemController {
 
   @ApiResponse({
     status: 200,
-    description: 'Удаляет запись модели Menu',
+    description: 'Удаляет запись модели MenuItem',
     type: MenuDto,
   })
   @ApiOperation({
-    summary: 'Удаляет запись модели Menu',
+    summary: 'Удаляет запись модели MenuItem',
   })
   @ApiParam({
     name: 'Id or Slug',
