@@ -1,3 +1,5 @@
+image: node:16-alpine
+
 stages:          # List of stages for jobs, and their order of execution
   - build
   - deploy
@@ -5,8 +7,9 @@ stages:          # List of stages for jobs, and their order of execution
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
   script:
-    - ls -la
-    - echo "Compile complete."
+    - docker login
+    - docker build -t vladdamage/infomania_backend .
+    - docker push vladdamage/infomania_backend:latest
 
 deploy-job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
