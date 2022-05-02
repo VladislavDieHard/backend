@@ -8,20 +8,20 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
+  id       String @id @default(uuid())
   username String @unique
   password String
 }
 
 model Department {
-  id      Int     @id @default(autoincrement())
+  id      String  @id @default(uuid())
   title   String  @db.VarChar(200)
   slug    String  @unique
   entries Entry[]
 }
 
 model Entry {
-  id           Int        @id @default(autoincrement())
+  id           String     @id @default(uuid())
   preview      String?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
@@ -32,16 +32,16 @@ model Entry {
   slug         String     @unique
   published    Boolean    @default(false)
   department   Department @relation(fields: [departmentId], references: [id])
-  departmentId Int
+  departmentId String
   rubric       Rubric?    @relation(fields: [rubricId], references: [id])
-  rubricId     Int?
+  rubricId     String?
   affiche      Affiche?   @relation(fields: [afficheId], references: [id])
-  afficheId    Int?       @unique
+  afficheId    String?    @unique
   MenuItem     MenuItem[]
 }
 
 model Document {
-  id       Int        @id @default(autoincrement())
+  id       String     @id @default(uuid())
   title    String     @db.VarChar(200)
   content  String     @db.VarChar(4000)
   preview  String?
@@ -49,7 +49,7 @@ model Document {
 }
 
 model Affiche {
-  id         Int      @id @default(autoincrement())
+  id         String   @id @default(uuid())
   eventDate  DateTime @default(now())
   title      String   @db.VarChar(200)
   desc       String   @db.VarChar(600)
@@ -60,7 +60,7 @@ model Affiche {
 }
 
 model Rubric {
-  id      Int     @id @default(autoincrement())
+  id      String  @id @default(uuid())
   title   String  @db.VarChar(200)
   slug    String  @unique
   entries Entry[]
@@ -74,7 +74,7 @@ enum MenuType {
 }
 
 model Menu {
-  id        Int        @id @default(autoincrement())
+  id        String     @id @default(uuid())
   title     String
   menuType  MenuType
   menuItems MenuItem[]
@@ -87,21 +87,21 @@ enum MenuItemType {
 }
 
 model MenuItem {
-  id           Int          @id @default(autoincrement())
+  id           String       @id @default(uuid())
   title        String
   menu         Menu         @relation(fields: [menuId], references: [id])
-  menuId       Int
+  menuId       String
   menuItemType MenuItemType
   slug         String
   document     Document?    @relation(fields: [documentId], references: [id])
-  documentId   Int?
+  documentId   String?
   entry        Entry?       @relation(fields: [entryId], references: [id])
-  entryId      Int?
+  entryId      String?
   link         String?
 }
 
 model MainSlider {
-  id          Int    @id @default(autoincrement())
+  id          String @id @default(uuid())
   title       String
   description String
   image       String

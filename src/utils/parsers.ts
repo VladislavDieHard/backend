@@ -1,3 +1,5 @@
+import { validate } from 'uuid';
+
 export function parseIncludeArrString(arrString) {
   if (arrString == undefined) return undefined;
   const result = {};
@@ -9,7 +11,7 @@ export function parseIncludeArrString(arrString) {
 
 export function parseIdOrSlug(idOrSlug) {
   return {
-    id: !isNaN(Number(idOrSlug)) ? Number(idOrSlug) : undefined,
-    slug: isNaN(Number(idOrSlug)) ? idOrSlug : undefined,
+    id: validate(idOrSlug) ? idOrSlug : undefined,
+    slug: !validate(idOrSlug) ? idOrSlug : undefined,
   } as any;
 }

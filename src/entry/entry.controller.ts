@@ -15,9 +15,7 @@ import { EntryDto } from './dto/entry.dto';
 
 @ApiTags('Entry')
 @Controller('entry')
-export class EntryController {
-  constructor(private entryService: EntryService) {}
-
+export class EntryController extends EntryService {
   @ApiResponse({
     status: 200,
     description: 'Возвращает массив записей модели Entry',
@@ -44,14 +42,14 @@ export class EntryController {
   })
   @Get()
   getEntries(
-    @Query('limit') limit?: number,
-    @Query('offset') offset?: number,
+    @Query('pageSize') pageSize?: number,
     @Query('search') search?: string,
+    @Query('page') page?: number,
   ) {
-    return this.entryService.getEntries({
-      take: limit,
-      skip: offset,
+    return this.entryGetService.getEntries({
+      pageSize: pageSize,
       search: search,
+      page: page,
     });
   }
 
@@ -79,7 +77,7 @@ export class EntryController {
     @Param('idOrSlug') idOrSlug: number | string,
     @Query('includes') includes?: string,
   ) {
-    return this.entryService.getEntry(idOrSlug, includes);
+    return this.entryGetService.getEntry(idOrSlug, includes);
   }
 
   @ApiResponse({
@@ -92,7 +90,7 @@ export class EntryController {
   })
   @Post()
   createEntry(@Body() newEntry: Entry) {
-    return this.entryService.createEntry(newEntry);
+    return this.entryCreateService.createEntry(newEntry);
   }
 
   @ApiResponse({
@@ -113,7 +111,7 @@ export class EntryController {
     @Param('idOrSlug') idOrSlug: number | string,
     @Body() newEntry: Entry,
   ) {
-    return this.entryService.updateEntry(newEntry, idOrSlug);
+    return this.entryUpdateService.updateEntry(newEntry, idOrSlug);
   }
 
   @ApiResponse({
@@ -131,6 +129,6 @@ export class EntryController {
   })
   @Delete(':idOrSlug')
   deleteEntry(@Param('idOrSlug') idOrSlug: number | string) {
-    return this.entryService.deleteEntry(idOrSlug);
+    return this.entryDeleteService.deleteEntry(idOrSlug);
   }
 }
