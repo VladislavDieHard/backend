@@ -4,14 +4,8 @@ before_script:
   - echo ${CI_JOB_TOKEN}
 
 stages:          # List of stages for jobs, and their order of execution
-  - dummy_stage
   - build
   - deploy
-
-dummy_stage:
-  stage: dummy_stage
-  script:
-    - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@git.infomania.ru/developers/backend.git
 
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
