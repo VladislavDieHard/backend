@@ -15,7 +15,7 @@ model User {
 
 model Department {
   id      Int     @id @default(autoincrement())
-  title   String
+  title   String  @db.VarChar(200)
   slug    String  @unique
   entries Entry[]
 }
@@ -25,10 +25,10 @@ model Entry {
   preview      String?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-  publishedAt  DateTime
-  title        String
-  desc         String?
-  content      String?
+  publishedAt  DateTime   @default(now())
+  title        String     @db.VarChar(200)
+  desc         String?    @db.VarChar(600)
+  content      String?    @db.VarChar(4000)
   slug         String     @unique
   published    Boolean    @default(false)
   department   Department @relation(fields: [departmentId], references: [id])
@@ -42,26 +42,26 @@ model Entry {
 
 model Document {
   id       Int        @id @default(autoincrement())
-  title    String
-  content  String
+  title    String     @db.VarChar(200)
+  content  String     @db.VarChar(4000)
   preview  String?
   MenuItem MenuItem[]
 }
 
 model Affiche {
-  id          Int      @id @default(autoincrement())
-  eventDate   DateTime @default(now())
-  title       String
-  description String
-  eventPlace  String
-  phone       String
-  slug        String   @unique
-  entry       Entry?
+  id         Int      @id @default(autoincrement())
+  eventDate  DateTime @default(now())
+  title      String   @db.VarChar(200)
+  desc       String   @db.VarChar(600)
+  eventPlace String
+  phone      String   @db.VarChar(20)
+  slug       String   @unique
+  entry      Entry?
 }
 
 model Rubric {
   id      Int     @id @default(autoincrement())
-  title   String
+  title   String  @db.VarChar(200)
   slug    String  @unique
   entries Entry[]
 }
@@ -98,8 +98,6 @@ model MenuItem {
   entry        Entry?       @relation(fields: [entryId], references: [id])
   entryId      Int?
   link         String?
-
-  @@map("menuItems")
 }
 
 model MainSlider {
