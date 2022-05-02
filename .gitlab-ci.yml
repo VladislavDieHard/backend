@@ -1,18 +1,7 @@
 stages:
   - build
-  # - test
 
 build:
   stage: build
   script: 
     - docker ps
-    - echo "Build successfully!"
-
-# test:
-#   stage: test
-#   image: node
-#   script:
-#     - echo "Testing App"
-#     - npm install
-#     - CI=true npm test
-#     - echo "Test successfully!"
