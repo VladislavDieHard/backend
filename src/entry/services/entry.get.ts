@@ -32,41 +32,50 @@ export class EntryGetService {
       pagination.pageSize
     }`;
 
-    try {
-      const entries = await this.prismaService.entry.findMany({
+    return this.prismaService.entry
+      .findMany({
         where: {
           published: true,
           ...or,
         },
         take: pagination.pageSize,
         skip: (options.page - 1) * pagination.pageSize,
+      })
+      .then((entries) => {
+        return {
+          data: entries,
+          meta: {
+            pages: pagination.pages,
+            pageSize: pagination.pageSize || 10,
+            nextPage: options.page < pagination.pages ? nextPageString : null,
+            prevPage: options.page > 1 ? prevPageString : null,
+          },
+        };
+      })
+      .catch((err) => {
+        throw new HttpException(
+          err.meta.cause,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       });
-      return {
-        data: entries,
-        meta: {
-          pages: pagination.pages,
-          pageSize: pagination.pageSize || 10,
-          nextPage: options.page < pagination.pages ? nextPageString : null,
-          prevPage: options.page > 1 ? prevPageString : null,
-        },
-      };
-    } catch {
-      throw new HttpException('Error with query', HttpStatus.BAD_REQUEST);
-    }
   }
 
   async getEntry(idOrSlug, includesString): Promise<Entry> {
     const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
 
-    try {
-      return await this.prismaService.entry.findUnique({
+    return this.prismaService.entry
+      .findUnique({
         where: {
           ...parsedIdOrSlug,
         },
         include: parseIncludeArrString(includesString),
+      })
+      .then((entry) => entry)
+      .catch((err) => {
+        throw new HttpException(
+          err.meta.cause,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       });
-    } catch {
-      throw new HttpException('Error with query', HttpStatus.BAD_REQUEST);
-    }
   }
 }

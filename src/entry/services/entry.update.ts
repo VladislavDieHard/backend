@@ -10,15 +10,20 @@ export class EntryUpdateService {
   async updateEntry(newEntry: Entry, idOrSlug) {
     const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
     newEntry.slug = newEntry.slug.toLowerCase();
-    try {
-      return await this.prismaService.entry.update({
+
+    return this.prismaService.entry
+      .update({
         where: {
           ...parsedIdOrSlug,
         },
         data: newEntry,
+      })
+      .then((entry) => entry)
+      .catch((err) => {
+        throw new HttpException(
+          err.meta.cause,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       });
-    } catch {
-      throw new HttpException('Error with data', HttpStatus.BAD_REQUEST);
-    }
   }
 }

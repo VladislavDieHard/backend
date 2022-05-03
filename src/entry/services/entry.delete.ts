@@ -8,17 +8,19 @@ export class EntryDeleteService {
 
   async deleteEntry(idOrSlug) {
     const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
-    try {
-      return await this.prismaService.entry.delete({
+
+    return this.prismaService.entry
+      .delete({
         where: {
           ...parsedIdOrSlug,
         },
+      })
+      .then((entry) => entry)
+      .catch((err) => {
+        throw new HttpException(
+          err.meta.cause,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       });
-    } catch (e) {
-      throw new HttpException(
-        e.meta.cause || 'Bad request',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
   }
 }

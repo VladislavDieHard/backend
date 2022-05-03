@@ -12,6 +12,7 @@ import { DepartmentService } from './department.service';
 import { Department } from '@prisma/client';
 import {
   ApiBody,
+  ApiOperation,
   ApiParam,
   ApiQuery,
   ApiResponse,
@@ -24,6 +25,9 @@ import { CommonDto } from '../common.dto';
 @ApiTags('Department')
 @Controller('department')
 export class DepartmentController extends DepartmentService {
+  @ApiOperation({
+    summary: 'Возвращает массив записей модели Department',
+  })
   @ApiResponse({
     type: DepartmentDto,
   })
@@ -32,6 +36,9 @@ export class DepartmentController extends DepartmentService {
     return this.departmentGetService.getDepartments();
   }
 
+  @ApiOperation({
+    summary: 'Возвращает массив записей модели Entry, выбранного Department',
+  })
   @ApiResponse({
     status: 201,
     type: DepartmentEntriesDto,
@@ -62,6 +69,9 @@ export class DepartmentController extends DepartmentService {
     return this.departmentGetService.getDepartmentEntries(id, page, pageSize);
   }
 
+  @ApiOperation({
+    summary: 'Возвращает запись модели Department',
+  })
   @ApiResponse({
     status: 201,
     type: DepartmentDto,
@@ -83,6 +93,9 @@ export class DepartmentController extends DepartmentService {
     return await this.departmentGetService.getDepartment(idOrSlug);
   }
 
+  @ApiOperation({
+    summary: 'Создаёт запись модели Department',
+  })
   @ApiBody({
     type: DepartmentDto,
   })
@@ -101,6 +114,9 @@ export class DepartmentController extends DepartmentService {
     return this.departmentCreateService.createDepartment(newDepartment);
   }
 
+  @ApiOperation({
+    summary: 'Обновляет запись модели Department',
+  })
   @ApiResponse({
     status: 201,
     type: DepartmentDto,
@@ -129,6 +145,9 @@ export class DepartmentController extends DepartmentService {
     );
   }
 
+  @ApiOperation({
+    summary: 'Удаляет запись модели Department',
+  })
   @ApiResponse({
     status: 201,
     type: DepartmentDto,

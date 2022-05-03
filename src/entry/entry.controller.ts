@@ -16,24 +16,25 @@ import { EntryDto } from './dto/entry.dto';
 @ApiTags('Entry')
 @Controller('entry')
 export class EntryController extends EntryService {
+  @ApiOperation({
+    summary: 'Возвращает массив записей модели Entry',
+  })
   @ApiResponse({
     status: 200,
     description: 'Возвращает массив записей модели Entry',
     type: EntryDto,
     isArray: true,
   })
-  @ApiOperation({
-    summary: 'Возвращает массив записей модели Entry',
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    description: `Количество возврашаемых записей на странице,
+     стандартный размер страницы 10`,
   })
   @ApiQuery({
-    name: 'limit',
+    name: 'page',
     required: false,
-    description: 'Количество возврашаемых записей',
-  })
-  @ApiQuery({
-    name: 'offset',
-    required: false,
-    description: 'Отступ',
+    description: 'Страница',
   })
   @ApiQuery({
     name: 'search',

@@ -9,15 +9,20 @@ export class EntryCreateService {
 
   async createEntry(newEntry: Entry) {
     newEntry.slug = newEntry.slug.toLowerCase();
-    try {
-      return await this.prismaService.entry.create({
+
+    return this.prismaService.entry
+      .create({
         data: {
           id: v4(),
           ...newEntry,
         },
+      })
+      .then((entry) => entry)
+      .catch((err) => {
+        throw new HttpException(
+          err.meta.cause,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       });
-    } catch {
-      throw new HttpException('Error with data', HttpStatus.BAD_REQUEST);
-    }
   }
 }
