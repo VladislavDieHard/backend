@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class EntryDto {
   @ApiProperty()
-  id: number;
+  id: string;
   @ApiPropertyOptional()
   preview: string | null;
   @ApiProperty()

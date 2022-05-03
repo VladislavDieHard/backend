@@ -10,7 +10,13 @@ import {
 } from '@nestjs/common';
 import { EntryService } from './entry.service';
 import { Entry } from '@prisma/client';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { EntryDto } from './dto/entry.dto';
 
 @ApiTags('Entry')
@@ -81,26 +87,32 @@ export class EntryController extends EntryService {
     return this.entryGetService.getEntry(idOrSlug, includes);
   }
 
+  @ApiOperation({
+    summary: 'Создаёт запись модели Entry',
+  })
+  @ApiBody({
+    type: EntryDto,
+  })
   @ApiResponse({
     status: 200,
     description: 'Создаёт запись модели Entry',
     type: EntryDto,
-  })
-  @ApiOperation({
-    summary: 'Создаёт запись модели Entry',
   })
   @Post()
   createEntry(@Body() newEntry: Entry) {
     return this.entryCreateService.createEntry(newEntry);
   }
 
+  @ApiOperation({
+    summary: 'Обновляет запись модели Entry',
+  })
+  @ApiBody({
+    type: EntryDto,
+  })
   @ApiResponse({
     status: 200,
     description: 'Обновляет запись модели Entry',
     type: EntryDto,
-  })
-  @ApiOperation({
-    summary: 'Обновляет запись модели Entry',
   })
   @ApiQuery({
     name: 'id or slug',
@@ -115,13 +127,13 @@ export class EntryController extends EntryService {
     return this.entryUpdateService.updateEntry(newEntry, idOrSlug);
   }
 
+  @ApiOperation({
+    summary: 'Удаляет запись модели Entry',
+  })
   @ApiResponse({
     status: 200,
     description: 'Удаляет запись модели Entry',
     type: EntryDto,
-  })
-  @ApiOperation({
-    summary: 'Удаляет запись модели Entry',
   })
   @ApiQuery({
     name: 'id or slug',

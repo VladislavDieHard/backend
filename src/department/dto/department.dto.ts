@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { EntryDto } from '../../entry/dto/entry.dto';
-import { MetaDto } from '../../common.dto';
+import { PaginationDto } from '../../common.dto';
 
 export class DepartmentDto {
   @ApiProperty()
@@ -18,7 +18,7 @@ export class DepartmentEntriesDto {
   })
   data: EntryDto[];
   @ApiProperty({
-    type: MetaDto,
+    type: PaginationDto,
   })
   meta: {
     pages: number;
