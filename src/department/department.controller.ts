@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -118,6 +119,11 @@ export class DepartmentController extends DepartmentService {
   ): Promise<Department | Error> {
     return this.departmentCreateService.createDepartment(newDepartment);
   }
+
+  // @Patch()
+  // addEntriesToDepartment() {
+  //   return
+  // }
 
   @ApiOperation({
     summary: 'Обновляет запись модели Department',

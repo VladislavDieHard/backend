@@ -4,6 +4,7 @@ import { createPagination } from '../../utils/pagination';
 import { PrismaService } from '../../prisma.service';
 import { GetEntriesResponse } from '../entry.types';
 import { Entry } from '@prisma/client';
+import { createOrderBy } from '../../utils/orderBy';
 
 @Injectable()
 export class EntryGetService {
@@ -19,27 +20,35 @@ export class EntryGetService {
         }
       : {};
 
+    const orderBy = createOrderBy(options.orderBy);
+
     const pagination = createPagination({
-      pageSize: parseInt(options.pageSize),
       count: await this.prismaService.entry.count(),
+      pageSize: parseInt(options.pageSize),
+      page: options.page,
     });
 
-    const nextPageString = `/entry?page=${Number(options.page) + 1}&pageSize=${
-      pagination.pageSize
-    }`;
+    const nextPageString = orderBy
+      ? `/entry?page=${pagination.page + 1}&pageSize=${
+          pagination.pageSize
+        }&orderBy=${options.orderBy}`
+      : `/entry?page=${pagination.page + 1}&pageSize=${pagination.pageSize}`;
 
-    const prevPageString = `/entry?page=${Number(options.page) - 1}&pageSize=${
-      pagination.pageSize
-    }`;
+    const prevPageString = orderBy
+      ? `/entry?page=${pagination.page - 1}&pageSize=${
+          pagination.pageSize
+        }&orderBy=${options.orderBy}`
+      : `/entry?page=${pagination.page + 1}&pageSize=${pagination.pageSize}`;
 
     return this.prismaService.entry
       .findMany({
         where: {
-          published: true,
+          published: false,
           ...or,
         },
-        take: pagination.pageSize,
-        skip: (options.page - 1) * pagination.pageSize,
+        take: pagination.pageSize || undefined,
+        skip: (pagination.page - 1) * pagination.pageSize || undefined,
+        orderBy: orderBy ? orderBy : { createdAt: 'asc' },
       })
       .then((entries) => {
         return {
@@ -47,16 +56,14 @@ export class EntryGetService {
           meta: {
             pages: pagination.pages,
             pageSize: pagination.pageSize || 10,
-            nextPage: options.page < pagination.pages ? nextPageString : null,
-            prevPage: options.page > 1 ? prevPageString : null,
+            nextPage:
+              pagination.page < pagination.pages ? nextPageString : null,
+            prevPage: pagination.page > 1 ? prevPageString : null,
           },
         };
       })
       .catch((err) => {
-        throw new HttpException(
-          err.meta.cause,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new HttpException(err.meta, HttpStatus.INTERNAL_SERVER_ERROR);
       });
   }
 
@@ -72,10 +79,7 @@ export class EntryGetService {
       })
       .then((entry) => entry)
       .catch((err) => {
-        throw new HttpException(
-          err.meta.cause,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new HttpException(err.meta, HttpStatus.INTERNAL_SERVER_ERROR);
       });
   }
 }

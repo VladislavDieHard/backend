@@ -29,4 +29,6 @@ export class DepartmentUpdateService {
         );
       });
   }
+
+  async addEntriesToDepartment(entryIds) {}
 }

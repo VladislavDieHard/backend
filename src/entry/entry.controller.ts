@@ -50,11 +50,13 @@ export class EntryController extends EntryService {
   @Get()
   getEntries(
     @Query('pageSize') pageSize?: number,
+    @Query('orderBy') orderBy?: string,
     @Query('search') search?: string,
     @Query('page') page?: number,
   ) {
     return this.entryGetService.getEntries({
       pageSize: pageSize,
+      orderBy: orderBy,
       search: search,
       page: page,
     });

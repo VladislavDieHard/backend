@@ -64,8 +64,8 @@ export class DepartmentGetService {
           departmentId: id,
           published: true,
         },
-        take: pagination.pageSize,
-        skip: (page - 1) * pagination.pageSize,
+        take: pagination.pageSize || undefined,
+        skip: (page - 1) * pagination.pageSize || undefined,
       })
       .then((result) => {
         return {
