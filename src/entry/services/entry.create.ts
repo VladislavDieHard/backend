@@ -31,10 +31,7 @@ export class EntryCreateService {
       })
       .then((entry) => entry)
       .catch((err) => {
-        throw new HttpException(
-          err.meta.cause,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new HttpException(err.meta, HttpStatus.INTERNAL_SERVER_ERROR);
       });
   }
 }
