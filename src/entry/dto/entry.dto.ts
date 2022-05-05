@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class EntryDto {
   @ApiProperty()
@@ -21,10 +21,13 @@ export class EntryDto {
   slug: string;
   @ApiProperty({ default: false })
   published: boolean;
+
   @ApiProperty()
   departmentId: number;
+
   @ApiPropertyOptional()
   rubricId: number | null;
+
   @ApiPropertyOptional()
   afficheId: number | null;
 }

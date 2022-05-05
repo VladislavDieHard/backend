@@ -56,8 +56,7 @@ export class EntryGetService {
           meta: {
             pages: pagination.pages,
             pageSize: pagination.pageSize || 10,
-            nextPage:
-              pagination.page < pagination.pages ? nextPageString : null,
+            nextPage: pagination.page < pagination.pages ? nextPageString : null,
             prevPage: pagination.page > 1 ? prevPageString : null,
           },
         };
@@ -72,9 +71,7 @@ export class EntryGetService {
 
     return this.prismaService.entry
       .findUnique({
-        where: {
-          ...parsedIdOrSlug,
-        },
+        where: parsedIdOrSlug,
         include: parseIncludeArrString(includesString),
       })
       .then((entry) => entry)
