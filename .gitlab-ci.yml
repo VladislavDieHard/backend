@@ -26,22 +26,18 @@
 #   # Only build off of master branch:
 #   only:
 #     - master
+image: docker/compose:latest
+
 build:docker:
   stage: build
-
-  image:
-    name: docker/compose:latest
 
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
 
   services:
-    - name: docker:20-dind
-      alias: docker
-      command: ["--tls=false"]
+    - name: docker:dind
 
   script:
-    - docker ps
+    - docker-compose build
     - docker-compose push
