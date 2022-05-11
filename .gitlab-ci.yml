@@ -26,14 +26,11 @@
 #   # Only build off of master branch:
 #   only:
 #     - master
-
-before_script:
-  - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@git.infomania.ru/developers/backend.git".insteadOf git@git.infomania.ru:developers/backend.git
-
 build:docker:
   stage: build
 
-  image: docker:20-dind
+  image:
+    name: docker/compose:latest
 
   variables:
     DOCKER_HOST: tcp://docker:2375
@@ -46,9 +43,8 @@ build:docker:
       command: ["--tls=false"]
 
   before_script:
-    - docker ps
+  - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@git.infomania.ru/developers/backend.git".insteadOf git@git.infomania.ru:developers/backend.git
 
   script:
-    - echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin
-    - docker build -t ${DOCKER_USER}/infomania_backend .
-    - docker push ${DOCKER_USER}/infomania_backend
+    - docker-compose build
+    - docker-compose push
