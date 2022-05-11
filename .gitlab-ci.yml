@@ -42,9 +42,6 @@ build:docker:
       alias: docker
       command: ["--tls=false"]
 
-  before_script:
-  - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@git.infomania.ru/developers/backend.git".insteadOf git@git.infomania.ru:developers/backend.git
-
   script:
     - docker-compose build
     - docker-compose push
