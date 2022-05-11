@@ -43,5 +43,5 @@ build:docker:
       command: ["--tls=false"]
 
   script:
-    - docker-compose build
+    - sudo docker-compose build
     - docker-compose push
