@@ -1,21 +1,21 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
+import { Affiche } from '@prisma/client';
 import { parseIdOrSlug } from '../../utils';
-import { Rubric } from '@prisma/client';
 
 @Injectable()
-export class RubricUpdateService {
-  constructor(private readonly prismaService: PrismaService) {}
+export class AfficheDeleteService {
+  constructor(private prismaService: PrismaService) {}
 
-  async updateRubric(newRubric: Rubric, idOrSlug: string) {
+  async deleteAffiche(idOrSlug): Promise<Affiche> {
     const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
-
-    return this.prismaService.rubric
-      .update({
-        where: parsedIdOrSlug,
-        data: newRubric,
+    return this.prismaService.affiche
+      .delete({
+        where: {
+          ...parsedIdOrSlug,
+        },
       })
-      .then((rubric) => rubric)
+      .then((affiche) => affiche)
       .catch((err) => {
         throw new HttpException(
           err.meta.cause,

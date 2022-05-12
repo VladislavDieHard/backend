@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { GetDepartmentEntriesResponse } from '../department.types';
-import { createPagination } from '../../utils/pagination';
+import { createPagination } from '../../utils';
 import { PrismaService } from '../../prisma.service';
 import { Department } from '@prisma/client';
 import { parseIdOrSlug } from '../../utils';

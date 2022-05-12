@@ -1,23 +1,21 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
-import { Department } from '@prisma/client';
-import { v4 } from 'uuid';
 import { createSlug } from '../../utils';
+import { Affiche } from '@prisma/client';
+import { v4 } from 'uuid';
 
 @Injectable()
-export class DepartmentCreateService {
+export class AfficheCreateService {
   constructor(private prismaService: PrismaService) {}
 
-  async createDepartment(
-    newDepartment: Department,
-  ): Promise<Department | Error> {
-    newDepartment.slug = createSlug(newDepartment.title, newDepartment.slug);
+  createAffiche(newAffiche: Affiche): Promise<Affiche> {
+    newAffiche.slug = createSlug(newAffiche.title, newAffiche.slug);
 
-    return this.prismaService.department
+    return this.prismaService.affiche
       .create({
         data: {
           id: v4(),
-          ...newDepartment,
+          ...newAffiche,
         },
       })
       .then((result) => {

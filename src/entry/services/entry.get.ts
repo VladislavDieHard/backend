@@ -1,10 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { parseIdOrSlug, parseIncludeArrString } from '../../utils';
-import { createPagination } from '../../utils/pagination';
 import { PrismaService } from '../../prisma.service';
 import { GetEntriesResponse } from '../entry.types';
+import { createPagination } from '../../utils';
+import { createOrderBy } from '../../utils';
 import { Entry } from '@prisma/client';
-import { createOrderBy } from '../../utils/orderBy';
 
 @Injectable()
 export class EntryGetService {
@@ -56,7 +56,8 @@ export class EntryGetService {
           meta: {
             pages: pagination.pages,
             pageSize: pagination.pageSize || 10,
-            nextPage: pagination.page < pagination.pages ? nextPageString : null,
+            nextPage:
+              pagination.page < pagination.pages ? nextPageString : null,
             prevPage: pagination.page > 1 ? prevPageString : null,
           },
         };

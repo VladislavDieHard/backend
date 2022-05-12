@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { parseIdOrSlug, parseIncludeArrString } from '../utils';
+import { parseIncludeArrString } from '../utils';
 import { PrismaService } from '../prisma.service';
 import { GetMenusOptions } from './menu.types';
 import { Menu } from '@prisma/client';

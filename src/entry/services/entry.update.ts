@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
-import { Entry } from '@prisma/client';
 import { parseIdOrSlug } from '../../utils';
+import { Entry } from '@prisma/client';
 
 @Injectable()
 export class EntryUpdateService {

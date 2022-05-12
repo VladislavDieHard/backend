@@ -1,17 +1,18 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { PrismaService } from "../../prisma.service";
-import { parseIdOrSlug } from "../../utils";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma.service';
+import { parseIdOrSlug } from '../../utils';
 
 @Injectable()
 export class RubricDeleteService {
-  constructor(private readonly prismaService: PrismaService){}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async deleteRubric(idOrSlug) {
     const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
 
-    return this.prismaService.rubric.delete({
-      where: parsedIdOrSlug,
-    })
+    return this.prismaService.rubric
+      .delete({
+        where: parsedIdOrSlug,
+      })
       .then((rubric) => rubric)
       .catch((err) => {
         throw new HttpException(
