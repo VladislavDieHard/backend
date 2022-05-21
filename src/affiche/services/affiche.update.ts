@@ -1,23 +1,20 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Department } from '@prisma/client';
-import { parseIdOrSlug } from '../../utils';
 import { PrismaService } from '../../prisma.service';
+import { parseIdOrSlug } from '../../utils';
+import { Affiche } from '@prisma/client';
 
 @Injectable()
-export class DepartmentUpdateService {
+export class AfficheUpdateService {
   constructor(private prismaService: PrismaService) {}
 
-  async updateDepartment(
-    idOrSlug,
-    newDepartment: Department,
-  ): Promise<Department> {
+  async updateAffiche(idOrSlug, newAffiche: Affiche): Promise<Affiche> {
     const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
-    return this.prismaService.department
+    return this.prismaService.affiche
       .update({
         where: {
           ...parsedIdOrSlug,
         },
-        data: newDepartment,
+        data: newAffiche,
       })
       .then((result) => {
         return result;
@@ -29,6 +26,4 @@ export class DepartmentUpdateService {
         );
       });
   }
-
-  async addEntriesToDepartment(entryIds) {}
 }

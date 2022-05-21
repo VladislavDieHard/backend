@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -12,6 +13,7 @@ import { DepartmentService } from './department.service';
 import { Department } from '@prisma/client';
 import {
   ApiBody,
+  ApiOperation,
   ApiParam,
   ApiQuery,
   ApiResponse,
@@ -19,26 +21,37 @@ import {
 } from '@nestjs/swagger';
 import { DepartmentDto, DepartmentEntriesDto } from './dto/department.dto';
 import { GetDepartmentEntriesResponse } from './department.types';
-import { CommonDto } from '../common.dto';
+import { ErrorDto } from '../common.dto';
 
 @ApiTags('Department')
 @Controller('department')
 export class DepartmentController extends DepartmentService {
+  @ApiOperation({
+    summary: 'Возвращает массив записей модели Department',
+  })
   @ApiResponse({
+    status: 201,
     type: DepartmentDto,
+  })
+  @ApiResponse({
+    status: 500,
+    type: ErrorDto,
   })
   @Get()
   getDepartments(): Promise<Department[]> {
     return this.departmentGetService.getDepartments();
   }
 
+  @ApiOperation({
+    summary: 'Возвращает массив записей модели Entry, выбранного Department',
+  })
   @ApiResponse({
     status: 201,
     type: DepartmentEntriesDto,
   })
   @ApiResponse({
-    status: 400,
-    type: CommonDto,
+    status: 500,
+    type: ErrorDto,
   })
   @ApiParam({
     name: 'id',
@@ -62,13 +75,16 @@ export class DepartmentController extends DepartmentService {
     return this.departmentGetService.getDepartmentEntries(id, page, pageSize);
   }
 
+  @ApiOperation({
+    summary: 'Возвращает запись модели Department',
+  })
   @ApiResponse({
     status: 201,
     type: DepartmentDto,
   })
   @ApiResponse({
-    status: 400,
-    type: CommonDto,
+    status: 500,
+    type: ErrorDto,
   })
   @ApiParam({
     name: 'idOrSlug',
@@ -83,6 +99,9 @@ export class DepartmentController extends DepartmentService {
     return await this.departmentGetService.getDepartment(idOrSlug);
   }
 
+  @ApiOperation({
+    summary: 'Создаёт запись модели Department',
+  })
   @ApiBody({
     type: DepartmentDto,
   })
@@ -91,8 +110,8 @@ export class DepartmentController extends DepartmentService {
     type: DepartmentDto,
   })
   @ApiResponse({
-    status: 400,
-    type: CommonDto,
+    status: 500,
+    type: ErrorDto,
   })
   @Post()
   createDepartment(
@@ -101,13 +120,21 @@ export class DepartmentController extends DepartmentService {
     return this.departmentCreateService.createDepartment(newDepartment);
   }
 
+  // @Patch()
+  // addEntriesToDepartment() {
+  //   return
+  // }
+
+  @ApiOperation({
+    summary: 'Обновляет запись модели Department',
+  })
   @ApiResponse({
     status: 201,
     type: DepartmentDto,
   })
   @ApiResponse({
-    status: 400,
-    type: CommonDto,
+    status: 500,
+    type: ErrorDto,
   })
   @ApiBody({
     type: DepartmentDto,
@@ -129,13 +156,16 @@ export class DepartmentController extends DepartmentService {
     );
   }
 
+  @ApiOperation({
+    summary: 'Удаляет запись модели Department',
+  })
   @ApiResponse({
     status: 201,
     type: DepartmentDto,
   })
   @ApiResponse({
-    status: 400,
-    type: CommonDto,
+    status: 500,
+    type: ErrorDto,
   })
   @ApiParam({
     name: 'idOrSlug',

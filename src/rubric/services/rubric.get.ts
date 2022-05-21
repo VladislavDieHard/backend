@@ -1,16 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { parseIdOrSlug, parseIncludeArrString } from '../../utils';
 import { PrismaService } from '../../prisma.service';
-import { GetEntriesResponse } from '../entry.types';
 import { createPagination } from '../../utils';
 import { createOrderBy } from '../../utils';
-import { Entry } from '@prisma/client';
 
 @Injectable()
-export class EntryGetService {
+export class RubricGetService {
   constructor(private prismaService: PrismaService) {}
 
-  async getEntries(options): Promise<GetEntriesResponse> {
+  async getRubrics(options) {
     const or = options.search
       ? {
           OR: [
@@ -20,39 +18,34 @@ export class EntryGetService {
         }
       : {};
 
-    const orderBy = createOrderBy(options.orderBy);
+    const orderBy = createOrderBy(options.search);
 
     const pagination = createPagination({
-      count: await this.prismaService.entry.count(),
+      count: await this.prismaService.rubric.count(),
       pageSize: parseInt(options.pageSize),
       page: options.page,
     });
 
     const nextPageString = orderBy
-      ? `/entry?page=${pagination.page + 1}&pageSize=${
-          pagination.pageSize
-        }&orderBy=${options.orderBy}`
-      : `/entry?page=${pagination.page + 1}&pageSize=${pagination.pageSize}`;
+      ? `/rubric?page=${pagination.page + 1}&pageSize=${pagination.pageSize}
+          &orderBy=${options.orderBy}`
+      : `/rubric?page=${pagination.page + 1}&pageSize=${pagination.pageSize}`;
 
     const prevPageString = orderBy
-      ? `/entry?page=${pagination.page - 1}&pageSize=${
+      ? `/rubric?page=${pagination.page - 1}&pageSize=${
           pagination.pageSize
         }&orderBy=${options.orderBy}`
-      : `/entry?page=${pagination.page + 1}&pageSize=${pagination.pageSize}`;
+      : `/rubric?page=${pagination.page + 1}&pageSize=${pagination.pageSize}`;
 
-    return this.prismaService.entry
+    return this.prismaService.rubric
       .findMany({
-        where: {
-          published: false,
-          ...or,
-        },
+        where: or,
         take: pagination.pageSize || undefined,
         skip: (pagination.page - 1) * pagination.pageSize || undefined,
-        orderBy: orderBy ? orderBy : { createdAt: 'asc' },
       })
-      .then((entries) => {
+      .then((rubrics) => {
         return {
-          data: entries,
+          data: rubrics,
           meta: {
             pages: pagination.pages,
             pageSize: pagination.pageSize || 10,
@@ -67,17 +60,12 @@ export class EntryGetService {
       });
   }
 
-  async getEntry(idOrSlug, includesString): Promise<Entry> {
+  async getRubric(idOrSlug: string | number, includesString: string) {
     const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
 
-    return this.prismaService.entry
-      .findUnique({
-        where: parsedIdOrSlug,
-        include: parseIncludeArrString(includesString),
-      })
-      .then((entry) => entry)
-      .catch((err) => {
-        throw new HttpException(err.meta, HttpStatus.INTERNAL_SERVER_ERROR);
-      });
+    return this.prismaService.rubric.findUnique({
+      where: parsedIdOrSlug,
+      include: parseIncludeArrString(includesString),
+    });
   }
 }

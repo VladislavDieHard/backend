@@ -8,7 +8,6 @@ import { EntryDeleteService } from './services/entry.delete';
 @Injectable()
 export class EntryService {
   constructor(
-    private readonly prismaService: PrismaService,
     protected entryGetService: EntryGetService,
     protected entryCreateService: EntryCreateService,
     protected entryUpdateService: EntryUpdateService,
