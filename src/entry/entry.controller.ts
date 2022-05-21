@@ -10,30 +10,37 @@ import {
 } from '@nestjs/common';
 import { EntryService } from './entry.service';
 import { Entry } from '@prisma/client';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { EntryDto } from './dto/entry.dto';
 
 @ApiTags('Entry')
 @Controller('entry')
 export class EntryController extends EntryService {
+  @ApiOperation({
+    summary: 'Возвращает массив записей модели Entry',
+  })
   @ApiResponse({
     status: 200,
     description: 'Возвращает массив записей модели Entry',
     type: EntryDto,
     isArray: true,
   })
-  @ApiOperation({
-    summary: 'Возвращает массив записей модели Entry',
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    description: `Количество возврашаемых записей на странице,
+     стандартный размер страницы 10`,
   })
   @ApiQuery({
-    name: 'limit',
+    name: 'page',
     required: false,
-    description: 'Количество возврашаемых записей',
-  })
-  @ApiQuery({
-    name: 'offset',
-    required: false,
-    description: 'Отступ',
+    description: 'Страница',
   })
   @ApiQuery({
     name: 'search',
@@ -43,11 +50,13 @@ export class EntryController extends EntryService {
   @Get()
   getEntries(
     @Query('pageSize') pageSize?: number,
+    @Query('orderBy') orderBy?: string,
     @Query('search') search?: string,
     @Query('page') page?: number,
   ) {
     return this.entryGetService.getEntries({
       pageSize: pageSize,
+      orderBy: orderBy,
       search: search,
       page: page,
     });
@@ -80,26 +89,32 @@ export class EntryController extends EntryService {
     return this.entryGetService.getEntry(idOrSlug, includes);
   }
 
+  @ApiOperation({
+    summary: 'Создаёт запись модели Entry',
+  })
+  @ApiBody({
+    type: EntryDto,
+  })
   @ApiResponse({
     status: 200,
     description: 'Создаёт запись модели Entry',
     type: EntryDto,
-  })
-  @ApiOperation({
-    summary: 'Создаёт запись модели Entry',
   })
   @Post()
   createEntry(@Body() newEntry: Entry) {
     return this.entryCreateService.createEntry(newEntry);
   }
 
+  @ApiOperation({
+    summary: 'Обновляет запись модели Entry',
+  })
+  @ApiBody({
+    type: EntryDto,
+  })
   @ApiResponse({
     status: 200,
     description: 'Обновляет запись модели Entry',
     type: EntryDto,
-  })
-  @ApiOperation({
-    summary: 'Обновляет запись модели Entry',
   })
   @ApiQuery({
     name: 'id or slug',
@@ -114,13 +129,13 @@ export class EntryController extends EntryService {
     return this.entryUpdateService.updateEntry(newEntry, idOrSlug);
   }
 
+  @ApiOperation({
+    summary: 'Удаляет запись модели Entry',
+  })
   @ApiResponse({
     status: 200,
     description: 'Удаляет запись модели Entry',
     type: EntryDto,
-  })
-  @ApiOperation({
-    summary: 'Удаляет запись модели Entry',
   })
   @ApiQuery({
     name: 'id or slug',

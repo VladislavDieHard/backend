@@ -82,7 +82,7 @@ export class MenuController {
     type: Number,
   })
   @Get(':id')
-  getEntry(@Param('id') id: number, @Query('includes') includes?: string) {
+  getMenu(@Param('id') id: number, @Query('includes') includes?: string) {
     return this.menuService.getMenu(id, includes);
   }
 
@@ -95,7 +95,7 @@ export class MenuController {
     summary: 'Создаёт запись модели Menu',
   })
   @Post()
-  createEntry(@Body() newEntry: Menu) {
+  createMenu(@Body() newEntry: Menu) {
     return this.menuService.createMenu(newEntry);
   }
 
@@ -112,7 +112,7 @@ export class MenuController {
     type: Number,
   })
   @Put(':id')
-  updateEntry(@Param('id') id: number, @Body() newMenu: Menu) {
+  updateMenu(@Param('id') id: number, @Body() newMenu: Menu) {
     return this.menuService.updateMenu(newMenu, id);
   }
 
@@ -129,7 +129,7 @@ export class MenuController {
     type: Number,
   })
   @Delete(':id')
-  deleteEntry(@Param('id') id: number) {
+  deleteMenu(@Param('id') id: number) {
     return this.menuService.deleteMenu(id);
   }
 }
