@@ -44,10 +44,10 @@ jobs:
 #          docker context use remote
 
       - name: docker pull
-        run: $SSH_CONNECT "echo | cd new_back/ && docker-compose pull"
+        run: $SSH_CONNECT cd new_back/ && docker-compose pull
 
       - name: docker up
-        run: $SSH_CONNECT "echo | cd new_back/ && docker-compose up -d"
+        run: $SSH_CONNECT cd new_back/ && docker-compose up -d
 
 #      - name: docker ps
 #        run: docker images
