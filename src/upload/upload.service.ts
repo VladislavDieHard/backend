@@ -7,7 +7,7 @@ import {
 import * as dayjs from 'dayjs';
 import { v4 } from 'uuid';
 import { Client } from 'minio';
-import { findFileType } from '../utils';
+import { findFileType, readDirRecursive } from '../utils';
 import { FileTypes } from '../utils/findFileType';
 import bucketPolicy from '../utils/bucketPolicy';
 import { PrismaService } from '../prisma.service';
@@ -15,7 +15,7 @@ import { File } from '@prisma/client';
 import { getConfig } from '../utils/getConfig';
 import * as extract from 'extract-zip';
 import * as fs from 'fs';
-import { rm, readdir, lstat } from 'node:fs/promises';
+import { rm, mkdir } from 'node:fs/promises';
 import * as path from 'path';
 
 @Injectable()
@@ -43,6 +43,11 @@ export class UploadService implements OnModuleInit {
   }
 
   async uploadExhibition(file) {
+    await rm(`${__dirname}/temp`, {
+      recursive: true,
+      force: true,
+    });
+    await mkdir(`${__dirname}/temp`);
     const fileName = file.originalname.split('.').shift();
 
     fs.writeFileSync(`${__dirname}/temp/archive.zip`, file.buffer);
@@ -137,6 +142,7 @@ export class UploadService implements OnModuleInit {
       .pop()}`;
   }
 
+  // TODO Переделать
   async relistingFiles(type) {
     const filesIntoDb = (
       await this.prismaService.file.findMany({
@@ -161,56 +167,33 @@ export class UploadService implements OnModuleInit {
     });
     listObjectsStream.on('end', () => {
       filesIntoMinio.forEach((file) => {
-        if (!filesIntoDb.includes(`/${this.bucketName}/${file.name}`)) {
-          this.minioClient.removeObject(this.bucketName, file.name);
+        if (type.toLowerCase() === 'exhibition') {
+          // console.log(filesIntoDb, index);
+          // console.log(file.name.substring(0, 48), index);
+          filesIntoDb.forEach((fileIntoDb) => {
+            console.log(fileIntoDb);
+            if (
+              !fileIntoDb.includes(
+                `/${this.bucketName}/${file.name.substring(0, 48)}`,
+              )
+            ) {
+              this.minioClient.removeObject(this.bucketName, file.name);
+            }
+          });
+          // if (
+          //   !filesIntoDb.includes(
+          //     `/${this.bucketName}/${file.name.substring(0, 48)}`,
+          //   )
+          // ) {
+          //   this.minioClient.removeObject(this.bucketName, file.name);
+          // }
+        } else {
+          if (!filesIntoDb.includes(`/${this.bucketName}/${file.name}`)) {
+            this.minioClient.removeObject(this.bucketName, file.name);
+          }
         }
       });
     });
     return 'Relisted successfully';
   }
-}
-
-// TODO на посмотреть
-// function uploadDirRecursive(dir, done) {
-//   let results = [];
-//   fs.readdir(dir, function (err, list) {
-//     if (err) return done(err);
-//     let i = 0;
-//     (function next() {
-//       let file = list[i++];
-//       if (!file) return done(null, results);
-//       file = path.resolve(dir, file);
-//
-//       fs.stat(file, (err, stat) => {
-//         if (stat && stat.isDirectory()) {
-//           uploadDirRecursive(file, function (err, res) {
-//             results = results.concat(res);
-//             next();
-//           });
-//         } else {
-//           results.push(file);
-//           next();
-//         }
-//       });
-//     })();
-//   });
-// }
-
-async function readDirRecursive(dir) {
-  let results = [];
-  const entries = await readdir(dir);
-
-  for (const entry of entries) {
-    const entryPath = path.join(dir, entry);
-    const entryStat = await lstat(entryPath);
-
-    if (entryStat.isDirectory()) {
-      const newEntries = await readDirRecursive(entryPath);
-      results = results.concat(newEntries);
-    } else {
-      results.push(entryPath);
-    }
-  }
-
-  return results;
 }
