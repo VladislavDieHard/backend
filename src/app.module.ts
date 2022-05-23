@@ -5,8 +5,9 @@ import { MenuModule } from './menu/menu.module';
 import { AppController } from './app.controller';
 import { MenuItemModule } from './menu-item/menu-item.module';
 import { DepartmentModule } from './department/department.module';
-import { RubricModule } from "./rubric/rubric.module";
+import { RubricModule } from './rubric/rubric.module';
 import { AfficheModule } from './affiche/affiche.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AfficheModule } from './affiche/affiche.module';
     DepartmentModule,
     RubricModule,
     AfficheModule,
+    UploadModule,
   ],
   providers: [PrismaService],
   controllers: [AppController],

@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { RubricService } from "./rubric.service";
-import { RubricGetService } from "./services/rubric.get";
-import { RubricController } from "./rubric.controller";
-import { RubricCreateService } from "./services/rubric.create";
+import { RubricService } from './rubric.service';
+import { RubricGetService } from './services/rubric.get';
+import { RubricController } from './rubric.controller';
+import { RubricCreateService } from './services/rubric.create';
 import { RubricUpdateService } from './services/rubric.update';
-import { RubricDeleteService } from "./services/rubric.delete";
-
+import { RubricDeleteService } from './services/rubric.delete';
 
 @Module({
   providers: [
@@ -15,7 +14,7 @@ import { RubricDeleteService } from "./services/rubric.delete";
     RubricGetService,
     RubricCreateService,
     RubricUpdateService,
-    RubricDeleteService
+    RubricDeleteService,
   ],
   controllers: [RubricController],
   exports: [
@@ -23,7 +22,7 @@ import { RubricDeleteService } from "./services/rubric.delete";
     RubricGetService,
     RubricCreateService,
     RubricUpdateService,
-    RubricDeleteService
+    RubricDeleteService,
   ],
 })
 export class RubricModule {}

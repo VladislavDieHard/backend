@@ -29,13 +29,16 @@ $ npm run start:prod
 ## Правила ветвления
 
 Что-бы начать новую ветку фичи
+
 ```bash
 # Начать разработку фичи
 $ git flow feature start <feature_name>
 # Закончить разработку фичи
 $ git flow feature finish
 ```
+
 Что-бы начать новую ветку фикса
+
 ```bash
 # Начать ветку багфикса
 $ git flow bugfix start <fix_name>
