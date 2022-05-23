@@ -44,7 +44,7 @@ jobs:
 #          docker context use remote
 
       - name: docker ps
-        run: SSH_CONNECT "echo | docker images"
+        run: $SSH_CONNECT "echo | docker images"
 
 #      - name: docker ps
 #        run: docker images
