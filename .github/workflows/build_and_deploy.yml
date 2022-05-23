@@ -44,7 +44,7 @@ jobs:
 #          docker context use remote
 
       - name: docker pull
-        run: $SSH_CONNECTdocker-compose pull
+        run: $SSH_CONNECT docker-compose pull
 
       - name: docker up
         run: $SSH_CONNECT docker-compose up -d
