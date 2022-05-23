@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
   Put,
   Query,
@@ -22,6 +21,7 @@ import {
 import { DepartmentDto, DepartmentEntriesDto } from './dto/department.dto';
 import { GetDepartmentEntriesResponse } from './department.types';
 import { ErrorDto } from '../common.dto';
+// import { ErrorDto } from '../common.dto';
 
 @ApiTags('Department')
 @Controller('department')
