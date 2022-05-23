@@ -37,30 +37,30 @@ jobs:
       - name: Adding Known Hosts
         run: ssh-keyscan -H -p 22024 ${{ secrets.DEPLOY_MACHINE_IP }} >> ~/.ssh/known_hosts
 
-      - name: Add and change docker remote context
-        run: docker context create remote --docker "host=ssh://${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_MACHINE_IP }}" &&
-          docker context use remote
+#      - name: Add and change docker remote context
+#        run: docker context create remote --docker "host=ssh://${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_MACHINE_IP }}" &&
+#          docker context use remote
 
       - name: 1
-        run: docker ps
+        run: ssh -p 22024 admin24@90.189.146.39
 
-      - name: 2
-        run: docker images
+#      - name: 2
+#        run: docker images
 
-      - name: Pull newer docker image
-        run: docker pull ${{ secrets.DOCKER_LOGIN }}/infomania_backend:latest
-
-      - name: Check container exists
-        id: check
-        run: OUTPUT=$(docker ps -q --filter "name=infomania_backend") &&
-          echo "::set-output name=OUTPUT::$OUTPUT"
-
-      - name: Remove old container
-        if: steps.check.outputs.OUTPUT != ''
-        run: docker rm -f -v $(echo | docker ps -q --filter "name=infomania_backend")
-
-      - name: Run new docker container
-        run: docker run --rm -d -p 3000:8080 --name infomania_backend vladdamage/infomania_backend:latest
-
-      - name: Clear unused images
-        run: echo y | docker image prune -a
+#      - name: Pull newer docker image
+#        run: docker pull ${{ secrets.DOCKER_LOGIN }}/infomania_backend:latest
+#
+#      - name: Check container exists
+#        id: check
+#        run: OUTPUT=$(docker ps -q --filter "name=infomania_backend") &&
+#          echo "::set-output name=OUTPUT::$OUTPUT"
+#
+#      - name: Remove old container
+#        if: steps.check.outputs.OUTPUT != ''
+#        run: docker rm -f -v $(echo | docker ps -q --filter "name=infomania_backend")
+#
+#      - name: Run new docker container
+#        run: docker run --rm -d -p 3000:8080 --name infomania_backend vladdamage/infomania_backend:latest
+#
+#      - name: Clear unused images
+#        run: echo y | docker image prune -a
