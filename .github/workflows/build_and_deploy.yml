@@ -10,24 +10,22 @@ on:
 
 jobs:
 
-#  build_and_publish:
-#    if: github.event.pull_request.merged == true
-#    runs-on: [ubuntu-latest]
-#    env:
-#      LOGIN: ${{ secrets.DOCKER_LOGIN }}
-#    steps:
-#      - name: Login to docker.io
-#        run:  echo ${{ secrets.DOCKER_PASS }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
-#      - uses: actions/checkout@master
-#      - name: Build image
-#        run: docker-compose build web
-#      - name: Push image to docker.io
-#        run: docker-compose push web
+  build_and_publish:
+    runs-on: [ubuntu-latest]
+    env:
+      LOGIN: ${{ secrets.DOCKER_LOGIN }}
+    steps:
+      - name: Login to docker.io
+        run:  echo ${{ secrets.DOCKER_PASS }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+      - uses: actions/checkout@master
+      - name: Build image
+        run: docker-compose build web
+      - name: Push image to docker.io
+        run: docker-compose push web
 
   deploy:
-#    if: github.event.pull_request.merged == true
     runs-on: [ubuntu-latest]
-#    needs: build_and_publish
+    needs: build_and_publish
     env:
       SSH_CONNECT: ssh -p ${{ secrets.DEPLOY_MACHINE_PORT }} ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_MACHINE_IP }}
     steps:
@@ -39,36 +37,11 @@ jobs:
       - name: Adding Known Hosts
         run: ssh-keyscan -H -p 22024 ${{ secrets.DEPLOY_MACHINE_IP }} >> ~/.ssh/known_hosts
 
-#      - name: Add and change docker remote context
-#        run: docker context create remote --docker "host=ssh://${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_MACHINE_IP }}" &&
-#          docker context use remote
-
       - name: docker pull
         run: $SSH_CONNECT docker-compose pull
 
       - name: docker up
         run: $SSH_CONNECT docker-compose up -d
 
-#      - name: docker ps
-#        run: docker images
-
-#      - name: 2
-#        run: docker images
-
-#      - name: Pull newer docker image
-#        run: docker pull ${{ secrets.DOCKER_LOGIN }}/infomania_backend:latest
-#
-#      - name: Check container exists
-#        id: check
-#        run: OUTPUT=$(docker ps -q --filter "name=infomania_backend") &&
-#          echo "::set-output name=OUTPUT::$OUTPUT"
-#
-#      - name: Remove old container
-#        if: steps.check.outputs.OUTPUT != ''
-#        run: docker rm -f -v $(echo | docker ps -q --filter "name=infomania_backend")
-#
-#      - name: Run new docker container
-#        run: docker run --rm -d -p 3000:8080 --name infomania_backend vladdamage/infomania_backend:latest
-#
-#      - name: Clear unused images
-#        run: echo y | docker image prune -a
+      - name: docker clear images
+        run: $SSH_CONNECT docker image prune
