@@ -18,6 +18,8 @@ jobs:
       - name: Login to docker.io
         run:  echo ${{ secrets.DOCKER_PASS }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
       - uses: actions/checkout@master
+      - name: Files
+        run: ls -la
       - name: Build image
         run: docker-compose build web
       - name: Push image to docker.io
