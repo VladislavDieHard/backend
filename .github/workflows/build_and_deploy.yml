@@ -45,7 +45,7 @@ jobs:
         run: ssh -p ${{ secrets.DEPLOY_MACHINE_PORT }} ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_MACHINE_IP }}
 
       - name: docker ps
-        run: "echo | docker ps"
+        run: docker images
 
 #      - name: 2
 #        run: docker images
