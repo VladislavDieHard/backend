@@ -22,6 +22,8 @@ services:
       # Where our data will be persisted
     volumes:
       - my-db:/var/lib/mysql
+    networks:
+      - network
 
   web:
     build: .
@@ -34,6 +36,8 @@ services:
       - .production.env
     depends_on:
       - db
+    networks:
+      - network
 
   adminer:
     image: adminer
@@ -42,6 +46,8 @@ services:
       - '8080:8080'
     depends_on:
       - db
+    networks:
+      - network
 
   minio:
     image: bitnami/minio:latest
@@ -52,7 +58,13 @@ services:
     environment:
       MINIO_ROOT_USER: admin
       MINIO_ROOT_PASSWORD: Linerace2010
+    networks:
+      - network
 
 # Names our volume
 volumes:
   my-db:
+
+networks:
+  network:
+    driver: bridge
