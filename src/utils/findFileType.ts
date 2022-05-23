@@ -20,6 +20,8 @@ const docTypes = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'rtf'];
 
 const archiveTypes = ['rar', 'zip', '7z'];
 
+const browserTypes = ['js', 'html', 'css'];
+
 enum FileTypesType {
   IMAGE = 'IMAGE',
   DOCUMENT = 'DOCUMENT',

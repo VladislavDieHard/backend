@@ -1,6 +1,9 @@
 import {
   Controller,
+  HttpException,
+  HttpStatus,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -17,8 +20,18 @@ export class UploadController {
     return this.uploadService.upload(file);
   }
 
+  @Post('/exhibition')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadExhibition(@UploadedFile() file: Express.Multer.File) {
+    return this.uploadService.uploadExhibition(file);
+  }
+
   @Post('/relisting')
-  relisting() {
-    return this.uploadService.relistingFiles();
+  relisting(@Query('type') type: string) {
+    if (type) {
+      return this.uploadService.relistingFiles(type);
+    } else {
+      throw new HttpException('Type query is required', HttpStatus.BAD_REQUEST);
+    }
   }
 }

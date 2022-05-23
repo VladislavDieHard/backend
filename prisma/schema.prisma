@@ -22,7 +22,7 @@ model Department {
 
 model Entry {
   id           String     @id @default(uuid())
-  preview      String?
+  preview      File?      @relation(fields: [fileId], references: [id])
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   publishedAt  DateTime   @default(now())
@@ -38,14 +38,16 @@ model Entry {
   affiche      Affiche?   @relation(fields: [afficheId], references: [id])
   afficheId    String?    @unique
   MenuItem     MenuItem[]
+  fileId       String?
 }
 
 model Document {
   id       String     @id @default(uuid())
   title    String     @db.VarChar(200)
   content  String     @db.VarChar(4000)
-  preview  String?
+  preview  File?      @relation(fields: [fileId], references: [id])
   MenuItem MenuItem[]
+  fileId   String?
 }
 
 model Affiche {
@@ -101,23 +103,28 @@ model MenuItem {
 }
 
 model MainSlider {
-  id          String @id @default(uuid())
+  id          String  @id @default(uuid())
   title       String
   description String
-  image       String
+  image       File?   @relation(fields: [fileId], references: [id])
+  fileId      String?
 }
 
 enum FileTypes {
   IMAGE
   DOCUMENT
   ARCHIVE
+  EXHIBITION
 }
 
 model File {
-  id           String    @id @default(uuid())
-  originalName String    @db.VarChar(200)
-  mimeType     String    @db.VarChar(50)
+  id           String       @id @default(uuid())
+  originalName String       @db.VarChar(200)
+  mimeType     String       @db.VarChar(50)
   type         FileTypes
-  path         String    @db.VarChar(400)
-  createdAt    DateTime  @default(now())
+  path         String       @db.VarChar(400)
+  createdAt    DateTime     @default(now())
+  Entry        Entry[]
+  Document     Document[]
+  MainSlider   MainSlider[]
 }
