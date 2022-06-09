@@ -28,7 +28,7 @@ model Entry {
   publishedAt  DateTime   @default(now())
   title        String     @db.VarChar(200)
   desc         String?    @db.VarChar(600)
-  content      String?    @db.VarChar(4000)
+  content      String?    @db.VarChar(4000) /// ckeditor
   slug         String     @unique
   published    Boolean    @default(false)
   department   Department @relation(fields: [departmentId], references: [id])
@@ -44,7 +44,7 @@ model Entry {
 model Document {
   id       String     @id @default(uuid())
   title    String     @db.VarChar(200)
-  content  String     @db.VarChar(4000)
+  content  String     @db.VarChar(4000) /// ckeditor
   preview  File?      @relation(fields: [fileId], references: [id])
   MenuItem MenuItem[]
   fileId   String?
@@ -54,7 +54,7 @@ model Affiche {
   id         String   @id @default(uuid())
   eventDate  DateTime @default(now())
   title      String   @db.VarChar(200)
-  desc       String   @db.VarChar(600)
+  desc       String   @db.VarChar(600) /// ckeditor
   eventPlace String
   phone      String   @db.VarChar(20)
   slug       String   @unique
@@ -103,11 +103,11 @@ model MenuItem {
 }
 
 model MainSlider {
-  id          String  @id @default(uuid())
-  title       String
-  description String
-  image       File?   @relation(fields: [fileId], references: [id])
-  fileId      String?
+  id     String  @id @default(uuid())
+  title  String
+  desc   String  @db.VarChar(200) /// ckeditor
+  image  File?   @relation(fields: [fileId], references: [id])
+  fileId String?
 }
 
 enum FileTypes {

@@ -13,10 +13,7 @@ export class EntryGetService {
   async getEntries(options): Promise<GetEntriesResponse> {
     const or = options.search
       ? {
-          OR: [
-            { title: { contains: options.search } },
-            { content: { contains: options.search } },
-          ],
+          OR: [{ title: { contains: options.search } }],
         }
       : {};
 

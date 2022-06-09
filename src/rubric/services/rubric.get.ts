@@ -11,10 +11,7 @@ export class RubricGetService {
   async getRubrics(options) {
     const or = options.search
       ? {
-          OR: [
-            { title: { contains: options.search } },
-            { content: { contains: options.search } },
-          ],
+          OR: [{ title: { contains: options.search } }],
         }
       : {};
 

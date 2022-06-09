@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { GetDepartmentEntriesResponse } from '../department.types';
-import { createPagination } from '../../utils';
+import { createOrderBy, createPagination } from '../../utils';
 import { PrismaService } from '../../prisma.service';
 import { Department } from '@prisma/client';
 import { parseIdOrSlug } from '../../utils';
@@ -9,11 +9,44 @@ import { parseIdOrSlug } from '../../utils';
 export class DepartmentGetService {
   constructor(private prismaService: PrismaService) {}
 
-  async getDepartments(): Promise<Department[]> {
+  async getDepartments(options): Promise<any> {
+    const pagination = createPagination({
+      count: await this.prismaService.entry.count(),
+      pageSize: parseInt(options.pageSize),
+      page: options.page,
+    });
+
+    const orderBy = createOrderBy(options.orderBy);
+
+    const nextPageString = orderBy
+      ? `/entry?page=${pagination.page + 1}&pageSize=${
+          pagination.pageSize
+        }&orderBy=${options.orderBy}`
+      : `/entry?page=${pagination.page + 1}&pageSize=${pagination.pageSize}`;
+
+    const prevPageString = orderBy
+      ? `/entry?page=${pagination.page - 1}&pageSize=${
+          pagination.pageSize
+        }&orderBy=${options.orderBy}`
+      : `/entry?page=${pagination.page + 1}&pageSize=${pagination.pageSize}`;
+
     return this.prismaService.department
-      .findMany({})
+      .findMany({
+        take: pagination.pageSize || undefined,
+        skip: (pagination.page - 1) * pagination.pageSize || undefined,
+        orderBy: orderBy ? orderBy : { title: 'asc' },
+      })
       .then((result) => {
-        return result;
+        return {
+          data: result,
+          meta: {
+            pages: pagination.pages,
+            pageSize: pagination.pageSize || 10,
+            nextPage:
+              pagination.page < pagination.pages ? nextPageString : null,
+            prevPage: pagination.page > 1 ? prevPageString : null,
+          },
+        };
       })
       .catch((err) => {
         throw new HttpException(

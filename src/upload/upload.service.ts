@@ -7,16 +7,15 @@ import {
 import * as dayjs from 'dayjs';
 import { v4 } from 'uuid';
 import { Client } from 'minio';
-import { findFileType, readDirRecursive } from '../utils';
+import { findFileType } from '../utils';
 import { FileTypes } from '../utils/findFileType';
 import bucketPolicy from '../utils/bucketPolicy';
 import { PrismaService } from '../prisma.service';
 import { File } from '@prisma/client';
 import { getConfig } from '../utils/getConfig';
-import * as extract from 'extract-zip';
-import * as fs from 'fs';
-import { rm, mkdir } from 'node:fs/promises';
-import * as path from 'path';
+import { rm } from 'node:fs/promises';
+import { join } from 'node:path';
+import { Worker } from 'worker_threads';
 
 @Injectable()
 export class UploadService implements OnModuleInit {
@@ -43,46 +42,37 @@ export class UploadService implements OnModuleInit {
   }
 
   async uploadExhibition(file) {
-    await rm(`${__dirname}/temp`, {
-      recursive: true,
-      force: true,
+    const threadFile = join(__dirname, '..', 'threads', 'uploadExhibition.js');
+
+    return new Promise((resolve, reject) => {
+      const worker = new Worker(threadFile, {
+        workerData: { bucketName: this.bucketName, file },
+      });
+      worker.on('message', async (data) => {
+        const newFile = await this.saveToDb({
+          id: data.id,
+          originalName: file.originalname,
+          mimeType: 'text/html',
+          type: 'EXHIBITION',
+          path: `/${this.bucketName}/exhibition/${data.id}/${data.fileName}/index.html`,
+          createdAt: new Date(),
+        });
+
+        console.log(join(__dirname, 'temp', data.fileName));
+
+        await rm(join(__dirname, 'temp', data.fileName), {
+          recursive: true,
+          force: true,
+        });
+
+        resolve(newFile);
+      });
+      worker.on('error', reject);
+      worker.on('exit', (code) => {
+        if (code !== 0)
+          reject(new Error(`Worker stopped with exit code ${code}`));
+      });
     });
-    await mkdir(`${__dirname}/temp`);
-    const fileName = file.originalname.split('.').shift();
-
-    fs.writeFileSync(`${__dirname}/temp/archive.zip`, file.buffer);
-    await extract(`${__dirname}/temp/archive.zip`, {
-      dir: `${__dirname}/temp/`,
-    });
-    await rm(`${__dirname}/temp/archive.zip`);
-
-    const id = v4();
-    const entries = await readDirRecursive(
-      path.join(__dirname, 'temp', 'v_legend_russian_rock'),
-    );
-
-    for (const entry of entries) {
-      const entryName = `exhibition/${id}${entry
-        .substring(entry.indexOf('temp') + 4, entry.length)
-        .replaceAll('\\', '/')}`;
-
-      await this.minioClient.fPutObject(this.bucketName, entryName, entry);
-    }
-
-    const newFile = await this.saveToDb({
-      id: id,
-      originalName: file.originalname,
-      mimeType: 'text/html',
-      type: 'EXHIBITION',
-      path: `/${this.bucketName}/exhibition/${id}/${fileName}/index.html`,
-      createdAt: new Date(),
-    });
-    await rm(`${__dirname}/temp/${fileName}`, {
-      recursive: true,
-      force: true,
-    });
-
-    return newFile;
   }
 
   async upload(file) {

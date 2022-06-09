@@ -1,5 +1,5 @@
 import slugify from 'slugify';
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 
 export function createSlug(title: string, slug: string | undefined) {
   let resultedSlug;

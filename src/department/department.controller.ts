@@ -38,8 +38,16 @@ export class DepartmentController extends DepartmentService {
     type: ErrorDto,
   })
   @Get()
-  getDepartments(): Promise<Department[]> {
-    return this.departmentGetService.getDepartments();
+  getDepartments(
+    @Query('pageSize') pageSize?: number,
+    @Query('orderBy') orderBy?: string,
+    @Query('page') page?: number,
+  ) {
+    return this.departmentGetService.getDepartments({
+      pageSize: pageSize,
+      orderBy: orderBy,
+      page: page,
+    });
   }
 
   @ApiOperation({
