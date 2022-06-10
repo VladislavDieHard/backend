@@ -1,13 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { parseIncludeArrString } from '../utils';
-import { PrismaService } from '../prisma.service';
 import { GetMenusOptions } from './menu.types';
 import { Menu } from '@prisma/client';
+import { GetService } from '../commonServices/getService';
 
 @Injectable()
-export class MenuService {
-  constructor(private readonly prismaService: PrismaService) {}
-
+export class MenuService extends GetService {
   async getMenus(options: GetMenusOptions): Promise<Menu[]> {
     try {
       return await this.prismaService.menu.findMany({

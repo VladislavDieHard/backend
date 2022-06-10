@@ -22,6 +22,8 @@ export class EntryCreateService {
       });
     }
 
+    console.log(newEntry);
+
     return this.prismaService.entry
       .create({
         data: {
@@ -31,7 +33,8 @@ export class EntryCreateService {
       })
       .then((entry) => entry)
       .catch((err) => {
-        throw new HttpException(err.meta, HttpStatus.INTERNAL_SERVER_ERROR);
+        console.log(err.message);
+        throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
       });
   }
 }

@@ -58,9 +58,7 @@ export class UploadService implements OnModuleInit {
           createdAt: new Date(),
         });
 
-        console.log(join(__dirname, 'temp', data.fileName));
-
-        await rm(join(__dirname, 'temp', data.fileName), {
+        await rm(data.randomExactPath, {
           recursive: true,
           force: true,
         });

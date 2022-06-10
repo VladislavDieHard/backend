@@ -1,75 +1,20 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { GetDepartmentEntriesResponse } from '../department.types';
-import { createOrderBy, createPagination } from '../../utils';
-import { PrismaService } from '../../prisma.service';
-import { Department } from '@prisma/client';
-import { parseIdOrSlug } from '../../utils';
+import { createPagination } from '../../utils';
+import { GetService } from '../../commonServices/getService';
 
 @Injectable()
-export class DepartmentGetService {
-  constructor(private prismaService: PrismaService) {}
-
+export class DepartmentGetService extends GetService {
   async getDepartments(options): Promise<any> {
-    const pagination = createPagination({
-      count: await this.prismaService.entry.count(),
-      pageSize: parseInt(options.pageSize),
-      page: options.page,
-    });
+    const count = await this.prismaService.department.count();
 
-    const orderBy = createOrderBy(options.orderBy);
-
-    const nextPageString = orderBy
-      ? `/entry?page=${pagination.page + 1}&pageSize=${
-          pagination.pageSize
-        }&orderBy=${options.orderBy}`
-      : `/entry?page=${pagination.page + 1}&pageSize=${pagination.pageSize}`;
-
-    const prevPageString = orderBy
-      ? `/entry?page=${pagination.page - 1}&pageSize=${
-          pagination.pageSize
-        }&orderBy=${options.orderBy}`
-      : `/entry?page=${pagination.page + 1}&pageSize=${pagination.pageSize}`;
-
-    return this.prismaService.department
-      .findMany({
-        take: pagination.pageSize || undefined,
-        skip: (pagination.page - 1) * pagination.pageSize || undefined,
-        orderBy: orderBy ? orderBy : { title: 'asc' },
-      })
-      .then((result) => {
-        return {
-          data: result,
-          meta: {
-            pages: pagination.pages,
-            pageSize: pagination.pageSize || 10,
-            nextPage:
-              pagination.page < pagination.pages ? nextPageString : null,
-            prevPage: pagination.page > 1 ? prevPageString : null,
-          },
-        };
-      })
-      .catch((err) => {
-        throw new HttpException(
-          err.meta.cause,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      });
+    return this.addPagination(count)
+      .addOrderBy(options.orderBy)
+      .executeFindMany('Department');
   }
 
-  async getDepartment(idOrSlug): Promise<Department> {
-    const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
-    return this.prismaService.department
-      .findUnique({
-        where: {
-          ...parsedIdOrSlug,
-        },
-      })
-      .then((department) => {
-        return department;
-      })
-      .catch((err) => {
-        throw new HttpException(err.meta.cause, HttpStatus.BAD_REQUEST);
-      });
+  async getDepartment(idOrSlug) {
+    return this.parseIdOrSlug(idOrSlug).executeFindUnique('Department');
   }
 
   async getDepartmentEntries(
@@ -112,7 +57,7 @@ export class DepartmentGetService {
         };
       })
       .catch((err) => {
-        throw new HttpException(err.meta.cause, HttpStatus.BAD_REQUEST);
+        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
       });
   }
 }

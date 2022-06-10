@@ -22,24 +22,25 @@ async function uploadToMinio() {
   let time = performance.now();
   const id = v4();
   const tempPath = join(__dirname, '/../upload/temp');
+  const randomExactPath = join(tempPath, id);
   const zipPath = join(tempPath, `${id}.zip`);
 
   if (!existsSync(tempPath)) {
     mkdirSync(tempPath, 0o744);
   }
 
-  const fileName = workerData.file.originalname.split('.').shift();
+  const fileName: string = workerData.file.originalname.split('.').shift();
 
   writeFileSync(zipPath, workerData.file.buffer);
   await extract(zipPath, {
-    dir: tempPath,
+    dir: randomExactPath,
   });
   await rm(zipPath);
 
-  const entries = await readDirRecursive(join(tempPath, fileName));
+  const entries = await readDirRecursive(join(randomExactPath, fileName));
 
   for (const entry of entries) {
-    const entryName = `exhibition/${id}${entry
+    const entryName = `exhibition${entry
       .substring(entry.indexOf('temp') + 4, entry.length)
       .replaceAll('\\', '/')}`;
 
@@ -48,11 +49,12 @@ async function uploadToMinio() {
 
   // TODO В будущем убрать измерение времени
   time = performance.now() - time;
-  console.log('Время выполнения = ', time);
+  console.log(`Время выполнения = ${time}`);
 
   return {
     id,
     fileName,
+    randomExactPath,
   };
 }
 

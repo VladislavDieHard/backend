@@ -9,7 +9,19 @@ export class EntryUpdateService {
 
   async updateEntry(newEntry: Entry, idOrSlug) {
     const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
-    newEntry.slug = newEntry.slug.toLowerCase();
+    if (newEntry.slug) {
+      newEntry.slug = newEntry.slug.toLowerCase();
+    }
+
+    console.log(newEntry);
+
+    const entry = await this.prismaService.entry.findUnique({
+      where: {
+        ...parsedIdOrSlug,
+      },
+    });
+
+    console.log(entry);
 
     return this.prismaService.entry
       .update({
@@ -20,10 +32,8 @@ export class EntryUpdateService {
       })
       .then((entry) => entry)
       .catch((err) => {
-        throw new HttpException(
-          err.meta.cause,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        console.log(err);
+        throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
       });
   }
 }

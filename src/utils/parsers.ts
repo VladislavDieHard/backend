@@ -15,3 +15,15 @@ export function parseIdOrSlug(idOrSlug) {
     slug: !validate(idOrSlug) ? idOrSlug : undefined,
   } as any;
 }
+
+export function parseSearch(fields: string[], searchString: string) {
+  if (fields && searchString) {
+    return {
+      OR: fields.map((field) => {
+        return { [field]: { contains: searchString } };
+      }),
+    };
+  } else {
+    return undefined;
+  }
+}
