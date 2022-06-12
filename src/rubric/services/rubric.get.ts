@@ -12,8 +12,9 @@ export class RubricGetService extends GetService {
   }
 
   async getRubric(idOrSlug: string, includesString: string) {
-    return this.parseIdOrSlug(idOrSlug)
-      .includeFields(includesString)
-      .executeFindUnique('Rubric');
+    return this.includeFields(includesString).executeFindUnique(
+      'Rubric',
+      idOrSlug,
+    );
   }
 }

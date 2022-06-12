@@ -14,7 +14,7 @@ export class DepartmentGetService extends GetService {
   }
 
   async getDepartment(idOrSlug) {
-    return this.parseIdOrSlug(idOrSlug).executeFindUnique('Department');
+    return this.executeFindUnique('Department', idOrSlug);
   }
 
   async getDepartmentEntries(

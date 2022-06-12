@@ -25,19 +25,19 @@ services:
     networks:
       - network
 
-  web:
-    build: .
-    image: vladdamage/infomania_backend
-    container_name: web
-    restart: always
-    ports:
-      - '3333:3000'
-    env_file:
-      - .production.env
-    depends_on:
-      - db
-    networks:
-      - network
+#  web:
+#    build: .
+#    image: vladdamage/infomania_backend
+#    container_name: web
+#    restart: always
+#    ports:
+#      - '3333:3000'
+#    env_file:
+#      - .production.env
+#    depends_on:
+#      - db
+#    networks:
+#      - network
 
   adminer:
     image: adminer

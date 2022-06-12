@@ -18,6 +18,15 @@ export class GetService {
   search: { OR: Array<{ [key: string]: { contains: string } }> } | undefined;
   orderBy: object | undefined;
   pagination: any;
+  searchRangeObj: {
+    field: string;
+    fromDate: Date;
+    toDate: Date;
+  };
+  searchByFieldObj: {
+    field: string;
+    query: string;
+  };
 
   constructor() {
     this.prismaService = new PrismaService();
@@ -25,12 +34,26 @@ export class GetService {
 
   /* Execute functions */
 
-  async executeFindUnique(model): Promise<any> {
+  executeFindFirst(model) {
     return new Promise((resolve, reject) => {
       this.prismaService[model]
         .findUnique({
           where: {
-            ...this.idOrSlug,
+            ...this.createWhereParams(),
+          },
+          include: this.include,
+        })
+        .then((entry) => resolve(entry))
+        .catch((error) => reject(error));
+    });
+  }
+
+  async executeFindUnique(model, idOrSlug: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.prismaService[model]
+        .findUnique({
+          where: {
+            ...parseIdOrSlug(idOrSlug),
             ...this.createWhereParams(),
           },
           include: this.include,
@@ -99,14 +122,41 @@ export class GetService {
     return this;
   }
 
+  addSearchByFieldValue(field: string, query: string) {
+    if (field && query) {
+      this.searchByFieldObj = {
+        field,
+        query,
+      };
+    }
+    return this;
+  }
+
+  addRangeDateSearch(searchField: string, { fromDate, toDate }) {
+    if (searchField && fromDate) {
+      this.searchRangeObj = {
+        field: searchField,
+        fromDate: new Date(fromDate),
+        toDate: toDate ? new Date(toDate) : new Date(),
+      };
+    }
+    return this;
+  }
+
   /* Service functions */
 
   private createWhereParams() {
     const params = {
-      OR: undefined,
+      OR: this.search.OR ? this.search.OR : undefined,
     };
-    if (this.search) {
-      params.OR = this.search.OR;
+    if (this.searchRangeObj) {
+      params[this.searchRangeObj.field] = {
+        gte: this.searchRangeObj.fromDate,
+        lte: this.searchRangeObj.toDate,
+      };
+    }
+    if (this.searchByFieldObj) {
+      params[this.searchByFieldObj.field] = this.searchByFieldObj.query;
     }
     return params;
   }

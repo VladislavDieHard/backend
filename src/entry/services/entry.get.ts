@@ -8,14 +8,19 @@ export class EntryGetService extends GetService {
     const entryCount = await this.prismaService.entry.count();
 
     return this.addSearch(['title'], options.search)
+      .addRangeDateSearch('publishedAt', {
+        fromDate: options.fromDate,
+        toDate: options.toDate,
+      })
       .addPagination(entryCount, options.pageSize, options.page)
       .addOrderBy(options.orderBy)
       .executeFindMany('Entry');
   }
 
   async getEntry(idOrSlug, includesString): Promise<Entry> {
-    return this.parseIdOrSlug(idOrSlug)
-      .includeFields(includesString)
-      .executeFindUnique('Entry');
+    return this.includeFields(includesString).executeFindUnique(
+      'Entry',
+      idOrSlug,
+    );
   }
 }

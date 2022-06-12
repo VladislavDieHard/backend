@@ -13,6 +13,6 @@ export class AfficheGetService extends GetService {
   }
 
   async getAffiche(idOrSlug): Promise<Affiche> {
-    return this.parseIdOrSlug(idOrSlug).executeFindUnique('Affiche');
+    return this.executeFindUnique('Affiche', idOrSlug);
   }
 }

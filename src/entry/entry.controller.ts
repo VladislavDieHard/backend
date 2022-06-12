@@ -49,6 +49,8 @@ export class EntryController extends EntryService {
   })
   @Get()
   getEntries(
+    @Query('fromDate') fromDate?: Date,
+    @Query('toDate') toDate?: Date,
     @Query('pageSize') pageSize?: number,
     @Query('orderBy') orderBy?: string,
     @Query('search') search?: string,
