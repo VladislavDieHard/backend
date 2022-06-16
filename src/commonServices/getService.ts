@@ -63,6 +63,7 @@ export class GetService {
   }
 
   async executeFindMany(model, path): Promise<any> {
+    console.log(this)
     const count = await this.prismaService[model].count({
       where: {
         ...this.createWhereParams(),
@@ -140,6 +141,8 @@ export class GetService {
       } else {
         this.searchByFieldObj = undefined;
       }
+    } else {
+      this.searchByFieldObj = undefined;
     }
     return this;
   }
