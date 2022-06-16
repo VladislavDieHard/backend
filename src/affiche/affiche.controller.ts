@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Req,
 } from '@nestjs/common';
 import { AfficheService } from './affiche.service';
 import { Affiche } from '@prisma/client';
@@ -15,8 +16,10 @@ import { ApiTags } from '@nestjs/swagger';
 @Controller('affiche')
 export class AfficheController extends AfficheService {
   @Get()
-  getAffiches() {
-    return this.afficheGetService.getAffiches();
+  getAffiches(@Req() request: any) {
+    return this.afficheGetService.getAffiches({
+      path: request.path,
+    });
   }
 
   @Get(':idOrSlug')
@@ -37,7 +40,7 @@ export class AfficheController extends AfficheService {
     return this.afficheUpdateService.updateAffiche(idOrSlug, newAffiche);
   }
 
-  @Delete('idOrSlug')
+  @Delete(':idOrSlug')
   deleteAffiche(@Param('idOrSlug') idOrSlug: string) {
     return this.afficheDeleteService.deleteAffiche(idOrSlug);
   }

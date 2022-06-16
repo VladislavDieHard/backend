@@ -1,13 +1,11 @@
-import { Controller, Get } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MetadataDto } from './common.dto';
+import { ModelService } from './commonServices/modelService';
 
 @ApiTags('Common')
 @Controller()
-export class AppController {
-  constructor(private prismaService: PrismaService) {}
-
+export class AppController extends ModelService {
   @ApiOperation({
     summary: 'Возвращает метаданные всех моделей',
   })
@@ -18,6 +16,11 @@ export class AppController {
   })
   @Get('/m*a')
   getMetadata() {
-    return (this.prismaService as any)._dmmf.datamodel;
+    return this.getModels();
+  }
+
+  @Get('/m*a/model')
+  getModelMetadata(@Query('model') model: string) {
+    return this.getModelMeta(model);
   }
 }

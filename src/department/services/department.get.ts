@@ -10,7 +10,7 @@ export class DepartmentGetService extends GetService {
 
     return this.addPagination(count)
       .addOrderBy(options.orderBy)
-      .executeFindMany('Department');
+      .executeFindMany('Department', options.path);
   }
 
   async getDepartment(idOrSlug) {

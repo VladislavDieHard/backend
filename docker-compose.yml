@@ -31,7 +31,7 @@ services:
 #    container_name: web
 #    restart: always
 #    ports:
-#      - '3333:3000'
+#      - '3333:3001'
 #    env_file:
 #      - .production.env
 #    depends_on:
@@ -53,8 +53,8 @@ services:
     image: bitnami/minio:latest
     restart: always
     ports:
-      - '9000:9000'
-      - '9001:9001'
+      - '10000:9000'
+      - '10001:9001'
     environment:
       MINIO_ROOT_USER: admin
       MINIO_ROOT_PASSWORD: Linerace2010

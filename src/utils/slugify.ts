@@ -1,5 +1,5 @@
 import slugify from 'slugify';
-import * as dayjs from 'dayjs';
+import moment from 'moment';
 
 export function createSlug(title: string, slug: string | undefined) {
   let resultedSlug;
@@ -17,7 +17,7 @@ export function createSlug(title: string, slug: string | undefined) {
     });
   }
 
-  resultedSlug += `-${dayjs().format('mm-HH-DD-MM-YY')}`;
+  resultedSlug += `-${moment().format('HH:mm-DD.MM.YY')}`;
 
   return resultedSlug;
 }

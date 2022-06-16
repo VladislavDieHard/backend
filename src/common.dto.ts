@@ -47,9 +47,9 @@ export class ModelFieldDefaultDto {
 
 export class ModelFieldsDto {
   @ApiProperty()
-  name: 'id';
+  name: string;
   @ApiProperty()
-  kind: 'scalar';
+  kind: string;
   @ApiProperty()
   isList: boolean;
   @ApiProperty()
@@ -65,14 +65,19 @@ export class ModelFieldsDto {
   @ApiProperty()
   hasDefaultValue: boolean;
   @ApiProperty({
-    isArray: true,
     type: ModelFieldDefaultDto,
   })
-  default: ModelFieldDefaultDto[];
+  default: ModelFieldDefaultDto;
   @ApiProperty()
   isGenerated: boolean;
+  @ApiProperty({
+    isArray: true,
+  })
+  relationFromFields: string[];
   @ApiProperty()
   isUpdatedAt: boolean;
+  @ApiProperty()
+  documentation?: string;
 }
 
 export class ModelDto {

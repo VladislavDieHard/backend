@@ -13,16 +13,6 @@ export class EntryUpdateService {
       newEntry.slug = newEntry.slug.toLowerCase();
     }
 
-    console.log(newEntry);
-
-    const entry = await this.prismaService.entry.findUnique({
-      where: {
-        ...parsedIdOrSlug,
-      },
-    });
-
-    console.log(entry);
-
     return this.prismaService.entry
       .update({
         where: {

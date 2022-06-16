@@ -4,17 +4,17 @@ import { GetService } from '../../commonServices/getService';
 
 @Injectable()
 export class EntryGetService extends GetService {
-  async getEntries(options): Promise<any> {
-    const entryCount = await this.prismaService.entry.count();
-
+  async getEntries(options): Promise<GetEntriesType> {
     return this.addSearch(['title'], options.search)
       .addRangeDateSearch('publishedAt', {
         fromDate: options.fromDate,
         toDate: options.toDate,
       })
-      .addPagination(entryCount, options.pageSize, options.page)
+      .addSearchByFieldValue(options.searchByField)
+      .includeFields(options.include)
+      .addPagination(options.pageSize, options.page)
       .addOrderBy(options.orderBy)
-      .executeFindMany('Entry');
+      .executeFindMany('Entry', options.path);
   }
 
   async getEntry(idOrSlug, includesString): Promise<Entry> {
@@ -24,3 +24,13 @@ export class EntryGetService extends GetService {
     );
   }
 }
+
+type GetEntriesType = {
+  data: Entry[];
+  meta: {
+    pages: number;
+    pageSize: number;
+    nextPage: string | null;
+    prevPage: string | null;
+  };
+};

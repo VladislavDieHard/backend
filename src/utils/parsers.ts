@@ -27,3 +27,20 @@ export function parseSearch(fields: string[], searchString: string) {
     return undefined;
   }
 }
+
+export function parseModelName(name: string) {
+  return name
+    .split(/(?=[A-Z])/)
+    .join('-')
+    .toLowerCase();
+}
+
+export function parseValue(value: string): any {
+  if (!isNaN(Number(value))) {
+    return Number(value);
+  } else if (value === 'true' || value === 'false') {
+    return value === 'true';
+  } else {
+    return value;
+  }
+}

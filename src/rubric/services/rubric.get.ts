@@ -4,11 +4,9 @@ import { GetService } from '../../commonServices/getService';
 @Injectable()
 export class RubricGetService extends GetService {
   async getRubrics(options) {
-    const count = await this.prismaService.rubric.count();
-
     return this.addSearch(['title'], options.search)
-      .addPagination(count, options.pageSize, options.page)
-      .executeFindMany('Rubric');
+      .addPagination(options.pageSize, options.page)
+      .executeFindMany('Rubric', options.path);
   }
 
   async getRubric(idOrSlug: string, includesString: string) {

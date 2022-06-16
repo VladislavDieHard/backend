@@ -2,7 +2,7 @@ import { workerData, parentPort } from 'worker_threads';
 import { rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { writeFileSync, existsSync, mkdirSync } from 'node:fs';
-import * as extract from 'extract-zip';
+import extract from 'extract-zip';
 import { v4 } from 'uuid';
 import { readDirRecursive } from '../utils';
 import { Client } from 'minio';
@@ -31,13 +31,19 @@ async function uploadToMinio() {
 
   const fileName: string = workerData.file.originalname.split('.').shift();
 
+  let writeExactTime = performance.now();
   writeFileSync(zipPath, workerData.file.buffer);
   await extract(zipPath, {
     dir: randomExactPath,
   });
+  writeExactTime = performance.now() - writeExactTime;
+  console.log(`writeExactTime = ${writeExactTime}`);
   await rm(zipPath);
 
+  let readDirTime = performance.now();
   const entries = await readDirRecursive(join(randomExactPath, fileName));
+  readDirTime = performance.now() - readDirTime;
+  console.log(`readDirTime time = ${readDirTime}`);
 
   for (const entry of entries) {
     const entryName = `exhibition${entry

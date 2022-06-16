@@ -4,14 +4,13 @@ import {
   createPagination,
   parseIdOrSlug,
   parseIncludeArrString,
+  parseValue,
 } from '../utils';
 import { parseSearch } from '../utils/parsers';
-
-// type GetServiceOptions = {};
+import moment from 'moment';
 
 export class GetService {
-  prismaService: PrismaService;
-  idOrSlug: object;
+  readonly prismaService: PrismaService;
   include: {
     [key: string]: boolean;
   };
@@ -63,8 +62,17 @@ export class GetService {
     });
   }
 
-  async executeFindMany(model): Promise<any> {
-    const pagination = this.pagination;
+  async executeFindMany(model, path): Promise<any> {
+    const count = await this.prismaService[model].count({
+      where: {
+        ...this.createWhereParams(),
+      },
+    });
+    const pagination = createPagination({
+      count: count,
+      pageSize: this.pagination.pageSize,
+      page: this.pagination.page,
+    });
     const orderBy = this.orderBy;
     return new Promise((resolve, reject) => {
       this.prismaService[model]
@@ -81,7 +89,7 @@ export class GetService {
           if (this.pagination) {
             resolve({
               data: entry,
-              meta: GetService.createMeta(model, pagination, orderBy),
+              meta: GetService.createMeta(path, pagination),
             });
           } else {
             resolve({ data: entry });
@@ -98,13 +106,12 @@ export class GetService {
     return this;
   }
 
-  parseIdOrSlug(idOrSlug: string) {
-    this.idOrSlug = parseIdOrSlug(idOrSlug);
-    return this;
-  }
-
   addSearch(fields: string[], searchString: string) {
-    this.search = parseSearch(fields, searchString);
+    if (fields && searchString) {
+      this.search = parseSearch(fields, searchString);
+    } else {
+      this.search = undefined;
+    }
     return this;
   }
 
@@ -113,32 +120,39 @@ export class GetService {
     return this;
   }
 
-  addPagination(entryCount: number, pageSize = 10, page = 1) {
-    this.pagination = createPagination({
-      count: entryCount,
+  addPagination(pageSize = 10, page = 1) {
+    this.pagination = {
       pageSize: parseInt(String(pageSize)),
       page: page,
-    });
+    };
     return this;
   }
 
-  addSearchByFieldValue(field: string, query: string) {
-    if (field && query) {
-      this.searchByFieldObj = {
-        field,
-        query,
-      };
+  addSearchByFieldValue(searchByField: string) {
+    if (searchByField) {
+      const [key, value] = searchByField.split('=');
+      if (key && value) {
+        this.searchByFieldObj = {
+          field: key,
+          query: parseValue(value),
+        };
+        console.log(this.searchByFieldObj);
+      } else {
+        this.searchByFieldObj = undefined;
+      }
     }
     return this;
   }
 
   addRangeDateSearch(searchField: string, { fromDate, toDate }) {
-    if (searchField && fromDate) {
+    if (searchField && fromDate && toDate) {
       this.searchRangeObj = {
         field: searchField,
-        fromDate: new Date(fromDate),
-        toDate: toDate ? new Date(toDate) : new Date(),
+        fromDate: moment(fromDate).toDate(),
+        toDate: moment(toDate).toDate(),
       };
+    } else {
+      this.searchRangeObj = undefined;
     }
     return this;
   }
@@ -146,14 +160,15 @@ export class GetService {
   /* Service functions */
 
   private createWhereParams() {
-    const params = {
-      OR: this.search.OR ? this.search.OR : undefined,
-    };
+    const params = {};
     if (this.searchRangeObj) {
       params[this.searchRangeObj.field] = {
         gte: this.searchRangeObj.fromDate,
         lte: this.searchRangeObj.toDate,
       };
+    }
+    if (this.search) {
+      params['OR'] = this.search?.OR ? this.search.OR : undefined;
     }
     if (this.searchByFieldObj) {
       params[this.searchByFieldObj.field] = this.searchByFieldObj.query;
@@ -161,23 +176,30 @@ export class GetService {
     return params;
   }
 
-  private static createMeta(modelName, pagination, orderBy) {
-    const model = modelName
-      .split(/(?=[A-Z])/)
-      .join('-')
-      .toLowerCase();
+  private static createMeta(path, pagination) {
+    pagination.page = parseInt(pagination.page);
 
-    const nextPageString = orderBy
-      ? `/${model}?page=${pagination.page + 1}&pageSize=${
-          pagination.pageSize
-        }&orderBy=${orderBy}`
-      : `/${model}?page=${pagination.page + 1}&pageSize=${pagination.pageSize}`;
+    const currPath = path;
 
-    const prevPageString = orderBy
-      ? `/${model}?page=${pagination.page - 1}&pageSize=${
-          pagination.pageSize
-        }&orderBy=${orderBy}`
-      : `/${model}?page=${pagination.page + 1}&pageSize=${pagination.pageSize}`;
+    let nextPageString = currPath.replaceAll(
+      /page=[0-9]/gm,
+      `page=${pagination.page + 1}`,
+    );
+
+    nextPageString = nextPageString.replaceAll(
+      /pageSize=[0-9]/gm,
+      `pageSize=${pagination.pageSize}`,
+    );
+
+    let prevPageString = currPath.replaceAll(
+      /page=[0-9]/gm,
+      `page=${pagination.page - 1}`,
+    );
+
+    prevPageString = prevPageString.replaceAll(
+      /pageSize=[0-9]/gm,
+      `pageSize=${pagination.pageSize}`,
+    );
 
     return {
       pages: pagination.pages,

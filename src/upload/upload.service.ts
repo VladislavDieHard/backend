@@ -4,7 +4,7 @@ import {
   Injectable,
   OnModuleInit,
 } from '@nestjs/common';
-import * as dayjs from 'dayjs';
+import moment from 'moment';
 import { v4 } from 'uuid';
 import { Client } from 'minio';
 import { findFileType } from '../utils';
@@ -125,9 +125,9 @@ export class UploadService implements OnModuleInit {
   }
 
   createPath(type, id, mime) {
-    return `${type.toLowerCase()}/${dayjs().format('YYYY/MM/DD')}/${id}.${mime
-      .split('/')
-      .pop()}`;
+    return `${type.toLowerCase()}/${moment()
+      .utc()
+      .format('YYYY/MM/DD')}/${id}.${mime.split('/').pop()}`;
   }
 
   // TODO Переделать

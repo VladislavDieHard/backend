@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
 } from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { Department } from '@prisma/client';
@@ -39,6 +40,7 @@ export class DepartmentController extends DepartmentService {
   })
   @Get()
   getDepartments(
+    @Req() request: any,
     @Query('pageSize') pageSize?: number,
     @Query('orderBy') orderBy?: string,
     @Query('page') page?: number,
@@ -47,6 +49,7 @@ export class DepartmentController extends DepartmentService {
       pageSize: pageSize,
       orderBy: orderBy,
       page: page,
+      path: request.path,
     });
   }
 
