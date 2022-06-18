@@ -15,4 +15,21 @@ export class RubricGetService extends GetService {
       idOrSlug,
     );
   }
+
+  async getEntriesByRubric(options) {
+    return this.addSearch(['title'], options.search)
+      .addPagination(options.pageSize, options.page)
+      .addOrderBy(options.orderBy)
+      .addSearchByFieldValue(options.searchByField)
+      .addRangeDateSearch('publishedAt', {
+        fromDate: options.fromDate,
+        toDate: options.toDate,
+      })
+      .executeFindModelByAnother(
+        'Entry',
+        'Rubric',
+        options.idOrSlug,
+        options.path,
+      );
+  }
 }

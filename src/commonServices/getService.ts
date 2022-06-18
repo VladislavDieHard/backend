@@ -63,7 +63,7 @@ export class GetService {
   }
 
   async executeFindMany(model, path): Promise<any> {
-    console.log(this)
+    console.log(this);
     const count = await this.prismaService[model].count({
       where: {
         ...this.createWhereParams(),
@@ -80,6 +80,45 @@ export class GetService {
         .findMany({
           where: {
             ...this.createWhereParams(),
+          },
+          include: this.include,
+          orderBy: orderBy ? orderBy : undefined,
+          take: pagination?.pageSize || undefined,
+          skip: (pagination?.page - 1) * pagination?.pageSize || undefined,
+        })
+        .then((entry) => {
+          if (this.pagination) {
+            resolve({
+              data: entry,
+              meta: GetService.createMeta(path, pagination),
+            });
+          } else {
+            resolve({ data: entry });
+          }
+        })
+        .catch((error) => reject(error));
+    });
+  }
+
+  async executeFindModelByAnother(modelOne, modelTwo, idOrSlug, path) {
+    const count = await this.prismaService[modelOne].count({
+      where: {
+        ...this.createWhereParams(),
+        [modelTwo.toLowerCase()]: parseIdOrSlug(idOrSlug),
+      },
+    });
+    const pagination = createPagination({
+      count: count,
+      pageSize: this.pagination.pageSize,
+      page: this.pagination.page,
+    });
+    const orderBy = this.orderBy;
+    return new Promise((resolve, reject) => {
+      this.prismaService[modelOne]
+        .findMany({
+          where: {
+            ...this.createWhereParams(),
+            [modelTwo.toLowerCase()]: parseIdOrSlug(idOrSlug),
           },
           include: this.include,
           orderBy: orderBy ? orderBy : undefined,
