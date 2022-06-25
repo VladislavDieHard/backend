@@ -82,9 +82,9 @@ export class GetService {
             ...this.createWhereParams(),
           },
           include: this.include,
-          orderBy: orderBy ? orderBy : undefined,
-          take: pagination?.pageSize || undefined,
-          skip: (pagination?.page - 1) * pagination?.pageSize || undefined,
+          orderBy: orderBy ? orderBy : null,
+          take: pagination?.pageSize || null,
+          skip: (pagination?.page - 1) * pagination?.pageSize || null,
         })
         .then((entry) => {
           if (this.pagination) {
@@ -121,9 +121,9 @@ export class GetService {
             [modelTwo.toLowerCase()]: parseIdOrSlug(idOrSlug),
           },
           include: this.include,
-          orderBy: orderBy ? orderBy : undefined,
+          orderBy: orderBy ? orderBy : null,
           take: pagination?.pageSize || undefined,
-          skip: (pagination?.page - 1) * pagination?.pageSize || undefined,
+          skip: (pagination?.page - 1) * pagination?.pageSize || null,
         })
         .then((entry) => {
           if (this.pagination) {
@@ -142,7 +142,11 @@ export class GetService {
   /* Utility functions */
 
   includeFields(fields: string) {
-    this.include = parseIncludeArrString(fields);
+    if (fields) {
+      this.include = parseIncludeArrString(fields);
+    } else {
+      this.include = null
+    }
     return this;
   }
 
@@ -150,13 +154,17 @@ export class GetService {
     if (fields && searchString) {
       this.search = parseSearch(fields, searchString);
     } else {
-      this.search = undefined;
+      this.search = null;
     }
     return this;
   }
 
   addOrderBy(orderBy: string) {
-    this.orderBy = createOrderBy(orderBy);
+    if (orderBy) {
+      this.orderBy = createOrderBy(orderBy);
+    } else {
+      this.orderBy = null
+    }
     return this;
   }
 
@@ -178,10 +186,10 @@ export class GetService {
         };
         console.log(this.searchByFieldObj);
       } else {
-        this.searchByFieldObj = undefined;
+        this.searchByFieldObj = null;
       }
     } else {
-      this.searchByFieldObj = undefined;
+      this.searchByFieldObj = null;
     }
     return this;
   }
@@ -194,7 +202,7 @@ export class GetService {
         toDate: moment(toDate).toDate(),
       };
     } else {
-      this.searchRangeObj = undefined;
+      this.searchRangeObj = null;
     }
     return this;
   }
@@ -210,7 +218,7 @@ export class GetService {
       };
     }
     if (this.search) {
-      params['OR'] = this.search?.OR ? this.search.OR : undefined;
+      params['OR'] = this.search?.OR ? this.search.OR : null;
     }
     if (this.searchByFieldObj) {
       params[this.searchByFieldObj.field] = this.searchByFieldObj.query;
