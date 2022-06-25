@@ -64,7 +64,7 @@ model Affiche {
   oldId      Int?     @unique
   eventDate  DateTime @db.Date()
   eventTime  DateTime @db.Time()
-  title      String   @db.VarChar(200)
+  title      String   @db.VarChar(500)
   desc       String   @db.LongText /// ckeditor
   eventPlace String
   phone      String?  @db.VarChar(22)

@@ -156,7 +156,7 @@ export class UploadService implements OnModuleInit {
 
     listObjectsStream.on('data', (file) => {
       this.prismaService.file
-        .findMany({
+        .findFirst({
           select: {
             path: true,
           },
