@@ -57,13 +57,18 @@ export class GetService {
           },
           include: this.include,
         })
-        .then((entry) => resolve(entry))
-        .catch((error) => reject(error));
+        .then((entry) => {
+          this.clearObject();
+          resolve(entry);
+        })
+        .catch((error) => {
+          this.clearObject();
+          reject(error);
+        });
     });
   }
 
   async executeFindMany(model, path): Promise<any> {
-    console.log(this);
     const count = await this.prismaService[model].count({
       where: {
         ...this.createWhereParams(),
@@ -82,11 +87,12 @@ export class GetService {
             ...this.createWhereParams(),
           },
           include: this.include,
-          orderBy: orderBy ? orderBy : undefined,
-          take: pagination?.pageSize || undefined,
-          skip: (pagination?.page - 1) * pagination?.pageSize || undefined,
+          orderBy: orderBy ? orderBy : null,
+          take: pagination?.pageSize || null,
+          skip: (pagination?.page - 1) * pagination?.pageSize || 0,
         })
         .then((entry) => {
+          this.clearObject();
           if (this.pagination) {
             resolve({
               data: entry,
@@ -96,7 +102,10 @@ export class GetService {
             resolve({ data: entry });
           }
         })
-        .catch((error) => reject(error));
+        .catch((error) => {
+          this.clearObject();
+          reject(error);
+        });
     });
   }
 
@@ -121,11 +130,12 @@ export class GetService {
             [modelTwo.toLowerCase()]: parseIdOrSlug(idOrSlug),
           },
           include: this.include,
-          orderBy: orderBy ? orderBy : undefined,
+          orderBy: orderBy ? orderBy : null,
           take: pagination?.pageSize || undefined,
-          skip: (pagination?.page - 1) * pagination?.pageSize || undefined,
+          skip: (pagination?.page - 1) * pagination?.pageSize || 0,
         })
         .then((entry) => {
+          this.clearObject();
           if (this.pagination) {
             resolve({
               data: entry,
@@ -135,14 +145,21 @@ export class GetService {
             resolve({ data: entry });
           }
         })
-        .catch((error) => reject(error));
+        .catch((error) => {
+          this.clearObject();
+          reject(error);
+        });
     });
   }
 
   /* Utility functions */
 
   includeFields(fields: string) {
-    this.include = parseIncludeArrString(fields);
+    if (fields) {
+      this.include = parseIncludeArrString(fields);
+    } else {
+      this.include = null
+    }
     return this;
   }
 
@@ -150,13 +167,17 @@ export class GetService {
     if (fields && searchString) {
       this.search = parseSearch(fields, searchString);
     } else {
-      this.search = undefined;
+      this.search = null;
     }
     return this;
   }
 
   addOrderBy(orderBy: string) {
-    this.orderBy = createOrderBy(orderBy);
+    if (orderBy) {
+      this.orderBy = createOrderBy(orderBy);
+    } else {
+      this.orderBy = {}
+    }
     return this;
   }
 
@@ -176,12 +197,11 @@ export class GetService {
           field: key,
           query: parseValue(value),
         };
-        console.log(this.searchByFieldObj);
       } else {
-        this.searchByFieldObj = undefined;
+        this.searchByFieldObj = null;
       }
     } else {
-      this.searchByFieldObj = undefined;
+      this.searchByFieldObj = null;
     }
     return this;
   }
@@ -194,12 +214,24 @@ export class GetService {
         toDate: moment(toDate).toDate(),
       };
     } else {
-      this.searchRangeObj = undefined;
+      this.searchRangeObj = null;
     }
     return this;
   }
 
   /* Service functions */
+
+  private clearObject() {
+    this.searchRangeObj = {
+      field: null,
+      fromDate: null,
+      toDate: null
+    }
+    this.include = null;
+    this.search = null;
+    this.searchByFieldObj = null;
+    this.searchRangeObj = null;
+  }
 
   private createWhereParams() {
     const params = {};
@@ -210,9 +242,9 @@ export class GetService {
       };
     }
     if (this.search) {
-      params['OR'] = this.search?.OR ? this.search.OR : undefined;
+      params['OR'] = this.search?.OR ? this.search.OR : null;
     }
-    if (this.searchByFieldObj) {
+    if (this.searchByFieldObj?.field && this.searchByFieldObj?.query) {
       params[this.searchByFieldObj.field] = this.searchByFieldObj.query;
     }
     return params;
