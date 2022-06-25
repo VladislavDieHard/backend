@@ -1,28 +1,50 @@
-import moment from 'moment';
-import axios from 'axios';
 import { parse } from 'node-html-parser';
-import { v4 } from 'uuid';
 import { saveImage } from './saveImage';
-import { PrismaService } from '../prisma.service';
-import { createSlug } from '../utils';
 
-const urlRegex = /http:\/\/infomania.ru\/new\/view.php\?id=([0-9]+)/gm;
-const prismaService = new PrismaService();
+const oldSiteUrlRegex = /http:\/\/infomania.ru\/new\/view.php\?id=([0-9]+)/gm;
+const newSiteImgRegExp = new RegExp(
+  /\/media\/uploads\/([0-9a-zA-Z\/_-]+)\.([a-zA-Z]+)/,
+);
+const oldSiteImgRegExp = new RegExp(
+  /http:\/\/infomania.ru\/([a-zA-Z0-9_\/ ]+)\.([a-zA-Z]+)/g,
+);
+const base64Image = new RegExp(
+  /data:image\/(gif|jpg|jpeg|png|webp|svg|ico+);base64,([a-zA-Z0-9+/]+)/,
+);
+const otherImageUrls = new RegExp(
+  /(http|https):\/\/([a-zA-Z.\/_0-9]+)\.(gif|jpg|jpeg|png|webp|svg|ico)/,
+);
 
-export async function parseHtml(html: string) {
+export async function parseHtml(html: string, date) {
   const root = parse(html);
 
   const images: any = root.getElementsByTagName('img');
   for (const image of images) {
-    const src = image.getAttribute('src');
-    if (!src.includes('dev.infomania.ru')) {
-      if (src && typeof src === 'string') {
-        const newSrc = await replaceImagePath(src);
-        image.removeAttribute('src');
-        image.setAttribute('src', newSrc);
-      }
+    const src = image.getAttribute('src').trim();
+
+    let newSrc;
+    if (newSiteImgRegExp.test(src)) {
+      newSrc = await saveImage(`http://dev.infomania.ru${src}`, new Date(date));
+    }
+
+    if (oldSiteImgRegExp.test(src)) {
+      newSrc = await saveImage(src, new Date(date));
+    }
+
+    if (base64Image.test(src)) {
+      newSrc = await saveImage(src, new Date(date), true);
+    }
+
+    if (otherImageUrls.test(src)) {
+      newSrc = await saveImage(src, new Date(date));
+    }
+
+    if (newSrc?.path) {
+      image.removeAttribute('src');
+      image.setAttribute('src', newSrc.path);
     }
   }
+
   return root.toString();
 }
 
@@ -67,9 +89,3 @@ export async function parseHtml(html: string) {
 //     return `/entry/${existsEntry.slug}`;
 //   }
 // }
-
-async function replaceImagePath(src) {
-  const result = await saveImage(src.substring(7, src.length));
-  if (!result) return null;
-  return result.path;
-}

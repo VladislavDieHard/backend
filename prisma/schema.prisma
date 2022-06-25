@@ -23,7 +23,7 @@ model Department {
   preview File?   @relation(fields: [fileId], references: [id])
   fileId  String?
   title   String  @unique @db.VarChar(200)
-  slug    String  @unique
+  slug    String  @unique @db.VarChar(250)
   entries Entry[]
 }
 
@@ -38,15 +38,14 @@ model Entry {
   title        String      @db.VarChar(200)
   desc         String?     @db.LongText
   content      String?     @db.LongText /// ckeditor
-  slug         String      @unique
+  slug         String      @unique @db.VarChar(250)
   published    Boolean     @default(false)
   mainSlider   MainSlider?
   department   Department  @relation(fields: [departmentId], references: [id])
   departmentId String
   rubric       Rubric?     @relation(fields: [rubricId], references: [id])
   rubricId     String?
-  affiche      Affiche?    @relation(fields: [afficheId], references: [id])
-  afficheId    String?     @unique
+  affiche      Affiche?
 }
 
 model Document {
@@ -66,18 +65,19 @@ model Affiche {
   eventDate  DateTime @db.Date()
   eventTime  DateTime @db.Time()
   title      String   @db.VarChar(200)
-  desc       String   @db.VarChar(600) /// ckeditor
+  desc       String   @db.LongText /// ckeditor
   eventPlace String
-  phone      String   @db.VarChar(20)
-  slug       String   @unique
-  entry      Entry?
+  phone      String?  @db.VarChar(22)
+  slug       String   @unique @db.VarChar(250)
+  entry      Entry?   @relation(fields: [entryId], references: [id])
+  entryId    String?  @unique
 }
 
 model Rubric {
   id      String  @id @default(uuid())
   oldId   Int?    @unique
-  title   String  @unique @db.VarChar(200)
-  slug    String  @unique
+  title   String  @unique @db.VarChar(500)
+  slug    String  @unique @db.VarChar(250)
   entries Entry[]
 }
 
@@ -108,7 +108,7 @@ model MenuItem {
   menu         Menu         @relation(fields: [menuId], references: [id])
   menuId       String
   menuItemType MenuItemType
-  slug         String
+  slug         String @db.VarChar(250)
   document     Document?
   link         String?
 }
@@ -135,6 +135,7 @@ model File {
   id           String       @id @default(uuid())
   originalName String       @db.VarChar(200)
   mimeType     String       @db.VarChar(50)
+  hash         String       @unique @db.VarChar(64)
   type         FileTypes
   path         String       @db.VarChar(400)
   createdAt    DateTime     @default(now())

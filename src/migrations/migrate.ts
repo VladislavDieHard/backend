@@ -1,13 +1,15 @@
 import { department } from './models/department';
-import { rubric } from './models/rubric';
-import { menu } from './models/menu';
+import { mainSlider } from './models/mainSlider';
 import { menuItem } from './models/menuItem';
 import { document } from './models/document';
+import { affiche } from './models/affiche';
+import { rubric } from './models/rubric';
 import { entry } from './models/entry';
-import { mainSlider } from './models/mainSlider';
+import { menu } from './models/menu';
 
 export async function migrate() {
   await department();
+  await affiche();
   await rubric();
   await menu();
   await menuItem();

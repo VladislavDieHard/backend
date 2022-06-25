@@ -158,7 +158,7 @@ export class GetService {
     if (fields) {
       this.include = parseIncludeArrString(fields);
     } else {
-      this.include = null
+      this.include = null;
     }
     return this;
   }
@@ -176,7 +176,7 @@ export class GetService {
     if (orderBy) {
       this.orderBy = createOrderBy(orderBy);
     } else {
-      this.orderBy = {}
+      this.orderBy = {};
     }
     return this;
   }
@@ -225,8 +225,8 @@ export class GetService {
     this.searchRangeObj = {
       field: null,
       fromDate: null,
-      toDate: null
-    }
+      toDate: null,
+    };
     this.include = null;
     this.search = null;
     this.searchByFieldObj = null;
@@ -276,6 +276,7 @@ export class GetService {
     );
 
     return {
+      page: pagination.page,
       pages: pagination.pages,
       pageSize: pagination.pageSize || 10,
       nextPage: pagination.page < pagination.pages ? nextPageString : null,

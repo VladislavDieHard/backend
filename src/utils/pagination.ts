@@ -1,6 +1,6 @@
 export function createPagination(options) {
   const page = options.page ? parseInt(options.page) : 1;
-  const pageSize = options.pageSize;
+  const pageSize = options.pageSize ? parseInt(options.pageSize) : 10;
   const prevPageSize = Math.floor(options.count / pageSize);
 
   let pages;
