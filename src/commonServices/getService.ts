@@ -57,13 +57,18 @@ export class GetService {
           },
           include: this.include,
         })
-        .then((entry) => resolve(entry))
-        .catch((error) => reject(error));
+        .then((entry) => {
+          this.clearObject();
+          resolve(entry);
+        })
+        .catch((error) => {
+          this.clearObject();
+          reject(error);
+        });
     });
   }
 
   async executeFindMany(model, path): Promise<any> {
-    console.log(this);
     const count = await this.prismaService[model].count({
       where: {
         ...this.createWhereParams(),
@@ -87,6 +92,7 @@ export class GetService {
           skip: (pagination?.page - 1) * pagination?.pageSize || 0,
         })
         .then((entry) => {
+          this.clearObject();
           if (this.pagination) {
             resolve({
               data: entry,
@@ -96,7 +102,10 @@ export class GetService {
             resolve({ data: entry });
           }
         })
-        .catch((error) => reject(error));
+        .catch((error) => {
+          this.clearObject();
+          reject(error);
+        });
     });
   }
 
@@ -126,6 +135,7 @@ export class GetService {
           skip: (pagination?.page - 1) * pagination?.pageSize || 0,
         })
         .then((entry) => {
+          this.clearObject();
           if (this.pagination) {
             resolve({
               data: entry,
@@ -135,7 +145,10 @@ export class GetService {
             resolve({ data: entry });
           }
         })
-        .catch((error) => reject(error));
+        .catch((error) => {
+          this.clearObject();
+          reject(error);
+        });
     });
   }
 
@@ -184,7 +197,6 @@ export class GetService {
           field: key,
           query: parseValue(value),
         };
-        console.log(this.searchByFieldObj);
       } else {
         this.searchByFieldObj = null;
       }
@@ -209,6 +221,18 @@ export class GetService {
 
   /* Service functions */
 
+  private clearObject() {
+    this.searchRangeObj = {
+      field: null,
+      fromDate: null,
+      toDate: null
+    }
+    this.include = null;
+    this.search = null;
+    this.searchByFieldObj = null;
+    this.searchRangeObj = null;
+  }
+
   private createWhereParams() {
     const params = {};
     if (this.searchRangeObj) {
@@ -220,7 +244,7 @@ export class GetService {
     if (this.search) {
       params['OR'] = this.search?.OR ? this.search.OR : null;
     }
-    if (this.searchByFieldObj) {
+    if (this.searchByFieldObj?.field && this.searchByFieldObj?.query) {
       params[this.searchByFieldObj.field] = this.searchByFieldObj.query;
     }
     return params;
