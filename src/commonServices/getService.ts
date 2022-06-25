@@ -84,7 +84,7 @@ export class GetService {
           include: this.include,
           orderBy: orderBy ? orderBy : null,
           take: pagination?.pageSize || null,
-          skip: (pagination?.page - 1) * pagination?.pageSize || null,
+          skip: (pagination?.page - 1) * pagination?.pageSize || 0,
         })
         .then((entry) => {
           if (this.pagination) {
@@ -123,7 +123,7 @@ export class GetService {
           include: this.include,
           orderBy: orderBy ? orderBy : null,
           take: pagination?.pageSize || undefined,
-          skip: (pagination?.page - 1) * pagination?.pageSize || null,
+          skip: (pagination?.page - 1) * pagination?.pageSize || 0,
         })
         .then((entry) => {
           if (this.pagination) {
@@ -163,7 +163,7 @@ export class GetService {
     if (orderBy) {
       this.orderBy = createOrderBy(orderBy);
     } else {
-      this.orderBy = null
+      this.orderBy = {}
     }
     return this;
   }
