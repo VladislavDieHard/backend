@@ -17,6 +17,7 @@ import { Rubric } from '@prisma/client';
 export class RubricController extends RubricService {
   @Get()
   getRubrics(
+    @Req() request: any,
     @Query('pageSize') pageSize?: number,
     @Query('orderBy') orderBy?: string,
     @Query('search') search?: string,
@@ -27,6 +28,7 @@ export class RubricController extends RubricService {
       orderBy: orderBy,
       search: search,
       page: page,
+      path: request.originalUrl,
     });
   }
 
