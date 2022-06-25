@@ -73,14 +73,15 @@ export class UploadService implements OnModuleInit {
     });
   }
 
-  async upload(file) {
+  async upload(file, customDate?: Date) {
     const type = findFileType(file.mimetype);
+    if (type === 'exclude') return null;
     if (type === FileTypes.UNSUPPORTED) {
       throw new HttpException(FileTypes.UNSUPPORTED, HttpStatus.BAD_REQUEST);
     }
 
     const id = v4();
-    const path = this.createPath(type, id, file.mimetype);
+    const path = this.createPath(type, id, file.mimetype, customDate);
     const metadata = {
       'Content-Type': file.mimetype || '',
       'Original-Name': file.originalname,
@@ -94,7 +95,7 @@ export class UploadService implements OnModuleInit {
           mimeType: file.mimetype,
           type: type,
           path: `/${this.bucketName}/${path}`,
-          createdAt: new Date(),
+          createdAt: customDate || new Date(),
         });
       })
       .catch((err) => {
@@ -124,8 +125,8 @@ export class UploadService implements OnModuleInit {
       });
   }
 
-  createPath(type, id, mime) {
-    return `${type.toLowerCase()}/${moment()
+  createPath(type, id, mime, date?: Date) {
+    return `${type.toLowerCase()}/${moment(date || new Date())
       .utc()
       .format('YYYY/MM/DD')}/${id}.${mime.split('/').pop()}`;
   }
