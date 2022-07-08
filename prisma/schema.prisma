@@ -2,6 +2,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator prismaClassGenerator {
+  provider = "prisma-class-generator"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("NEST_DATABASE_URL")
@@ -15,56 +19,65 @@ model User {
 
 model Department {
   id      String  @id @default(uuid())
-  title   String  @db.VarChar(200)
-  slug    String  @unique
+  oldId   Int?    @unique
+  preview File?   @relation(fields: [fileId], references: [id])
+  fileId  String?
+  title   String  @unique @db.VarChar(200)
+  slug    String  @unique @db.VarChar(250)
   entries Entry[]
 }
 
 model Entry {
-  id           String     @id @default(uuid())
-  preview      File?      @relation(fields: [fileId], references: [id])
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  publishedAt  DateTime   @default(now())
-  title        String     @db.VarChar(200)
-  desc         String?    @db.VarChar(600)
-  content      String?    @db.VarChar(4000)
-  slug         String     @unique
-  published    Boolean    @default(false)
-  department   Department @relation(fields: [departmentId], references: [id])
-  departmentId String
-  rubric       Rubric?    @relation(fields: [rubricId], references: [id])
-  rubricId     String?
-  affiche      Affiche?   @relation(fields: [afficheId], references: [id])
-  afficheId    String?    @unique
-  MenuItem     MenuItem[]
+  id           String      @id @default(uuid())
+  oldId        Int?        @unique
+  preview      File?       @relation(fields: [fileId], references: [id])
   fileId       String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  publishedAt  DateTime    @default(now())
+  title        String      @db.VarChar(200)
+  desc         String?     @db.LongText
+  content      String?     @db.LongText /// ckeditor
+  slug         String      @unique @db.VarChar(250)
+  published    Boolean     @default(false)
+  mainSlider   MainSlider?
+  department   Department  @relation(fields: [departmentId], references: [id])
+  departmentId String
+  rubric       Rubric?     @relation(fields: [rubricId], references: [id])
+  rubricId     String?
+  affiche      Affiche?
 }
 
 model Document {
-  id       String     @id @default(uuid())
-  title    String     @db.VarChar(200)
-  content  String     @db.VarChar(4000)
-  preview  File?      @relation(fields: [fileId], references: [id])
-  MenuItem MenuItem[]
-  fileId   String?
+  id         String   @id @default(uuid())
+  oldId      Int?     @unique
+  title      String   @db.VarChar(200)
+  content    String   @db.LongText /// ckeditor
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  menuItemId String   @unique
+  preview    File?    @relation(fields: [fileId], references: [id])
+  fileId     String?
 }
 
 model Affiche {
   id         String   @id @default(uuid())
-  eventDate  DateTime @default(now())
+  oldId      Int?     @unique
+  eventDate  DateTime @db.Date()
+  eventTime  DateTime @db.Time()
   title      String   @db.VarChar(200)
-  desc       String   @db.VarChar(600)
+  desc       String   @db.LongText /// ckeditor
   eventPlace String
-  phone      String   @db.VarChar(20)
-  slug       String   @unique
-  entry      Entry?
+  phone      String?  @db.VarChar(22)
+  slug       String   @unique @db.VarChar(250)
+  entry      Entry?   @relation(fields: [entryId], references: [id])
+  entryId    String?  @unique
 }
 
 model Rubric {
   id      String  @id @default(uuid())
-  title   String  @db.VarChar(200)
-  slug    String  @unique
+  oldId   Int?    @unique
+  title   String  @unique @db.VarChar(500)
+  slug    String  @unique @db.VarChar(250)
   entries Entry[]
 }
 
@@ -77,37 +90,38 @@ enum MenuType {
 
 model Menu {
   id        String     @id @default(uuid())
-  title     String
+  oldId     Int?       @unique
+  title     String     @unique
   menuType  MenuType
   menuItems MenuItem[]
 }
 
 enum MenuItemType {
-  ENTRY
   DOCUMENT
   LINK
 }
 
 model MenuItem {
   id           String       @id @default(uuid())
-  title        String
+  oldId        Int?         @unique
+  title        String       @unique
   menu         Menu         @relation(fields: [menuId], references: [id])
   menuId       String
   menuItemType MenuItemType
-  slug         String
-  document     Document?    @relation(fields: [documentId], references: [id])
-  documentId   String?
-  entry        Entry?       @relation(fields: [entryId], references: [id])
-  entryId      String?
+  slug         String @db.VarChar(250)
+  document     Document?
   link         String?
 }
 
 model MainSlider {
-  id          String  @id @default(uuid())
-  title       String
-  description String
-  image       File?   @relation(fields: [fileId], references: [id])
-  fileId      String?
+  id      String  @id @default(uuid())
+  oldId   Int?    @unique
+  title   String
+  entry   Entry   @relation(fields: [entryId], references: [id])
+  entryId String  @unique
+  desc    String  @db.VarChar(200) /// ckeditor
+  image   File?   @relation(fields: [fileId], references: [id])
+  fileId  String?
 }
 
 enum FileTypes {
@@ -121,10 +135,12 @@ model File {
   id           String       @id @default(uuid())
   originalName String       @db.VarChar(200)
   mimeType     String       @db.VarChar(50)
+  hash         String       @unique @db.VarChar(64)
   type         FileTypes
   path         String       @db.VarChar(400)
   createdAt    DateTime     @default(now())
   Entry        Entry[]
   Document     Document[]
   MainSlider   MainSlider[]
+  Department   Department[]
 }

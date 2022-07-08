@@ -22,18 +22,22 @@ services:
       # Where our data will be persisted
     volumes:
       - my-db:/var/lib/mysql
+    networks:
+      - network
 
-  web:
-    build: .
-    image: vladdamage/infomania_backend
-    container_name: web
-    restart: always
-    ports:
-      - '3333:3000'
-    environment:
-      DATABASE_URL: 'mysql://root:example@host.docker.internal:3306/db'
-    depends_on:
-      - db
+#  web:
+#    build: .
+#    image: vladdamage/infomania_backend
+#    container_name: web
+#    restart: always
+#    ports:
+#      - '3333:3001'
+#    env_file:
+#      - .production.env
+#    depends_on:
+#      - db
+#    networks:
+#      - network
 
   adminer:
     image: adminer
@@ -42,17 +46,36 @@ services:
       - '8080:8080'
     depends_on:
       - db
+    networks:
+      - network
 
   minio:
     image: bitnami/minio:latest
     restart: always
     ports:
-      - '9000:9000'
-      - '9001:9001'
+      - '10000:9000'
+      - '10001:9001'
     environment:
       MINIO_ROOT_USER: admin
       MINIO_ROOT_PASSWORD: Linerace2010
+    networks:
+      - network
+
+  redis:
+    image: redis:alpine
+    command: redis-server
+    ports:
+      - '6379:6379'
+#    volumes:
+#      - redis-data:/data
+#      - redis-conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - network
 
 # Names our volume
 volumes:
   my-db:
+
+networks:
+  network:
+    driver: bridge

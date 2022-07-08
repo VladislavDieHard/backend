@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
 } from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { MenuType } from './menu.types';
@@ -48,12 +49,14 @@ export class MenuController {
   })
   @Get()
   getMenus(
+    @Req() request: any,
     @Query('type') type?: MenuType,
     @Query('includes') includes?: string,
   ) {
     return this.menuService.getMenus({
       type: type || undefined,
       includes: includes || undefined,
+      path: request.path,
     });
   }
 

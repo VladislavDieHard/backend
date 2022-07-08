@@ -1,4 +1,4 @@
-const imageTypes = [
+export const imageTypes = [
   'apng',
   'bmp',
   'gif',
@@ -46,6 +46,7 @@ const objectTypes: ObjectTypesType = {
 };
 
 export function findFileType(mimeType: string) {
+  if (mimeType === 'application/octet-stream') return 'exclude';
   const mime: string = mimeType.split('/').pop();
   let type: FileTypesType;
 

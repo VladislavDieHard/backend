@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
 } from '@nestjs/common';
 import { RubricService } from './rubric.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -16,6 +17,7 @@ import { Rubric } from '@prisma/client';
 export class RubricController extends RubricService {
   @Get()
   getRubrics(
+    @Req() request: any,
     @Query('pageSize') pageSize?: number,
     @Query('orderBy') orderBy?: string,
     @Query('search') search?: string,
@@ -26,15 +28,42 @@ export class RubricController extends RubricService {
       orderBy: orderBy,
       search: search,
       page: page,
+      path: request.originalUrl,
     });
   }
 
   @Get(':idOrSlug')
-  getRubric(
-    @Param('idOrSlug') idOrSlug: string | number,
-    includesString: string,
-  ) {
+  getRubric(@Param('idOrSlug') idOrSlug: string, includesString: string) {
     return this.rubricGetService.getRubric(idOrSlug, includesString);
+  }
+
+  @Get(':idOrSlug/:model')
+  getRubricEntries(
+    @Param('idOrSlug') idOrSlug: string,
+    @Param('model') model: string,
+    @Req() request: any,
+    @Query('fromDate') fromDate?: Date,
+    @Query('toDate') toDate?: Date,
+    @Query('pageSize') pageSize?: number,
+    @Query('orderBy') orderBy?: string,
+    @Query('search') search?: string,
+    @Query('page') page?: number,
+    @Query('include') include?: string,
+    @Query('searchByField') searchByField?: string,
+  ) {
+    return this.rubricGetService.getEntriesByRubric({
+      idOrSlug,
+      model,
+      path: request.originalUrl,
+      fromDate,
+      toDate,
+      pageSize,
+      orderBy,
+      search,
+      page,
+      include,
+      searchByField,
+    });
   }
 
   @Post()

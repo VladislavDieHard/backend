@@ -4,19 +4,19 @@ import {
   Injectable,
   OnModuleInit,
 } from '@nestjs/common';
-import * as dayjs from 'dayjs';
+import bucketPolicy from '../utils/bucketPolicy';
+import sha256 from 'sha256';
+import moment from 'moment';
 import { v4 } from 'uuid';
 import { Client } from 'minio';
-import { findFileType, readDirRecursive } from '../utils';
+import { findFileType } from '../utils';
 import { FileTypes } from '../utils/findFileType';
-import bucketPolicy from '../utils/bucketPolicy';
 import { PrismaService } from '../prisma.service';
 import { File } from '@prisma/client';
 import { getConfig } from '../utils/getConfig';
-import * as extract from 'extract-zip';
-import * as fs from 'fs';
-import { rm, mkdir } from 'node:fs/promises';
-import * as path from 'path';
+import { rm } from 'node:fs/promises';
+import { join } from 'node:path';
+import { Worker } from 'worker_threads';
 
 @Injectable()
 export class UploadService implements OnModuleInit {
@@ -43,56 +43,59 @@ export class UploadService implements OnModuleInit {
   }
 
   async uploadExhibition(file) {
-    await rm(`${__dirname}/temp`, {
-      recursive: true,
-      force: true,
+    const threadFile = join(__dirname, '..', 'threads', 'uploadExhibition.js');
+
+    return new Promise((resolve, reject) => {
+      const hash = sha256(file.buffer);
+      const worker = new Worker(threadFile, {
+        workerData: { bucketName: this.bucketName, file },
+      });
+      worker.on('message', async (data) => {
+        const newFile = await this.saveToDb({
+          id: data.id,
+          originalName: file.originalname,
+          mimeType: 'text/html',
+          type: 'EXHIBITION',
+          path: `/${this.bucketName}/exhibition/${data.id}/${data.fileName}/index.html`,
+          createdAt: new Date(),
+          hash,
+        });
+
+        await rm(data.randomExactPath, {
+          recursive: true,
+          force: true,
+        });
+
+        resolve(newFile);
+      });
+      worker.on('error', reject);
+      worker.on('exit', (code) => {
+        if (code !== 0)
+          reject(new Error(`Worker stopped with exit code ${code}`));
+      });
     });
-    await mkdir(`${__dirname}/temp`);
-    const fileName = file.originalname.split('.').shift();
-
-    fs.writeFileSync(`${__dirname}/temp/archive.zip`, file.buffer);
-    await extract(`${__dirname}/temp/archive.zip`, {
-      dir: `${__dirname}/temp/`,
-    });
-    await rm(`${__dirname}/temp/archive.zip`);
-
-    const id = v4();
-    const entries = await readDirRecursive(
-      path.join(__dirname, 'temp', 'v_legend_russian_rock'),
-    );
-
-    for (const entry of entries) {
-      const entryName = `exhibition/${id}${entry
-        .substring(entry.indexOf('temp') + 4, entry.length)
-        .replaceAll('\\', '/')}`;
-
-      await this.minioClient.fPutObject(this.bucketName, entryName, entry);
-    }
-
-    const newFile = await this.saveToDb({
-      id: id,
-      originalName: file.originalname,
-      mimeType: 'text/html',
-      type: 'EXHIBITION',
-      path: `/${this.bucketName}/exhibition/${id}/${fileName}/index.html`,
-      createdAt: new Date(),
-    });
-    await rm(`${__dirname}/temp/${fileName}`, {
-      recursive: true,
-      force: true,
-    });
-
-    return newFile;
   }
 
-  async upload(file) {
+  async upload(file, customDate?: Date) {
+    const hash = sha256(file.buffer);
+    const existFile = await this.prismaService.file.findFirst({
+      where: {
+        hash,
+      },
+    });
+
+    if (existFile) {
+      return existFile;
+    }
+
     const type = findFileType(file.mimetype);
+    if (type === 'exclude') return null;
     if (type === FileTypes.UNSUPPORTED) {
       throw new HttpException(FileTypes.UNSUPPORTED, HttpStatus.BAD_REQUEST);
     }
 
     const id = v4();
-    const path = this.createPath(type, id, file.mimetype);
+    const path = this.createPath(type, id, file.mimetype, customDate);
     const metadata = {
       'Content-Type': file.mimetype || '',
       'Original-Name': file.originalname,
@@ -104,9 +107,10 @@ export class UploadService implements OnModuleInit {
           id: id,
           originalName: file.originalname,
           mimeType: file.mimetype,
-          type: type,
           path: `/${this.bucketName}/${path}`,
-          createdAt: new Date(),
+          createdAt: customDate || new Date(),
+          type: type,
+          hash,
         });
       })
       .catch((err) => {
@@ -136,64 +140,42 @@ export class UploadService implements OnModuleInit {
       });
   }
 
-  createPath(type, id, mime) {
-    return `${type.toLowerCase()}/${dayjs().format('YYYY/MM/DD')}/${id}.${mime
-      .split('/')
-      .pop()}`;
+  createPath(type, id, mime, date?: Date) {
+    return `${type.toLowerCase()}/${moment(date || new Date())
+      .utc()
+      .format('YYYY/MM/DD')}/${id}.${mime.split('/').pop()}`;
   }
 
   // TODO Переделать
   async relistingFiles(type) {
-    const filesIntoDb = (
-      await this.prismaService.file.findMany({
-        select: {
-          path: true,
-        },
-        where: {
-          type: type.toUpperCase(),
-        },
-      })
-    ).map((file) => {
-      return file.path;
-    });
     const listObjectsStream = await this.minioClient.listObjects(
       this.bucketName,
       type.toLowerCase(),
       true,
     );
-    const filesIntoMinio = [];
+
     listObjectsStream.on('data', (file) => {
-      filesIntoMinio.push(file);
-    });
-    listObjectsStream.on('end', () => {
-      filesIntoMinio.forEach((file) => {
-        if (type.toLowerCase() === 'exhibition') {
-          // console.log(filesIntoDb, index);
-          // console.log(file.name.substring(0, 48), index);
-          filesIntoDb.forEach((fileIntoDb) => {
-            console.log(fileIntoDb);
-            if (
-              !fileIntoDb.includes(
-                `/${this.bucketName}/${file.name.substring(0, 48)}`,
-              )
-            ) {
-              this.minioClient.removeObject(this.bucketName, file.name);
-            }
-          });
-          // if (
-          //   !filesIntoDb.includes(
-          //     `/${this.bucketName}/${file.name.substring(0, 48)}`,
-          //   )
-          // ) {
-          //   this.minioClient.removeObject(this.bucketName, file.name);
-          // }
-        } else {
-          if (!filesIntoDb.includes(`/${this.bucketName}/${file.name}`)) {
+      this.prismaService.file
+        .findMany({
+          select: {
+            path: true,
+          },
+          where: {
+            path: `/site/${file.name}`,
+          },
+        })
+        .then((dbFile) => {
+          if (!dbFile) {
             this.minioClient.removeObject(this.bucketName, file.name);
           }
-        }
-      });
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     });
-    return 'Relisted successfully';
+
+    listObjectsStream.on('end', () => {
+      return 'Relisted successfully';
+    });
   }
 }

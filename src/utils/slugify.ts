@@ -1,7 +1,11 @@
 import slugify from 'slugify';
-import dayjs from 'dayjs';
+import moment from 'moment';
 
-export function createSlug(title: string, slug: string | undefined) {
+export function createSlug(
+  title: string,
+  slug: string | undefined,
+  slugWithDate = true,
+) {
   let resultedSlug;
 
   if (slug) {
@@ -17,7 +21,9 @@ export function createSlug(title: string, slug: string | undefined) {
     });
   }
 
-  resultedSlug += `-${dayjs().format('mm-HH-DD-MM-YY')}`;
+  if (slugWithDate) {
+    resultedSlug += `-${moment().format('HH:mm-DD.MM.YY')}`;
+  }
 
   return resultedSlug;
 }

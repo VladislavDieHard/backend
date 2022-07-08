@@ -9,7 +9,7 @@ export class RubricCreateService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createRubric(newRubric: Rubric) {
-    newRubric.slug = createSlug(newRubric.title, newRubric.slug);
+    newRubric.slug = createSlug(newRubric.title, newRubric.slug, false);
 
     return this.prismaService.rubric
       .create({

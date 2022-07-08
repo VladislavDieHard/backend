@@ -1,3 +1,4 @@
+import { parseValue } from './index';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -14,14 +15,4 @@ export function getConfig() {
   });
 
   return envObject;
-}
-
-function parseValue(value: string) {
-  if (!isNaN(Number(value))) {
-    return Number(value);
-  } else if (value === 'true' || value === 'false') {
-    return Boolean(value);
-  } else {
-    return value;
-  }
 }

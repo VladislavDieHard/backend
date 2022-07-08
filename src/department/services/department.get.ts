@@ -1,42 +1,20 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { GetDepartmentEntriesResponse } from '../department.types';
 import { createPagination } from '../../utils';
-import { PrismaService } from '../../prisma.service';
-import { Department } from '@prisma/client';
-import { parseIdOrSlug } from '../../utils';
+import { GetService } from '../../commonServices/getService';
 
 @Injectable()
-export class DepartmentGetService {
-  constructor(private prismaService: PrismaService) {}
+export class DepartmentGetService extends GetService {
+  async getDepartments(options): Promise<any> {
+    const count = await this.prismaService.department.count();
 
-  async getDepartments(): Promise<Department[]> {
-    return this.prismaService.department
-      .findMany({})
-      .then((result) => {
-        return result;
-      })
-      .catch((err) => {
-        throw new HttpException(
-          err.meta.cause,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      });
+    return this.addPagination(count)
+      .addOrderBy(options.orderBy)
+      .executeFindMany('Department', options.path);
   }
 
-  async getDepartment(idOrSlug): Promise<Department> {
-    const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
-    return this.prismaService.department
-      .findUnique({
-        where: {
-          ...parsedIdOrSlug,
-        },
-      })
-      .then((department) => {
-        return department;
-      })
-      .catch((err) => {
-        throw new HttpException(err.meta.cause, HttpStatus.BAD_REQUEST);
-      });
+  async getDepartment(idOrSlug) {
+    return this.executeFindUnique('Department', idOrSlug);
   }
 
   async getDepartmentEntries(
@@ -79,7 +57,7 @@ export class DepartmentGetService {
         };
       })
       .catch((err) => {
-        throw new HttpException(err.meta.cause, HttpStatus.BAD_REQUEST);
+        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
       });
   }
 }

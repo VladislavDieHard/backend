@@ -11,7 +11,11 @@ export class DepartmentCreateService {
   async createDepartment(
     newDepartment: Department,
   ): Promise<Department | Error> {
-    newDepartment.slug = createSlug(newDepartment.title, newDepartment.slug);
+    newDepartment.slug = createSlug(
+      newDepartment.title,
+      newDepartment.slug,
+      false,
+    );
 
     return this.prismaService.department
       .create({

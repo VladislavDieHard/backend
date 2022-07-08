@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
 } from '@nestjs/common';
 import { EntryService } from './entry.service';
 import { Entry } from '@prisma/client';
@@ -49,16 +50,26 @@ export class EntryController extends EntryService {
   })
   @Get()
   getEntries(
+    @Req() request: any,
+    @Query('fromDate') fromDate?: Date,
+    @Query('toDate') toDate?: Date,
     @Query('pageSize') pageSize?: number,
     @Query('orderBy') orderBy?: string,
     @Query('search') search?: string,
     @Query('page') page?: number,
+    @Query('include') include?: string,
+    @Query('searchByField') searchByField?: string,
   ) {
     return this.entryGetService.getEntries({
-      pageSize: pageSize,
-      orderBy: orderBy,
-      search: search,
-      page: page,
+      pageSize,
+      fromDate,
+      toDate,
+      orderBy,
+      search,
+      page,
+      include,
+      searchByField,
+      path: request.originalUrl,
     });
   }
 

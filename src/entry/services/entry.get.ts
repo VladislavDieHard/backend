@@ -1,83 +1,36 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { parseIdOrSlug, parseIncludeArrString } from '../../utils';
-import { PrismaService } from '../../prisma.service';
-import { GetEntriesResponse } from '../entry.types';
-import { createPagination } from '../../utils';
-import { createOrderBy } from '../../utils';
+import { Injectable } from '@nestjs/common';
 import { Entry } from '@prisma/client';
+import { GetService } from '../../commonServices/getService';
 
 @Injectable()
-export class EntryGetService {
-  constructor(private prismaService: PrismaService) {}
-
-  async getEntries(options): Promise<GetEntriesResponse> {
-    const or = options.search
-      ? {
-          OR: [
-            { title: { contains: options.search } },
-            { content: { contains: options.search } },
-          ],
-        }
-      : {};
-
-    const orderBy = createOrderBy(options.orderBy);
-
-    const pagination = createPagination({
-      count: await this.prismaService.entry.count(),
-      pageSize: parseInt(options.pageSize),
-      page: options.page,
-    });
-
-    const nextPageString = orderBy
-      ? `/entry?page=${pagination.page + 1}&pageSize=${
-          pagination.pageSize
-        }&orderBy=${options.orderBy}`
-      : `/entry?page=${pagination.page + 1}&pageSize=${pagination.pageSize}`;
-
-    const prevPageString = orderBy
-      ? `/entry?page=${pagination.page - 1}&pageSize=${
-          pagination.pageSize
-        }&orderBy=${options.orderBy}`
-      : `/entry?page=${pagination.page + 1}&pageSize=${pagination.pageSize}`;
-
-    return this.prismaService.entry
-      .findMany({
-        where: {
-          published: false,
-          ...or,
-        },
-        take: pagination.pageSize || undefined,
-        skip: (pagination.page - 1) * pagination.pageSize || undefined,
-        orderBy: orderBy ? orderBy : { createdAt: 'asc' },
+export class EntryGetService extends GetService {
+  async getEntries(options): Promise<GetEntriesType> {
+    return this.addSearch(['title'], options.search)
+      .addRangeDateSearch('createdAt', {
+        fromDate: options.fromDate,
+        toDate: options.toDate,
       })
-      .then((entries) => {
-        return {
-          data: entries,
-          meta: {
-            pages: pagination.pages,
-            pageSize: pagination.pageSize || 10,
-            nextPage:
-              pagination.page < pagination.pages ? nextPageString : null,
-            prevPage: pagination.page > 1 ? prevPageString : null,
-          },
-        };
-      })
-      .catch((err) => {
-        throw new HttpException(err.meta, HttpStatus.INTERNAL_SERVER_ERROR);
-      });
+      .addSearchByFieldValue(options.searchByField)
+      .includeFields(options.include)
+      .addPagination(options.pageSize, options.page)
+      .addOrderBy(options.orderBy)
+      .executeFindMany('Entry', options.path);
   }
 
   async getEntry(idOrSlug, includesString): Promise<Entry> {
-    const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
-
-    return this.prismaService.entry
-      .findUnique({
-        where: parsedIdOrSlug,
-        include: parseIncludeArrString(includesString),
-      })
-      .then((entry) => entry)
-      .catch((err) => {
-        throw new HttpException(err.meta, HttpStatus.INTERNAL_SERVER_ERROR);
-      });
+    return this.includeFields(includesString).executeFindUnique(
+      'Entry',
+      idOrSlug,
+    );
   }
 }
+
+type GetEntriesType = {
+  data: Entry[];
+  meta: {
+    pages: number;
+    pageSize: number;
+    nextPage: string | null;
+    prevPage: string | null;
+  };
+};

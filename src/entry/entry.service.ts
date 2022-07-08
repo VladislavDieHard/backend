@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
 import { EntryGetService } from './services/entry.get';
 import { EntryCreateService } from './services/entry.create';
 import { EntryUpdateService } from './services/entry.update';

@@ -1,40 +1,23 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma.service';
-import { parseIdOrSlug } from '../../utils';
+import { Injectable } from '@nestjs/common';
 import { Affiche } from '@prisma/client';
+import { GetService } from '../../commonServices/getService';
 
 @Injectable()
-export class AfficheGetService {
-  constructor(private prismaService: PrismaService) {}
-
-  async getAffiches(): Promise<Affiche[]> {
-    return this.prismaService.affiche
-      .findMany({
-        orderBy: { eventDate: 'asc' },
+export class AfficheGetService extends GetService {
+  async getAffiches(options) {
+    return this.addSearch(['title'], options.search)
+      .addRangeDateSearch('eventDate', {
+        fromDate: options.fromDate,
+        toDate: options.toDate,
       })
-      .catch((affiches) => affiches)
-      .catch((err) => {
-        throw new HttpException(
-          err.meta.cause,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      });
+      .addSearchByFieldValue(options.searchByField)
+      .includeFields(options.include)
+      .addPagination(options.pageSize, options.page)
+      .addOrderBy(options.orderBy)
+      .executeFindMany('Affiche', options.path);
   }
 
   async getAffiche(idOrSlug): Promise<Affiche> {
-    const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
-    return this.prismaService.affiche
-      .findUnique({
-        where: {
-          ...parsedIdOrSlug,
-        },
-      })
-      .then((affiche) => affiche)
-      .catch((err) => {
-        throw new HttpException(
-          err.meta.cause,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      });
+    return this.executeFindUnique('Affiche', idOrSlug);
   }
 }
