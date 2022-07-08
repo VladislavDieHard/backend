@@ -2,12 +2,14 @@ import { PrismaService } from '../../prisma.service';
 import { select } from '../select';
 import { v4 } from 'uuid';
 import { saveImage } from '../saveImage';
+import { getConfig } from '../../utils/getConfig';
 
 const prismaService = new PrismaService();
+const config = getConfig();
 
 export async function mainSlider() {
   const mainSliders = await select(
-    `SELECT * FROM main_slider  WHERE is_deleted != '1'`,
+    `SELECT * FROM main_slider WHERE is_deleted != '1'`,
   );
   const existMainSlider = await prismaService.mainSlider.findMany({});
   const mainSliderIds = existMainSlider.map((slide) => slide.oldId);
@@ -25,7 +27,9 @@ export async function mainSlider() {
       let preview;
 
       if (mainSlider['full_size_image']) {
-        preview = await saveImage(mainSlider['full_size_image']);
+        preview = await saveImage(
+          `${config['OLD_URL_MEDIA']}${mainSlider['full_size_image']}`,
+        );
       }
 
       if (entry) {

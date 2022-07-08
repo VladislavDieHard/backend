@@ -81,13 +81,14 @@ async function executeEntry(entry: OldEntry, departmentIds, rubricIds) {
   if (newDepartmentId) {
     let preview;
     if (entry.preview) {
+      console.log(entry.preview);
       preview = await saveImage(
         `${config['OLD_URL_MEDIA']}${entry.preview}`,
         new Date(entry.date_of_create),
       );
     }
 
-    // const content = await parseHtml(entry.text);
+    const content = await parseHtml(entry.text, entry.date_of_create);
 
     prismaService.entry
       .create({
@@ -96,7 +97,7 @@ async function executeEntry(entry: OldEntry, departmentIds, rubricIds) {
           oldId: entry.id,
           title: entry.title,
           desc: entry.description,
-          content: entry.text,
+          content: content,
           slug: entry.slug,
           published: true,
           createdAt: new Date(entry.date_of_create),

@@ -4,12 +4,13 @@ import {
   Injectable,
   OnModuleInit,
 } from '@nestjs/common';
+import bucketPolicy from '../utils/bucketPolicy';
+import sha256 from 'sha256';
 import moment from 'moment';
 import { v4 } from 'uuid';
 import { Client } from 'minio';
 import { findFileType } from '../utils';
 import { FileTypes } from '../utils/findFileType';
-import bucketPolicy from '../utils/bucketPolicy';
 import { PrismaService } from '../prisma.service';
 import { File } from '@prisma/client';
 import { getConfig } from '../utils/getConfig';
@@ -45,6 +46,7 @@ export class UploadService implements OnModuleInit {
     const threadFile = join(__dirname, '..', 'threads', 'uploadExhibition.js');
 
     return new Promise((resolve, reject) => {
+      const hash = sha256(file.buffer);
       const worker = new Worker(threadFile, {
         workerData: { bucketName: this.bucketName, file },
       });
@@ -56,6 +58,7 @@ export class UploadService implements OnModuleInit {
           type: 'EXHIBITION',
           path: `/${this.bucketName}/exhibition/${data.id}/${data.fileName}/index.html`,
           createdAt: new Date(),
+          hash,
         });
 
         await rm(data.randomExactPath, {
@@ -74,6 +77,17 @@ export class UploadService implements OnModuleInit {
   }
 
   async upload(file, customDate?: Date) {
+    const hash = sha256(file.buffer);
+    const existFile = await this.prismaService.file.findFirst({
+      where: {
+        hash,
+      },
+    });
+
+    if (existFile) {
+      return existFile;
+    }
+
     const type = findFileType(file.mimetype);
     if (type === 'exclude') return null;
     if (type === FileTypes.UNSUPPORTED) {
@@ -93,9 +107,10 @@ export class UploadService implements OnModuleInit {
           id: id,
           originalName: file.originalname,
           mimeType: file.mimetype,
-          type: type,
           path: `/${this.bucketName}/${path}`,
           createdAt: customDate || new Date(),
+          type: type,
+          hash,
         });
       })
       .catch((err) => {
@@ -133,56 +148,34 @@ export class UploadService implements OnModuleInit {
 
   // TODO Переделать
   async relistingFiles(type) {
-    const filesIntoDb = (
-      await this.prismaService.file.findMany({
-        select: {
-          path: true,
-        },
-        where: {
-          type: type.toUpperCase(),
-        },
-      })
-    ).map((file) => {
-      return file.path;
-    });
     const listObjectsStream = await this.minioClient.listObjects(
       this.bucketName,
       type.toLowerCase(),
       true,
     );
-    const filesIntoMinio = [];
+
     listObjectsStream.on('data', (file) => {
-      filesIntoMinio.push(file);
-    });
-    listObjectsStream.on('end', () => {
-      filesIntoMinio.forEach((file) => {
-        if (type.toLowerCase() === 'exhibition') {
-          // console.log(filesIntoDb, index);
-          // console.log(file.name.substring(0, 48), index);
-          filesIntoDb.forEach((fileIntoDb) => {
-            console.log(fileIntoDb);
-            if (
-              !fileIntoDb.includes(
-                `/${this.bucketName}/${file.name.substring(0, 48)}`,
-              )
-            ) {
-              this.minioClient.removeObject(this.bucketName, file.name);
-            }
-          });
-          // if (
-          //   !filesIntoDb.includes(
-          //     `/${this.bucketName}/${file.name.substring(0, 48)}`,
-          //   )
-          // ) {
-          //   this.minioClient.removeObject(this.bucketName, file.name);
-          // }
-        } else {
-          if (!filesIntoDb.includes(`/${this.bucketName}/${file.name}`)) {
+      this.prismaService.file
+        .findMany({
+          select: {
+            path: true,
+          },
+          where: {
+            path: `/site/${file.name}`,
+          },
+        })
+        .then((dbFile) => {
+          if (!dbFile) {
             this.minioClient.removeObject(this.bucketName, file.name);
           }
-        }
-      });
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     });
-    return 'Relisted successfully';
+
+    listObjectsStream.on('end', () => {
+      return 'Relisted successfully';
+    });
   }
 }

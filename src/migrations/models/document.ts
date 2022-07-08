@@ -33,13 +33,16 @@ export async function document() {
       }
 
       if (menuItem) {
-        // const content = await parseHtml(document['e_text']);
+        const content = await parseHtml(
+          document['e_text'],
+          document['e_date_of_create'],
+        );
 
         const documentToSave = {
           id: newId,
           oldId,
           title: document['e_title'],
-          content: document['e_text'],
+          content: content,
           menuItemId: menuItem.id,
           fileId: preview?.id,
         };

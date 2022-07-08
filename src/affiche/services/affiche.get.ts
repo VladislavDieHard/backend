@@ -5,7 +5,6 @@ import { GetService } from '../../commonServices/getService';
 @Injectable()
 export class AfficheGetService extends GetService {
   async getAffiches(options) {
-
     return this.addSearch(['title'], options.search)
       .addRangeDateSearch('eventDate', {
         fromDate: options.fromDate,
