@@ -77,6 +77,7 @@ export class UploadService implements OnModuleInit {
   }
 
   async upload(file, customDate?: Date) {
+    console.log(file);
     const hash = sha256(file.buffer);
     const existFile = await this.prismaService.file.findFirst({
       where: {
@@ -95,7 +96,12 @@ export class UploadService implements OnModuleInit {
     }
 
     const id = v4();
-    const path = this.createPath(type, id, file.mimetype, customDate);
+    const path = this.createPath(
+      type,
+      id,
+      file.mimetype,
+      customDate || new Date(),
+    );
     const metadata = {
       'Content-Type': file.mimetype || '',
       'Original-Name': file.originalname,

@@ -7,7 +7,6 @@ import {
   Post,
   Put,
   Query,
-  Req,
 } from '@nestjs/common';
 import { EntryService } from './entry.service';
 import { Entry } from '@prisma/client';
@@ -55,7 +54,6 @@ export class EntryController extends EntryService {
   })
   @Get()
   getEntries(
-    @Req() request: any,
     @Query('fromDate') fromDate?: Date,
     @Query('toDate') toDate?: Date,
     @Query('pageSize') pageSize?: number,
@@ -74,7 +72,6 @@ export class EntryController extends EntryService {
       page,
       include,
       searchByField,
-      path: request.originalUrl,
     });
   }
 

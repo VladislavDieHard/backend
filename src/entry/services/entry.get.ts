@@ -14,7 +14,7 @@ export class EntryGetService extends GetService {
       .includeFields(options.include)
       .addPagination(options.pageSize, options.page)
       .addOrderBy(options.orderBy)
-      .executeFindMany('Entry', options.path);
+      .executeFindMany('Entry');
   }
 
   async getEntry(idOrSlug, includesString): Promise<Entry> {
@@ -30,7 +30,5 @@ type GetEntriesType = {
   meta: {
     pages: number;
     pageSize: number;
-    nextPage: string | null;
-    prevPage: string | null;
   };
 };

@@ -40,7 +40,6 @@ export class DepartmentController extends DepartmentService {
   })
   @Get()
   getDepartments(
-    @Req() request: any,
     @Query('pageSize') pageSize?: number,
     @Query('orderBy') orderBy?: string,
     @Query('page') page?: number,
@@ -49,7 +48,6 @@ export class DepartmentController extends DepartmentService {
       pageSize: pageSize,
       orderBy: orderBy,
       page: page,
-      path: request.path,
     });
   }
 
@@ -77,13 +75,31 @@ export class DepartmentController extends DepartmentService {
     name: 'pageSize',
     required: false,
   })
-  @Get(':id/entries')
+  @Get(':idOrSlug/entries')
   getDepartmentEntries(
-    @Param('id') id: string,
-    @Query('page') page?: number,
+    @Param('idOrSlug') idOrSlug: string,
+    @Param('model') model: string,
+    @Query('fromDate') fromDate?: Date,
+    @Query('toDate') toDate?: Date,
     @Query('pageSize') pageSize?: number,
-  ): Promise<GetDepartmentEntriesResponse | Error> {
-    return this.departmentGetService.getDepartmentEntries(id, page, pageSize);
+    @Query('orderBy') orderBy?: string,
+    @Query('search') search?: string,
+    @Query('page') page?: number,
+    @Query('include') include?: string,
+    @Query('searchByField') searchByField?: string,
+  ): Promise<any> {
+    return this.departmentGetService.getDepartmentEntries({
+      idOrSlug,
+      model,
+      fromDate,
+      toDate,
+      pageSize,
+      orderBy,
+      search,
+      page,
+      include,
+      searchByField,
+    });
   }
 
   @ApiOperation({
