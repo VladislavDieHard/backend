@@ -10,6 +10,7 @@ export class DepartmentGetService extends GetService {
 
     return this.addPagination(count)
       .addOrderBy(options.orderBy)
+      .includeFields(options.include)
       .executeFindMany('Department');
   }
 
