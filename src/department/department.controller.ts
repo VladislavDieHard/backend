@@ -44,14 +44,12 @@ export class DepartmentController extends DepartmentService {
     @Query('orderBy') orderBy?: string,
     @Query('include') include?: string,
     @Query('page') page?: number,
-    @Query('include') include?: string,
   ) {
     return this.departmentGetService.getDepartments({
       pageSize: pageSize,
       orderBy: orderBy,
       include: include,
       page: page,
-      include:include
     });
   }
 
