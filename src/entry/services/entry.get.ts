@@ -6,7 +6,7 @@ import { GetService } from '../../commonServices/getService';
 export class EntryGetService extends GetService {
   async getEntries(options): Promise<GetEntriesType> {
     return this.addSearch(['title'], options.search)
-      .addRangeDateSearch('publishedAt', {
+      .addRangeDateSearch('createdAt', {
         fromDate: options.fromDate,
         toDate: options.toDate,
       })

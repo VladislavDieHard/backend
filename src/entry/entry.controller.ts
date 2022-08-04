@@ -44,6 +44,11 @@ export class EntryController extends EntryService {
     description: 'Страница',
   })
   @ApiQuery({
+    name: 'toDate',
+    required: false,
+    description: 'До какой даты',
+  })
+  @ApiQuery({
     name: 'search',
     required: false,
     description: 'Поиск по полям title и content',

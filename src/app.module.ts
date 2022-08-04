@@ -8,6 +8,7 @@ import { DepartmentModule } from './department/department.module';
 import { RubricModule } from './rubric/rubric.module';
 import { AfficheModule } from './affiche/affiche.module';
 import { UploadModule } from './upload/upload.module';
+import { FileModule } from "./file/file.modules";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UploadModule } from './upload/upload.module';
     RubricModule,
     AfficheModule,
     UploadModule,
+    FileModule
   ],
   providers: [PrismaService],
   controllers: [AppController],
