@@ -124,8 +124,9 @@ export class DepartmentController extends DepartmentService {
   @Get(':idOrSlug')
   async getDepartment(
     @Param('idOrSlug') idOrSlug: string,
-  ): Promise<Department> {
-    return await this.departmentGetService.getDepartment(idOrSlug);
+    @Query('include') include?: string,
+  ) {
+    return await this.departmentGetService.getDepartment(idOrSlug, include);
   }
 
   @ApiOperation({

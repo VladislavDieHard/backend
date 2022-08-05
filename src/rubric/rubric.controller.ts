@@ -31,8 +31,11 @@ export class RubricController extends RubricService {
   }
 
   @Get(':idOrSlug')
-  getRubric(@Param('idOrSlug') idOrSlug: string, includesString: string) {
-    return this.rubricGetService.getRubric(idOrSlug, includesString);
+  getRubric(
+    @Param('idOrSlug') idOrSlug: string,
+    @Query('include') include?: string,
+    ) {
+    return this.rubricGetService.getRubric(idOrSlug, include);
   }
 
   @Get(':idOrSlug/entries')

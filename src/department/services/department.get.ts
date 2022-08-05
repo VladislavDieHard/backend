@@ -14,8 +14,8 @@ export class DepartmentGetService extends GetService {
       .executeFindMany('Department');
   }
 
-  async getDepartment(idOrSlug) {
-    return this.executeFindUnique('Department', idOrSlug);
+  async getDepartment(idOrSlug, includesString) {
+    return this.includeFields(includesString).executeFindUnique('Department', idOrSlug);
   }
 
   async getDepartmentEntries(options) {
