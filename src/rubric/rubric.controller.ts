@@ -7,7 +7,6 @@ import {
   Post,
   Put,
   Query,
-  Req,
 } from '@nestjs/common';
 import { RubricService } from './rubric.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -34,7 +33,7 @@ export class RubricController extends RubricService {
   getRubric(
     @Param('idOrSlug') idOrSlug: string,
     @Query('include') include?: string,
-    ) {
+  ) {
     return this.rubricGetService.getRubric(idOrSlug, include);
   }
 

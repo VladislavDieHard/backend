@@ -77,7 +77,6 @@ export class UploadService implements OnModuleInit {
   }
 
   async upload(file, customDate?: Date) {
-    console.log(file);
     const hash = sha256(file.buffer);
     const existFile = await this.prismaService.file.findFirst({
       where: {

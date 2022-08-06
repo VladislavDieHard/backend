@@ -22,7 +22,6 @@ export class EntryUpdateService {
       })
       .then((entry) => entry)
       .catch((err) => {
-        console.log(err);
         throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
       });
   }

@@ -1,33 +1,12 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  Query,
-  Req,
-} from '@nestjs/common';
-import { FileService } from "./file.service";
-import { File } from '@prisma/client';
-import {
-  ApiBody,
-  ApiOperation,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { FileDto } from "./dto/file.dto";
+import { Controller, Get, Param } from '@nestjs/common';
+import { FileService } from './file.service';
+import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags('file')
+@ApiTags('File')
 @Controller('file')
 export class FileController extends FileService {
   @Get(':idOrSlug')
-  getEntry(
-    @Param('idOrSlug') idOrSlug: number | string,
-    @Query('includes') includes?: string,
-  ) {
+  getEntry(@Param('idOrSlug') idOrSlug: number | string) {
     return this.fileGetService.getFile(idOrSlug);
   }
 }

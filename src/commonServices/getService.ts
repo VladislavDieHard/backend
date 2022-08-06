@@ -36,7 +36,7 @@ export class GetService {
   executeFindFirst(model) {
     return new Promise((resolve, reject) => {
       this.prismaService[model]
-        .findUnique({
+        .findFirst({
           where: {
             ...this.createWhereParams(),
           },

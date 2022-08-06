@@ -1,6 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { GetDepartmentEntriesResponse } from '../department.types';
-import { createPagination } from '../../utils';
+import { Injectable } from '@nestjs/common';
 import { GetService } from '../../commonServices/getService';
 
 @Injectable()
@@ -15,7 +13,10 @@ export class DepartmentGetService extends GetService {
   }
 
   async getDepartment(idOrSlug, includesString) {
-    return this.includeFields(includesString).executeFindUnique('Department', idOrSlug);
+    return this.includeFields(includesString).executeFindUnique(
+      'Department',
+      idOrSlug,
+    );
   }
 
   async getDepartmentEntries(options) {

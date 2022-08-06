@@ -9,7 +9,9 @@ import { RubricModule } from './rubric/rubric.module';
 import { AfficheModule } from './affiche/affiche.module';
 import { UploadModule } from './upload/upload.module';
 import { MainSliderModule } from './main-slider/main-slider.module';
-import { FileModule } from "./file/file.modules";
+import { FileModule } from './file/file.modules';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -21,7 +23,9 @@ import { FileModule } from "./file/file.modules";
     AfficheModule,
     UploadModule,
     MainSliderModule,
-    FileModule
+    FileModule,
+    AuthModule,
+    UsersModule,
   ],
   providers: [PrismaService],
   controllers: [AppController],

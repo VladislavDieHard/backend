@@ -4,6 +4,6 @@ import { MainSliderService } from './main-slider.service';
 
 @Module({
   controllers: [MainSliderController],
-  providers: [MainSliderService]
+  providers: [MainSliderService],
 })
 export class MainSliderModule {}
