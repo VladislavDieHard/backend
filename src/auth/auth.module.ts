@@ -5,6 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { getConfig } from '../utils/getConfig';
+import { JwtStrategy } from './jwt.strategy';
 
 const config = getConfig();
 
@@ -17,7 +18,7 @@ const config = getConfig();
       signOptions: { expiresIn: '2h' },
     }),
   ],
-  providers: [AuthService, LocalStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

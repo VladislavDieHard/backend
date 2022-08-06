@@ -6,7 +6,7 @@ import {
   Param,
   Post,
   Put,
-  Query,
+  Query, UseGuards,
 } from '@nestjs/common';
 import { EntryService } from './entry.service';
 import { Entry } from '@prisma/client';
@@ -18,6 +18,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { EntryDto } from './dto/entry.dto';
+import {JwtAuthGuard} from "../auth/jwt-auth.guard";
 
 @ApiTags('Entry')
 @Controller('entry')
@@ -52,6 +53,7 @@ export class EntryController extends EntryService {
     required: false,
     description: 'Поиск по полям title и content',
   })
+  @UseGuards(JwtAuthGuard)
   @Get()
   getEntries(
     @Query('fromDate') fromDate?: Date,
