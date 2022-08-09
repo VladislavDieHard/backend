@@ -7,11 +7,12 @@ import {
   Post,
   Put,
   Query,
-  Req,
-} from '@nestjs/common';
+  Req, UseGuards
+} from "@nestjs/common";
 import { AfficheService } from './affiche.service';
 import { Affiche } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 @ApiTags('Affiche')
 @Controller('affiche')
@@ -44,11 +45,13 @@ export class AfficheController extends AfficheService {
     return this.afficheGetService.getAffiche(idOrSlug);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   createAffiche(@Body() newAffiche: Affiche) {
     return this.afficheCreateService.createAffiche(newAffiche);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':idOrSlug')
   updateAffiche(
     @Param('idOrSlug') idOrSlug: string,
@@ -57,6 +60,7 @@ export class AfficheController extends AfficheService {
     return this.afficheUpdateService.updateAffiche(idOrSlug, newAffiche);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':idOrSlug')
   deleteAffiche(@Param('idOrSlug') idOrSlug: string) {
     return this.afficheDeleteService.deleteAffiche(idOrSlug);

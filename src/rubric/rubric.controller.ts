@@ -6,11 +6,12 @@ import {
   Param,
   Post,
   Put,
-  Query,
-} from '@nestjs/common';
+  Query, UseGuards
+} from "@nestjs/common";
 import { RubricService } from './rubric.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Rubric } from '@prisma/client';
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 @Controller('rubric')
 @ApiTags('Rubric')
 export class RubricController extends RubricService {
@@ -64,16 +65,19 @@ export class RubricController extends RubricService {
     });
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   createRubric(@Body() newRubric: Rubric) {
     return this.rubricCreateService.createRubric(newRubric);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':idOrSlug')
   updateRubric(@Param('idOrSlug') idOrSlug: string, @Body() newRubric: Rubric) {
     return this.rubricUpdateService.updateRubric(newRubric, idOrSlug);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':idOrSlug')
   deleteRubric(@Param('idOrSlug') idOrSlug: string) {
     return this.rubricDeleteService.deleteRubric(idOrSlug);

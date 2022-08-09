@@ -6,7 +6,8 @@ import {
   Param,
   Post,
   Put,
-  Query, UseGuards,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { EntryService } from './entry.service';
 import { Entry } from '@prisma/client';
@@ -53,7 +54,6 @@ export class EntryController extends EntryService {
     required: false,
     description: 'Поиск по полям title и content',
   })
-  @UseGuards(JwtAuthGuard)
   @Get()
   getEntries(
     @Query('fromDate') fromDate?: Date,
@@ -115,6 +115,7 @@ export class EntryController extends EntryService {
     description: 'Создаёт запись модели Entry',
     type: EntryDto,
   })
+  @UseGuards(JwtAuthGuard)
   @Post()
   createEntry(@Body() newEntry: Entry) {
     return this.entryCreateService.createEntry(newEntry);
@@ -136,6 +137,7 @@ export class EntryController extends EntryService {
     required: true,
     description: 'Уникальный идентификатор записи',
   })
+  @UseGuards(JwtAuthGuard)
   @Put(':idOrSlug')
   updateEntry(
     @Param('idOrSlug') idOrSlug: number | string,
@@ -157,6 +159,7 @@ export class EntryController extends EntryService {
     required: true,
     description: 'Уникальный идентификатор записи',
   })
+  @UseGuards(JwtAuthGuard)
   @Delete(':idOrSlug')
   deleteEntry(@Param('idOrSlug') idOrSlug: number | string) {
     return this.entryDeleteService.deleteEntry(idOrSlug);

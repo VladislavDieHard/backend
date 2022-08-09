@@ -6,8 +6,8 @@ import {
   Param,
   Post,
   Put,
-  Query,
-} from '@nestjs/common';
+  Query, UseGuards
+} from "@nestjs/common";
 import { MenuItem, MenuItemType } from '@prisma/client';
 import { MenuItemService } from './menu-item.service';
 import {
@@ -19,6 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { MenuDto } from '../menu/dto/menu.dto';
 import { MenuType } from '../menu/menu.types';
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 @ApiTags('MenuItem')
 @Controller('menu-item')
@@ -76,6 +77,7 @@ export class MenuItemController {
   @ApiOperation({
     summary: 'Создаёт запись модели MenuItem',
   })
+  @UseGuards(JwtAuthGuard)
   @Post()
   createEntry(@Body() newMenuItem: MenuItem) {
     return this.menuItemService.createMenuItem(newMenuItem);
@@ -93,6 +95,7 @@ export class MenuItemController {
     name: 'Id or Slug',
     type: String,
   })
+  @UseGuards(JwtAuthGuard)
   @Put(':idOrSlug')
   updateEntry(
     @Param('idOrSlug') idOrSlug: number | string,
@@ -113,6 +116,7 @@ export class MenuItemController {
     name: 'Id or Slug',
     type: String,
   })
+  @UseGuards(JwtAuthGuard)
   @Delete(':idOrSlug')
   deleteEntry(@Param('idOrSlug') idOrSlug: number | string) {
     return this.menuItemService.deleteMenuItem(idOrSlug);

@@ -7,8 +7,8 @@ import {
   Post,
   Put,
   Query,
-  Req,
-} from '@nestjs/common';
+  Req, UseGuards
+} from "@nestjs/common";
 import { MenuService } from './menu.service';
 import { MenuType } from './menu.types';
 import { Menu } from '@prisma/client';
@@ -20,6 +20,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { MenuDto } from './dto/menu.dto';
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 
 @ApiTags('Menu')
 @Controller('menu')
@@ -97,6 +98,7 @@ export class MenuController {
   @ApiOperation({
     summary: 'Создаёт запись модели Menu',
   })
+  @UseGuards(JwtAuthGuard)
   @Post()
   createMenu(@Body() newEntry: Menu) {
     return this.menuService.createMenu(newEntry);
@@ -114,6 +116,7 @@ export class MenuController {
     name: 'id',
     type: Number,
   })
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   updateMenu(@Param('id') id: number, @Body() newMenu: Menu) {
     return this.menuService.updateMenu(newMenu, id);
@@ -131,6 +134,7 @@ export class MenuController {
     name: 'id',
     type: Number,
   })
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   deleteMenu(@Param('id') id: number) {
     return this.menuService.deleteMenu(id);

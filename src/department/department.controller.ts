@@ -7,8 +7,8 @@ import {
   Post,
   Put,
   Query,
-  Req,
-} from '@nestjs/common';
+  Req, UseGuards
+} from "@nestjs/common";
 import { DepartmentService } from './department.service';
 import { Department } from '@prisma/client';
 import {
@@ -22,6 +22,7 @@ import {
 import { DepartmentDto, DepartmentEntriesDto } from './dto/department.dto';
 import { GetDepartmentEntriesResponse } from './department.types';
 import { ErrorDto } from '../common.dto';
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 // import { ErrorDto } from '../common.dto';
 
 @ApiTags('Department')
@@ -143,6 +144,7 @@ export class DepartmentController extends DepartmentService {
     status: 500,
     type: ErrorDto,
   })
+  @UseGuards(JwtAuthGuard)
   @Post()
   createDepartment(
     @Body() newDepartment: Department,
@@ -175,6 +177,7 @@ export class DepartmentController extends DepartmentService {
     description: 'UUID or Slug',
     type: String || Number,
   })
+  @UseGuards(JwtAuthGuard)
   @Put(':idOrSlug')
   updateDepartment(
     @Param('idOrSlug') idOrSlug: string,
@@ -203,6 +206,7 @@ export class DepartmentController extends DepartmentService {
     description: 'UUID or Slug',
     type: String || Number,
   })
+  @UseGuards(JwtAuthGuard)
   @Delete(':idOrSlug')
   deleteDepartment(@Param('idOrSlug') idOrSlug: string) {
     return this.departmentDeleteService.deleteDepartment(idOrSlug);
