@@ -12,6 +12,7 @@ import { MetadataDto } from './common.dto';
 import { ModelService } from './commonServices/modelService';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 type CookieResponse = Response & { cookie(key, value, options): void };
 
@@ -30,11 +31,13 @@ export class AppController extends ModelService {
     description: 'Возвращает метаданные всех моделей',
     type: MetadataDto,
   })
+  @UseGuards(JwtAuthGuard)
   @Get('/m*a')
   getMetadata() {
     return this.getModels();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/m*a/model')
   getModelMetadata(@Query('model') model: string) {
     return this.getModelMeta(model);
