@@ -17,8 +17,8 @@ export class EntryGetService extends GetService {
       .executeFindMany('Entry');
   }
 
-  async getEntry(idOrSlug, includesString): Promise<Entry> {
-    return this.includeFields(includesString).executeFindUnique(
+  async getEntry(idOrSlug, includeString): Promise<Entry> {
+    return this.includeFields(includeString).executeFindUnique(
       'Entry',
       idOrSlug,
     );

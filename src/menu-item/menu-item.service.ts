@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { parseIdOrSlug, parseIncludeArrString } from '../utils';
+import { parseIdOrSlug } from '../utils';
 import { MenuItemOptions } from './menu-item.types';
 import { MenuItem } from '@prisma/client';
 import { MultiResponse } from '../commonServices/types';
@@ -11,26 +11,21 @@ export class MenuItemService extends GetService {
     options: MenuItemOptions,
   ): Promise<MultiResponse<MenuItem[]>> {
     try {
-      return this.includeFields(options.includes)
+      return this.includeFields(options.include)
         .addPagination()
         .addSearchByFieldValue(options.searchByField)
-        .addSearch(['menuItemType', 'title'], options.searchString)
         .executeFindMany('MenuItem');
     } catch (e) {
       throw new HttpException('Error with query', HttpStatus.BAD_REQUEST);
     }
   }
 
-  async getMenuItem(idOrSlug, includesString): Promise<MenuItem> {
-    const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
-
+  async getMenuItem(idOrSlug, includeString): Promise<MenuItem> {
     try {
-      return await this.prismaService.menuItem.findUnique({
-        where: {
-          ...parsedIdOrSlug,
-        },
-        include: parseIncludeArrString(includesString),
-      });
+      return this.includeFields(includeString).executeFindUnique(
+        'MenuItem',
+        idOrSlug,
+      );
     } catch (e) {
       throw new HttpException('Error with query', HttpStatus.BAD_REQUEST);
     }

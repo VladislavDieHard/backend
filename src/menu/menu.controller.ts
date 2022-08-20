@@ -7,8 +7,9 @@ import {
   Post,
   Put,
   Query,
-  Req, UseGuards
-} from "@nestjs/common";
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { MenuType } from './menu.types';
 import { Menu } from '@prisma/client';
@@ -20,7 +21,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { MenuDto } from './dto/menu.dto';
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('Menu')
 @Controller('menu')
@@ -43,7 +44,7 @@ export class MenuController {
     enum: MenuType,
   })
   @ApiQuery({
-    name: 'includes',
+    name: 'include',
     required: false,
     description: 'Укажите модели для включения полей в ответ',
     example: 'menuItems',
@@ -51,13 +52,12 @@ export class MenuController {
   @Get()
   getMenus(
     @Req() request: any,
-    @Query('type') type?: MenuType,
-    @Query('includes') includes?: string,
+    @Query('searchByField') searchByField?: string,
+    @Query('include') include?: string,
   ) {
     return this.menuService.getMenus({
-      type: type || undefined,
-      includes: includes || undefined,
-      path: request.path,
+      include: include || undefined,
+      searchByField: searchByField,
     });
   }
 
@@ -76,7 +76,7 @@ export class MenuController {
     enum: MenuType,
   })
   @ApiQuery({
-    name: 'includes',
+    name: 'include',
     required: false,
     description: 'Укажите модели для включения полей в ответ',
     example: 'menuItems',
@@ -86,8 +86,8 @@ export class MenuController {
     type: Number,
   })
   @Get(':id')
-  getMenu(@Param('id') id: number, @Query('includes') includes?: string) {
-    return this.menuService.getMenu(id, includes);
+  getMenu(@Param('id') id: number, @Query('include') include?: string) {
+    return this.menuService.getMenu(id, include);
   }
 
   @ApiResponse({

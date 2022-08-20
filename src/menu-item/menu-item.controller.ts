@@ -30,13 +30,11 @@ export class MenuItemController {
   @Get()
   async getMenuItems(
     @Query('searchByField') searchByField?: string,
-    @Query('search') search?: string,
-    @Query('includes') includes?: string,
+    @Query('include') include?: string,
   ) {
     return this.menuItemService.getMenuItems({
       searchByField: searchByField,
-      searchString: search,
-      includes: includes || undefined,
+      include: include || undefined,
     });
   }
 
@@ -55,7 +53,7 @@ export class MenuItemController {
     enum: MenuType,
   })
   @ApiQuery({
-    name: 'includes',
+    name: 'include',
     required: false,
     description: 'Укажите модели для включения полей в ответ',
     example: 'menuItems',
@@ -67,9 +65,9 @@ export class MenuItemController {
   @Get(':idOrSlug')
   getEntry(
     @Param('idOrSlug') idOrSlug: number | string,
-    @Query('includes') includes?: string,
+    @Query('include') include?: string,
   ) {
-    return this.menuItemService.getMenuItem(idOrSlug, includes);
+    return this.menuItemService.getMenuItem(idOrSlug, include);
   }
 
   @ApiResponse({

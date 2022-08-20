@@ -19,7 +19,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { EntryDto } from './dto/entry.dto';
-import {JwtAuthGuard} from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('Entry')
 @Controller('entry')
@@ -91,7 +91,7 @@ export class EntryController extends EntryService {
     description: 'Уникальный идентификатор записи',
   })
   @ApiQuery({
-    name: 'includes',
+    name: 'include',
     required: false,
     description: 'Укажите модели для включения полей в ответ',
     example: 'department,rubric',
@@ -99,9 +99,9 @@ export class EntryController extends EntryService {
   @Get(':idOrSlug')
   getEntry(
     @Param('idOrSlug') idOrSlug: number | string,
-    @Query('includes') includes?: string,
+    @Query('include') include?: string,
   ) {
-    return this.entryGetService.getEntry(idOrSlug, includes);
+    return this.entryGetService.getEntry(idOrSlug, include);
   }
 
   @ApiOperation({

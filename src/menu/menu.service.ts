@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { parseIncludeArrString } from '../utils';
 import { GetMenusOptions } from './menu.types';
 import { Menu } from '@prisma/client';
 import { GetService } from '../commonServices/getService';
@@ -8,25 +7,18 @@ import { GetService } from '../commonServices/getService';
 export class MenuService extends GetService {
   async getMenus(options: GetMenusOptions): Promise<Menu[]> {
     try {
-      return await this.prismaService.menu.findMany({
-        where: {
-          menuType: options.type,
-        },
-        include: parseIncludeArrString(options.includes),
-      });
+      return this.includeFields(options.include)
+        .addPagination()
+        .addSearchByFieldValue(options.searchByField)
+        .executeFindMany('Menu');
     } catch {
       throw new HttpException('Error with query', HttpStatus.BAD_REQUEST);
     }
   }
 
-  async getMenu(id, includesString): Promise<Menu> {
+  async getMenu(id, includeString): Promise<Menu> {
     try {
-      return await this.prismaService.menu.findUnique({
-        where: {
-          id: id,
-        },
-        include: parseIncludeArrString(includesString),
-      });
+      return this.includeFields(includeString).executeFindUnique('Menu', id);
     } catch {
       throw new HttpException('Error with query', HttpStatus.BAD_REQUEST);
     }
