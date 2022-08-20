@@ -14,7 +14,7 @@ export class GetService {
   include: {
     [key: string]: boolean;
   };
-  search: { OR: Array<{ [key: string]: { contains: string } }> } | undefined;
+  search: { OR: Array<{ [key: string]: { equals: string } }> } | undefined;
   orderBy: object | undefined;
   pagination: any;
   searchRangeObj: {
@@ -76,8 +76,8 @@ export class GetService {
     });
     const pagination = createPagination({
       count: count,
-      pageSize: this.pagination.pageSize,
-      page: this.pagination.page,
+      pageSize: this.pagination?.pageSize,
+      page: this.pagination?.page,
     });
     const orderBy = this.orderBy;
     return new Promise((resolve, reject) => {

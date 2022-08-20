@@ -1,6 +1,7 @@
 import { MenuItemType } from '@prisma/client';
 
 export type MenuItemOptions = {
-  menuItemType: MenuItemType;
+  searchByField: string;
+  searchString: string | MenuItemType;
   includes: string | undefined;
 };

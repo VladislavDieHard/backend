@@ -1,21 +1,21 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { parseIdOrSlug, parseIncludeArrString } from '../utils';
 import { MenuItemOptions } from './menu-item.types';
-import { PrismaService } from '../prisma.service';
 import { MenuItem } from '@prisma/client';
+import { MultiResponse } from '../commonServices/types';
+import { GetService } from '../commonServices/getService';
 
 @Injectable()
-export class MenuItemService {
-  constructor(private prismaService: PrismaService) {}
-
-  async getMenuItems(options: MenuItemOptions): Promise<MenuItem[]> {
+export class MenuItemService extends GetService {
+  async getMenuItems(
+    options: MenuItemOptions,
+  ): Promise<MultiResponse<MenuItem[]>> {
     try {
-      return await this.prismaService.menuItem.findMany({
-        where: {
-          menuItemType: options.menuItemType,
-        },
-        include: parseIncludeArrString(options.includes),
-      });
+      return this.includeFields(options.includes)
+        .addPagination()
+        .addSearchByFieldValue(options.searchByField)
+        .addSearch(['menuItemType', 'title'], options.searchString)
+        .executeFindMany('MenuItem');
     } catch (e) {
       throw new HttpException('Error with query', HttpStatus.BAD_REQUEST);
     }

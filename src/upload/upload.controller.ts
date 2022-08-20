@@ -4,12 +4,13 @@ import {
   HttpStatus,
   Post,
   Query,
-  UploadedFile, UseGuards,
-  UseInterceptors
-} from "@nestjs/common";
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('upload')
 export class UploadController {

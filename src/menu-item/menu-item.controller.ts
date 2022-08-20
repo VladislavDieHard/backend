@@ -6,9 +6,10 @@ import {
   Param,
   Post,
   Put,
-  Query, UseGuards
-} from "@nestjs/common";
-import { MenuItem, MenuItemType } from '@prisma/client';
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { MenuItem } from '@prisma/client';
 import { MenuItemService } from './menu-item.service';
 import {
   ApiOperation,
@@ -19,7 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { MenuDto } from '../menu/dto/menu.dto';
 import { MenuType } from '../menu/menu.types';
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('MenuItem')
 @Controller('menu-item')
@@ -28,11 +29,13 @@ export class MenuItemController {
 
   @Get()
   async getMenuItems(
-    @Query('type') type?: MenuItemType,
+    @Query('searchByField') searchByField?: string,
+    @Query('search') search?: string,
     @Query('includes') includes?: string,
   ) {
     return this.menuItemService.getMenuItems({
-      menuItemType: type,
+      searchByField: searchByField,
+      searchString: search,
       includes: includes || undefined,
     });
   }
