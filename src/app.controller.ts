@@ -32,13 +32,13 @@ export class AppController extends ModelService {
     type: MetadataDto,
   })
   @UseGuards(JwtAuthGuard)
-  @Get('/m*a')
+  @Get('/meta')
   getMetadata() {
     return this.getModels();
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/m*a/model')
+  @Get('/meta/model')
   getModelMetadata(@Query('model') model: string) {
     return this.getModelMeta(model);
   }
