@@ -64,7 +64,7 @@ export class MenuItemController {
   })
   @Get(':idOrSlug')
   getEntry(
-    @Param('idOrSlug') idOrSlug: number | string,
+    @Param('idOrSlug') idOrSlug: string,
     @Query('include') include?: string,
   ) {
     return this.menuItemService.getMenuItem(idOrSlug, include);

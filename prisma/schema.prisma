@@ -108,21 +108,21 @@ model MenuItem {
   menu         Menu         @relation(fields: [menuId], references: [id])
   menuId       String
   menuItemType MenuItemType
-  slug         String @db.VarChar(250)
+  slug         String       @unique @db.VarChar(250)
   document     Document?
   link         String?
 }
 
 model MainSlider {
-  id      String  @id @default(uuid())
-  oldId   Int?    @unique
-  title   String
-  desc    String  @db.VarChar(200) /// ckeditor
-  createdAt    DateTime    @default(now())
-  entry   Entry   @relation(fields: [entryId], references: [id])
-  entryId String  @unique
-  image   File?   @relation(fields: [fileId], references: [id])
-  fileId  String?
+  id        String   @id @default(uuid())
+  oldId     Int?     @unique
+  title     String
+  desc      String   @db.VarChar(200) /// ckeditor
+  createdAt DateTime @default(now())
+  entry     Entry    @relation(fields: [entryId], references: [id])
+  entryId   String   @unique
+  image     File?    @relation(fields: [fileId], references: [id])
+  fileId    String?
 }
 
 enum FileTypes {

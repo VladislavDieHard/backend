@@ -9,11 +9,11 @@ export function parseIncludeArrString(arrString) {
   return result;
 }
 
-export function parseIdOrSlug(idOrSlug) {
+export function parseIdOrSlug(idOrSlug: string): { [key: string]: string } {
   return {
     id: validate(idOrSlug) ? idOrSlug : undefined,
     slug: !validate(idOrSlug) ? idOrSlug : undefined,
-  } as any;
+  };
 }
 
 export function parseSearch(fields: string[], searchString: string) {
