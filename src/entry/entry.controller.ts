@@ -7,7 +7,7 @@ import {
   Post,
   Put,
   Query,
-  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { EntryService } from './entry.service';
 import { Entry } from '@prisma/client';
@@ -19,6 +19,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { EntryDto } from './dto/entry.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('Entry')
 @Controller('entry')
@@ -44,13 +45,17 @@ export class EntryController extends EntryService {
     description: 'Страница',
   })
   @ApiQuery({
+    name: 'toDate',
+    required: false,
+    description: 'До какой даты',
+  })
+  @ApiQuery({
     name: 'search',
     required: false,
     description: 'Поиск по полям title и content',
   })
   @Get()
   getEntries(
-    @Req() request: any,
     @Query('fromDate') fromDate?: Date,
     @Query('toDate') toDate?: Date,
     @Query('pageSize') pageSize?: number,
@@ -69,7 +74,6 @@ export class EntryController extends EntryService {
       page,
       include,
       searchByField,
-      path: request.originalUrl,
     });
   }
 
@@ -87,7 +91,7 @@ export class EntryController extends EntryService {
     description: 'Уникальный идентификатор записи',
   })
   @ApiQuery({
-    name: 'includes',
+    name: 'include',
     required: false,
     description: 'Укажите модели для включения полей в ответ',
     example: 'department,rubric',
@@ -95,9 +99,9 @@ export class EntryController extends EntryService {
   @Get(':idOrSlug')
   getEntry(
     @Param('idOrSlug') idOrSlug: number | string,
-    @Query('includes') includes?: string,
+    @Query('include') include?: string,
   ) {
-    return this.entryGetService.getEntry(idOrSlug, includes);
+    return this.entryGetService.getEntry(idOrSlug, include);
   }
 
   @ApiOperation({
@@ -111,6 +115,7 @@ export class EntryController extends EntryService {
     description: 'Создаёт запись модели Entry',
     type: EntryDto,
   })
+  @UseGuards(JwtAuthGuard)
   @Post()
   createEntry(@Body() newEntry: Entry) {
     return this.entryCreateService.createEntry(newEntry);
@@ -132,6 +137,7 @@ export class EntryController extends EntryService {
     required: true,
     description: 'Уникальный идентификатор записи',
   })
+  @UseGuards(JwtAuthGuard)
   @Put(':idOrSlug')
   updateEntry(
     @Param('idOrSlug') idOrSlug: number | string,
@@ -153,6 +159,7 @@ export class EntryController extends EntryService {
     required: true,
     description: 'Уникальный идентификатор записи',
   })
+  @UseGuards(JwtAuthGuard)
   @Delete(':idOrSlug')
   deleteEntry(@Param('idOrSlug') idOrSlug: number | string) {
     return this.entryDeleteService.deleteEntry(idOrSlug);

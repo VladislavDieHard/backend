@@ -7,8 +7,8 @@ import {
   Post,
   Put,
   Query,
-  Req,
-} from '@nestjs/common';
+  Req, UseGuards
+} from "@nestjs/common";
 import { DepartmentService } from './department.service';
 import { Department } from '@prisma/client';
 import {
@@ -22,6 +22,7 @@ import {
 import { DepartmentDto, DepartmentEntriesDto } from './dto/department.dto';
 import { GetDepartmentEntriesResponse } from './department.types';
 import { ErrorDto } from '../common.dto';
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 // import { ErrorDto } from '../common.dto';
 
 @ApiTags('Department')
@@ -40,16 +41,16 @@ export class DepartmentController extends DepartmentService {
   })
   @Get()
   getDepartments(
-    @Req() request: any,
     @Query('pageSize') pageSize?: number,
     @Query('orderBy') orderBy?: string,
+    @Query('include') include?: string,
     @Query('page') page?: number,
   ) {
     return this.departmentGetService.getDepartments({
       pageSize: pageSize,
       orderBy: orderBy,
+      include: include,
       page: page,
-      path: request.path,
     });
   }
 
@@ -77,13 +78,31 @@ export class DepartmentController extends DepartmentService {
     name: 'pageSize',
     required: false,
   })
-  @Get(':id/entries')
+  @Get(':idOrSlug/entries')
   getDepartmentEntries(
-    @Param('id') id: string,
-    @Query('page') page?: number,
+    @Param('idOrSlug') idOrSlug: string,
+    @Param('model') model: string,
+    @Query('fromDate') fromDate?: Date,
+    @Query('toDate') toDate?: Date,
     @Query('pageSize') pageSize?: number,
-  ): Promise<GetDepartmentEntriesResponse | Error> {
-    return this.departmentGetService.getDepartmentEntries(id, page, pageSize);
+    @Query('orderBy') orderBy?: string,
+    @Query('search') search?: string,
+    @Query('page') page?: number,
+    @Query('include') include?: string,
+    @Query('searchByField') searchByField?: string,
+  ): Promise<any> {
+    return this.departmentGetService.getDepartmentEntries({
+      idOrSlug,
+      model,
+      fromDate,
+      toDate,
+      pageSize,
+      orderBy,
+      search,
+      page,
+      include,
+      searchByField,
+    });
   }
 
   @ApiOperation({
@@ -106,8 +125,9 @@ export class DepartmentController extends DepartmentService {
   @Get(':idOrSlug')
   async getDepartment(
     @Param('idOrSlug') idOrSlug: string,
-  ): Promise<Department> {
-    return await this.departmentGetService.getDepartment(idOrSlug);
+    @Query('include') include?: string,
+  ) {
+    return await this.departmentGetService.getDepartment(idOrSlug, include);
   }
 
   @ApiOperation({
@@ -124,6 +144,7 @@ export class DepartmentController extends DepartmentService {
     status: 500,
     type: ErrorDto,
   })
+  @UseGuards(JwtAuthGuard)
   @Post()
   createDepartment(
     @Body() newDepartment: Department,
@@ -156,6 +177,7 @@ export class DepartmentController extends DepartmentService {
     description: 'UUID or Slug',
     type: String || Number,
   })
+  @UseGuards(JwtAuthGuard)
   @Put(':idOrSlug')
   updateDepartment(
     @Param('idOrSlug') idOrSlug: string,
@@ -184,6 +206,7 @@ export class DepartmentController extends DepartmentService {
     description: 'UUID or Slug',
     type: String || Number,
   })
+  @UseGuards(JwtAuthGuard)
   @Delete(':idOrSlug')
   deleteDepartment(@Param('idOrSlug') idOrSlug: string) {
     return this.departmentDeleteService.deleteDepartment(idOrSlug);

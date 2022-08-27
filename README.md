@@ -45,3 +45,13 @@ $ git flow bugfix start <fix_name>
 # Закрыть ветку багфикса
 $ git flow bugfix finish
 ```
+
+## Деплой и сборка
+
+```bash
+# Сборка для продакшена
+$ docker-compose -f docker-compose.prod.yml build web
+
+# Пуш в dockerhub
+$ docker-compose -f docker-compose.prod.yml push web
+```

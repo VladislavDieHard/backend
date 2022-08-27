@@ -14,11 +14,11 @@ export class EntryGetService extends GetService {
       .includeFields(options.include)
       .addPagination(options.pageSize, options.page)
       .addOrderBy(options.orderBy)
-      .executeFindMany('Entry', options.path);
+      .executeFindMany('Entry');
   }
 
-  async getEntry(idOrSlug, includesString): Promise<Entry> {
-    return this.includeFields(includesString).executeFindUnique(
+  async getEntry(idOrSlug, includeString): Promise<Entry> {
+    return this.includeFields(includeString).executeFindUnique(
       'Entry',
       idOrSlug,
     );
@@ -30,7 +30,5 @@ type GetEntriesType = {
   meta: {
     pages: number;
     pageSize: number;
-    nextPage: string | null;
-    prevPage: string | null;
   };
 };

@@ -64,7 +64,7 @@ model Affiche {
   oldId      Int?     @unique
   eventDate  DateTime @db.Date()
   eventTime  DateTime @db.Time()
-  title      String   @db.VarChar(200)
+  title      String   @db.VarChar(500)
   desc       String   @db.LongText /// ckeditor
   eventPlace String
   phone      String?  @db.VarChar(22)
@@ -108,20 +108,21 @@ model MenuItem {
   menu         Menu         @relation(fields: [menuId], references: [id])
   menuId       String
   menuItemType MenuItemType
-  slug         String @db.VarChar(250)
+  slug         String       @unique @db.VarChar(250)
   document     Document?
   link         String?
 }
 
 model MainSlider {
-  id      String  @id @default(uuid())
-  oldId   Int?    @unique
-  title   String
-  entry   Entry   @relation(fields: [entryId], references: [id])
-  entryId String  @unique
-  desc    String  @db.VarChar(200) /// ckeditor
-  image   File?   @relation(fields: [fileId], references: [id])
-  fileId  String?
+  id        String   @id @default(uuid())
+  oldId     Int?     @unique
+  title     String
+  desc      String   @db.VarChar(200) /// ckeditor
+  createdAt DateTime @default(now())
+  entry     Entry    @relation(fields: [entryId], references: [id])
+  entryId   String   @unique
+  image     File?    @relation(fields: [fileId], references: [id])
+  fileId    String?
 }
 
 enum FileTypes {

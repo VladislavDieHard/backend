@@ -14,7 +14,7 @@ export class AfficheGetService extends GetService {
       .includeFields(options.include)
       .addPagination(options.pageSize, options.page)
       .addOrderBy(options.orderBy)
-      .executeFindMany('Affiche', options.path);
+      .executeFindMany('Affiche');
   }
 
   async getAffiche(idOrSlug): Promise<Affiche> {

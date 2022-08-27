@@ -6,7 +6,7 @@ export class RubricGetService extends GetService {
   async getRubrics(options) {
     return this.addSearch(['title'], options.search)
       .addPagination(options.pageSize, options.page)
-      .executeFindMany('Rubric', options.path);
+      .executeFindMany('Rubric');
   }
 
   async getRubric(idOrSlug: string, includesString: string) {
@@ -18,6 +18,7 @@ export class RubricGetService extends GetService {
 
   async getEntriesByRubric(options) {
     return this.addSearch(['title'], options.search)
+      .includeFields(options.include)
       .addPagination(options.pageSize, options.page)
       .addOrderBy(options.orderBy)
       .addSearchByFieldValue(options.searchByField)
@@ -25,11 +26,6 @@ export class RubricGetService extends GetService {
         fromDate: options.fromDate,
         toDate: options.toDate,
       })
-      .executeFindModelByAnother(
-        'Entry',
-        'Rubric',
-        options.idOrSlug,
-        options.path,
-      );
+      .executeFindModelByAnother('Entry', 'Rubric', options.idOrSlug);
   }
 }

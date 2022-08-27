@@ -95,7 +95,12 @@ export class UploadService implements OnModuleInit {
     }
 
     const id = v4();
-    const path = this.createPath(type, id, file.mimetype, customDate);
+    const path = this.createPath(
+      type,
+      id,
+      file.mimetype,
+      customDate || new Date(),
+    );
     const metadata = {
       'Content-Type': file.mimetype || '',
       'Original-Name': file.originalname,
@@ -156,7 +161,7 @@ export class UploadService implements OnModuleInit {
 
     listObjectsStream.on('data', (file) => {
       this.prismaService.file
-        .findMany({
+        .findFirst({
           select: {
             path: true,
           },

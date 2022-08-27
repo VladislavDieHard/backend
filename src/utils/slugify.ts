@@ -22,7 +22,7 @@ export function createSlug(
   }
 
   if (slugWithDate) {
-    resultedSlug += `-${moment().format('HH:mm-DD.MM.YY')}`;
+    resultedSlug += `-${moment().format('HH-mm-DD-MM-YY')}`;
   }
 
   return resultedSlug;

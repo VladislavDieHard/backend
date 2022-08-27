@@ -14,7 +14,7 @@ export class GetService {
   include: {
     [key: string]: boolean;
   };
-  search: { OR: Array<{ [key: string]: { contains: string } }> } | undefined;
+  search: { OR: Array<{ [key: string]: { equals: string } }> } | undefined;
   orderBy: object | undefined;
   pagination: any;
   searchRangeObj: {
@@ -36,7 +36,7 @@ export class GetService {
   executeFindFirst(model) {
     return new Promise((resolve, reject) => {
       this.prismaService[model]
-        .findUnique({
+        .findFirst({
           where: {
             ...this.createWhereParams(),
           },
@@ -68,7 +68,7 @@ export class GetService {
     });
   }
 
-  async executeFindMany(model, path): Promise<any> {
+  async executeFindMany(model): Promise<any> {
     const count = await this.prismaService[model].count({
       where: {
         ...this.createWhereParams(),
@@ -76,8 +76,8 @@ export class GetService {
     });
     const pagination = createPagination({
       count: count,
-      pageSize: this.pagination.pageSize,
-      page: this.pagination.page,
+      pageSize: this.pagination?.pageSize,
+      page: this.pagination?.page,
     });
     const orderBy = this.orderBy;
     return new Promise((resolve, reject) => {
@@ -87,8 +87,8 @@ export class GetService {
             ...this.createWhereParams(),
           },
           include: this.include,
-          orderBy: orderBy ? orderBy : null,
-          take: pagination?.pageSize || null,
+          orderBy: orderBy ? orderBy : undefined,
+          take: pagination?.pageSize || undefined,
           skip: (pagination?.page - 1) * pagination?.pageSize || 0,
         })
         .then((entry) => {
@@ -96,7 +96,7 @@ export class GetService {
           if (this.pagination) {
             resolve({
               data: entry,
-              meta: GetService.createMeta(path, pagination),
+              meta: GetService.createMeta(pagination),
             });
           } else {
             resolve({ data: entry });
@@ -109,7 +109,7 @@ export class GetService {
     });
   }
 
-  async executeFindModelByAnother(modelOne, modelTwo, idOrSlug, path) {
+  async executeFindModelByAnother(modelOne, modelTwo, idOrSlug) {
     const count = await this.prismaService[modelOne].count({
       where: {
         ...this.createWhereParams(),
@@ -130,7 +130,7 @@ export class GetService {
             [modelTwo.toLowerCase()]: parseIdOrSlug(idOrSlug),
           },
           include: this.include,
-          orderBy: orderBy ? orderBy : null,
+          orderBy: orderBy ? orderBy : undefined,
           take: pagination?.pageSize || undefined,
           skip: (pagination?.page - 1) * pagination?.pageSize || 0,
         })
@@ -139,7 +139,7 @@ export class GetService {
           if (this.pagination) {
             resolve({
               data: entry,
-              meta: GetService.createMeta(path, pagination),
+              meta: GetService.createMeta(pagination),
             });
           } else {
             resolve({ data: entry });
@@ -158,7 +158,7 @@ export class GetService {
     if (fields) {
       this.include = parseIncludeArrString(fields);
     } else {
-      this.include = null;
+      this.include = undefined;
     }
     return this;
   }
@@ -167,7 +167,7 @@ export class GetService {
     if (fields && searchString) {
       this.search = parseSearch(fields, searchString);
     } else {
-      this.search = null;
+      this.search = undefined;
     }
     return this;
   }
@@ -198,10 +198,10 @@ export class GetService {
           query: parseValue(value),
         };
       } else {
-        this.searchByFieldObj = null;
+        this.searchByFieldObj = undefined;
       }
     } else {
-      this.searchByFieldObj = null;
+      this.searchByFieldObj = undefined;
     }
     return this;
   }
@@ -214,7 +214,7 @@ export class GetService {
         toDate: moment(toDate).toDate(),
       };
     } else {
-      this.searchRangeObj = null;
+      this.searchRangeObj = undefined;
     }
     return this;
   }
@@ -223,14 +223,14 @@ export class GetService {
 
   private clearObject() {
     this.searchRangeObj = {
-      field: null,
-      fromDate: null,
-      toDate: null,
+      field: undefined,
+      fromDate: undefined,
+      toDate: undefined,
     };
-    this.include = null;
-    this.search = null;
-    this.searchByFieldObj = null;
-    this.searchRangeObj = null;
+    this.include = undefined;
+    this.search = undefined;
+    this.searchByFieldObj = undefined;
+    this.searchRangeObj = undefined;
   }
 
   private createWhereParams() {
@@ -250,37 +250,11 @@ export class GetService {
     return params;
   }
 
-  private static createMeta(path, pagination) {
-    pagination.page = parseInt(pagination.page);
-
-    const currPath = path;
-
-    let nextPageString = currPath.replaceAll(
-      /page=[0-9]/gm,
-      `page=${pagination.page + 1}`,
-    );
-
-    nextPageString = nextPageString.replaceAll(
-      /pageSize=[0-9]/gm,
-      `pageSize=${pagination.pageSize}`,
-    );
-
-    let prevPageString = currPath.replaceAll(
-      /page=[0-9]/gm,
-      `page=${pagination.page - 1}`,
-    );
-
-    prevPageString = prevPageString.replaceAll(
-      /pageSize=[0-9]/gm,
-      `pageSize=${pagination.pageSize}`,
-    );
-
+  private static createMeta(pagination) {
     return {
       page: pagination.page,
       pages: pagination.pages,
       pageSize: pagination.pageSize || 10,
-      nextPage: pagination.page < pagination.pages ? nextPageString : null,
-      prevPage: pagination.page > 1 ? prevPageString : null,
     };
   }
 }
