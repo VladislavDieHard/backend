@@ -12,6 +12,8 @@ import { MainSliderModule } from './main-slider/main-slider.module';
 import { FileModule } from './file/file.modules';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ConsoleModule } from '@squareboat/nest-console';
+import { CommandService } from './commander/commander.service';
 
 @Module({
   imports: [
@@ -26,8 +28,9 @@ import { UsersModule } from './users/users.module';
     FileModule,
     AuthModule,
     UsersModule,
+    ConsoleModule,
   ],
-  providers: [PrismaService],
+  providers: [PrismaService, CommandService],
   controllers: [AppController],
 })
 export class AppModule {}

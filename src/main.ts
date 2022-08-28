@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { migrate } from './migrations/migrate';
 import { getConfig } from './utils/getConfig';
 import cookieParser from 'cookie-parser';
 
@@ -21,8 +20,6 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('', app, document);
-
-  // await migrate();
 
   await app.listen(appConfig['MAIN_PORT'] || 3001);
 }
