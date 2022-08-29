@@ -119,7 +119,49 @@ export class MenuItemController {
   })
   @UseGuards(JwtAuthGuard)
   @Delete(':idOrSlug')
-  deleteEntry(@Param('idOrSlug') idOrSlug: number | string) {
+  deleteEntry(@Param('idOrSlug') idOrSlug: string) {
     return this.menuItemService.deleteMenuItem(idOrSlug);
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Добавляет запись Document',
+  })
+  @ApiOperation({
+    summary: 'Добавляет запись Document',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post('/document')
+  createDocument(@Body() newDocument: any) {
+    return this.menuItemService.createDocument(newDocument);
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Обновляет запись Document',
+  })
+  @ApiOperation({
+    summary: 'Обновляет запись Document',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Put('/document/:idOrSlug')
+  updateDocument(
+    @Body() newDocument: any,
+    @Param('idOrSlug') idOrSlug: string,
+  ) {
+    return this.menuItemService.updateDocument(idOrSlug, newDocument);
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Удаляет запись Document',
+  })
+  @ApiOperation({
+    summary: 'Удаляет запись Document',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Delete('/document/:idOrSlug')
+  deleteDocument(@Param('idOrSlug') idOrSlug: string) {
+    return this.menuItemService.deleteDocument(idOrSlug);
   }
 }

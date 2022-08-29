@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { parseIdOrSlug } from '../utils';
 import { MenuItemOptions } from './menu-item.types';
-import { MenuItem } from '@prisma/client';
+import { MenuItem, Document } from '@prisma/client';
 import { MultiResponse } from '../commonServices/types';
 import { GetService } from '../commonServices/getService';
 
@@ -68,6 +68,42 @@ export class MenuItemService extends GetService {
         e.meta.cause || 'Bad request',
         HttpStatus.BAD_REQUEST,
       );
+    }
+  }
+
+  async createDocument(newDocument: Document): Promise<Document> {
+    try {
+      return await this.prismaService.document.create({
+        data: newDocument,
+      });
+    } catch {
+      throw new HttpException('Error with data', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updateDocument(
+    idOrSlug: string,
+    newDocument: Document,
+  ): Promise<Document> {
+    const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
+    try {
+      return await this.prismaService.document.update({
+        where: parsedIdOrSlug,
+        data: newDocument,
+      });
+    } catch {
+      throw new HttpException('Error with data', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async deleteDocument(idOrSlug: string): Promise<Document> {
+    const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
+    try {
+      return await this.prismaService.document.delete({
+        where: parsedIdOrSlug,
+      });
+    } catch {
+      throw new HttpException('Error with data', HttpStatus.BAD_REQUEST);
     }
   }
 }
