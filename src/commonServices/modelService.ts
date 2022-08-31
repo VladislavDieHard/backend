@@ -50,11 +50,6 @@ export class ModelService {
     if (field.name === 'id' && field.isId) return undefined;
     if (field.name.match(/Id/gm)) return undefined;
 
-    if (field.name === 'menuItemType') {
-      console.log(field);
-    }
-
-
     if (
       field.type === 'String' &&
       field.kind === 'scalar' &&
@@ -73,7 +68,7 @@ export class ModelService {
 
     if(field.kind === "enum" && field.type === "MenuItemType") {
       return {
-        type:field.type,
+        type:"String",
         name: field.name,
         fieldName: field.name,
         isRequired: field.isRequired,
