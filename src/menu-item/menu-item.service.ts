@@ -1,9 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { parseIdOrSlug } from '../utils';
+import { createSlug, parseIdOrSlug } from "../utils";
 import { MenuItemOptions } from './menu-item.types';
 import { MenuItem, Document } from '@prisma/client';
 import { MultiResponse } from '../commonServices/types';
 import { GetService } from '../commonServices/getService';
+import { v4 } from 'uuid';
 
 @Injectable()
 export class MenuItemService extends GetService {
@@ -32,9 +33,13 @@ export class MenuItemService extends GetService {
   }
 
   async createMenuItem(newMenuItem: MenuItem): Promise<MenuItem> {
+    newMenuItem.slug = createSlug(newMenuItem.title, newMenuItem.slug)
     try {
       return await this.prismaService.menuItem.create({
-        data: newMenuItem,
+        data: {
+          id:v4(),
+          ...newMenuItem
+        },
       });
     } catch {
       throw new HttpException('Error with data', HttpStatus.BAD_REQUEST);
