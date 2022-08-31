@@ -50,11 +50,6 @@ export class ModelService {
     if (field.name === 'id' && field.isId) return undefined;
     if (field.name.match(/Id/gm)) return undefined;
 
-    if (field.name === 'menuItemType') {
-      console.log(field);
-    }
-
-
     if (
       field.type === 'String' &&
       field.kind === 'scalar' &&
