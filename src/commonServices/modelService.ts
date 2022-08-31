@@ -17,7 +17,6 @@ export class ModelService {
 
   getModelMeta(model: string) {
     const dataModel = (this.prismaService as any)._dmmf.datamodel;
-
     let findedModel;
     dataModel.models.forEach((modelData) => {
       if (model === modelData.name.toLowerCase()) {
@@ -51,6 +50,11 @@ export class ModelService {
     if (field.name === 'id' && field.isId) return undefined;
     if (field.name.match(/Id/gm)) return undefined;
 
+    if (field.name === 'menuItemType') {
+      console.log(field);
+    }
+
+
     if (
       field.type === 'String' &&
       field.kind === 'scalar' &&
@@ -65,6 +69,16 @@ export class ModelService {
           field.name === 'slug' ? !field.isRequired : field.isRequired,
         hasDefaultValue: field.hasDefaultValue,
       };
+    }
+
+    if(field.kind === "enum" && field.type === "MenuItemType") {
+      return {
+        type:field.type,
+        name: field.name,
+        fieldName: field.name,
+        isRequired: field.isRequired,
+        hasDefaultValue: field.hasDefaultValue,
+      }
     }
 
     if (field.type === 'DateTime' && field.kind === 'scalar') {
