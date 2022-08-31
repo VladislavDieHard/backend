@@ -68,7 +68,7 @@ export class ModelService {
 
     if(field.kind === "enum" && field.type === "MenuItemType") {
       return {
-        type:field.type,
+        type:"String",
         name: field.name,
         fieldName: field.name,
         isRequired: field.isRequired,
