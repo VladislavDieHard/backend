@@ -13,7 +13,7 @@ export class MenuItemService extends GetService {
   ): Promise<MultiResponse<MenuItem[]>> {
     try {
       return this.includeFields(options.include)
-        .addPagination()
+        .addPagination(options.pageSize, options.page)
         .addSearchByFieldValue(options.searchByField)
         .executeFindMany('MenuItem');
     } catch (e) {

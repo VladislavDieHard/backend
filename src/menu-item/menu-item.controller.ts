@@ -30,11 +30,15 @@ export class MenuItemController {
   @Get()
   async getMenuItems(
     @Query('searchByField') searchByField?: string,
+    @Query('pageSize') pageSize?: number,
+    @Query('page') page?: number,
     @Query('include') include?: string,
   ) {
     return this.menuItemService.getMenuItems({
       searchByField: searchByField,
       include: include || undefined,
+      page:page,
+      pageSize:pageSize
     });
   }
 
