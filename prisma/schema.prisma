@@ -86,6 +86,7 @@ enum MenuType {
   ABOUT
   COLLEAGUES
   DOCUMENTS
+  DELETED
 }
 
 model Menu {
