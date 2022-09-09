@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { createSlug, parseIdOrSlug } from "../utils";
-import { MenuItemOptions } from './menu-item.types';
+import { createSlug, parseIdOrSlug } from '../utils';
+import { ServiceArgs } from './menu-item.types';
 import { MenuItem, Document } from '@prisma/client';
 import { MultiResponse } from '../commonServices/types';
 import { GetService } from '../commonServices/getService';
@@ -8,9 +8,7 @@ import { v4 } from 'uuid';
 
 @Injectable()
 export class MenuItemService extends GetService {
-  async getMenuItems(
-    options: MenuItemOptions,
-  ): Promise<MultiResponse<MenuItem[]>> {
+  async getMenuItems(options: ServiceArgs): Promise<MultiResponse<MenuItem[]>> {
     try {
       return this.includeFields(options.include)
         .addPagination(options.pageSize, options.page)
@@ -33,12 +31,12 @@ export class MenuItemService extends GetService {
   }
 
   async createMenuItem(newMenuItem: MenuItem): Promise<MenuItem> {
-    newMenuItem.slug = createSlug(newMenuItem.title, newMenuItem.slug)
+    newMenuItem.slug = createSlug(newMenuItem.title, newMenuItem.slug);
     try {
       return await this.prismaService.menuItem.create({
         data: {
-          id:v4(),
-          ...newMenuItem
+          id: v4(),
+          ...newMenuItem,
         },
       });
     } catch {
@@ -73,6 +71,25 @@ export class MenuItemService extends GetService {
         e.meta.cause || 'Bad request',
         HttpStatus.BAD_REQUEST,
       );
+    }
+  }
+
+  async getDocuments(options: ServiceArgs): Promise<MultiResponse<Document[]>> {
+    try {
+      return this.includeFields(options.include)
+        .addPagination(options.pageSize, options.page)
+        .addSearchByFieldValue(options.searchByField)
+        .executeFindMany('Document');
+    } catch (e) {
+      throw new HttpException('Error with query', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getDocument(idOrSlug): Promise<Document> {
+    try {
+      return this.executeFindUnique('Document', idOrSlug);
+    } catch (e) {
+      throw new HttpException('Error with query', HttpStatus.BAD_REQUEST);
     }
   }
 

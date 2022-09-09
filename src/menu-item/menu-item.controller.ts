@@ -27,6 +27,14 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 export class MenuItemController {
   constructor(private menuItemService: MenuItemService) {}
 
+  @ApiResponse({
+    status: 200,
+    description: 'Возвращает записи MenuItem',
+    type: MenuDto,
+  })
+  @ApiOperation({
+    summary: 'Возвращает записи модели MenuItem',
+  })
   @Get()
   async getMenuItems(
     @Query('searchByField') searchByField?: string,
@@ -37,8 +45,8 @@ export class MenuItemController {
     return this.menuItemService.getMenuItems({
       searchByField: searchByField,
       include: include || undefined,
-      page:page,
-      pageSize:pageSize
+      page: page,
+      pageSize: pageSize,
     });
   }
 
@@ -67,7 +75,7 @@ export class MenuItemController {
     type: String,
   })
   @Get(':idOrSlug')
-  getEntry(
+  getMenuItem(
     @Param('idOrSlug') idOrSlug: string,
     @Query('include') include?: string,
   ) {
@@ -84,7 +92,7 @@ export class MenuItemController {
   })
   @UseGuards(JwtAuthGuard)
   @Post()
-  createEntry(@Body() newMenuItem: MenuItem) {
+  createMenuItem(@Body() newMenuItem: MenuItem) {
     return this.menuItemService.createMenuItem(newMenuItem);
   }
 
@@ -102,7 +110,7 @@ export class MenuItemController {
   })
   @UseGuards(JwtAuthGuard)
   @Put(':idOrSlug')
-  updateEntry(
+  updateMenuItem(
     @Param('idOrSlug') idOrSlug: number | string,
     @Body() newMenuItem: MenuItem,
   ) {
@@ -123,8 +131,48 @@ export class MenuItemController {
   })
   @UseGuards(JwtAuthGuard)
   @Delete(':idOrSlug')
-  deleteEntry(@Param('idOrSlug') idOrSlug: string) {
+  deleteMenuItem(@Param('idOrSlug') idOrSlug: string) {
     return this.menuItemService.deleteMenuItem(idOrSlug);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/document')
+  async getDocuments(
+    @Query('searchByField') searchByField?: string,
+    @Query('pageSize') pageSize?: number,
+    @Query('page') page?: number,
+    @Query('include') include?: string,
+  ) {
+    return this.menuItemService.getDocuments({
+      searchByField: searchByField,
+      include: include || undefined,
+      page: page,
+      pageSize: pageSize,
+    });
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Возвращает одну запись модели MenuItem',
+    type: MenuDto,
+  })
+  @ApiOperation({
+    summary: 'Возвращает одну запись модели MenuItem',
+  })
+  @ApiQuery({
+    name: 'type',
+    required: false,
+    description: 'Укажите тип меню, что-бы вернуть только данный тип',
+    enum: MenuType,
+  })
+  @ApiParam({
+    name: 'Id or Slug',
+    type: String,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Get('/document/:idOrSlug')
+  getDocument(@Param('idOrSlug') idOrSlug: string) {
+    return this.menuItemService.getDocument(idOrSlug);
   }
 
   @ApiResponse({
