@@ -18,13 +18,14 @@ model User {
 }
 
 model Department {
-  id      String  @id @default(uuid())
-  oldId   Int?    @unique
-  preview File?   @relation(fields: [fileId], references: [id])
-  fileId  String?
-  title   String  @unique @db.VarChar(200)
-  slug    String  @unique @db.VarChar(250)
-  entries Entry[]
+  id        String  @id @default(uuid())
+  oldId     Int?    @unique
+  preview   File?   @relation(fields: [fileId], references: [id])
+  fileId    String?
+  title     String  @unique @db.VarChar(200)
+  slug      String  @unique @db.VarChar(250)
+  isDeleted Boolean @default(false)
+  entries   Entry[]
 }
 
 model Entry {
@@ -40,6 +41,7 @@ model Entry {
   content      String?     @db.LongText /// ckeditor
   slug         String      @unique @db.VarChar(250)
   published    Boolean     @default(false)
+  isDeleted    Boolean     @default(false)
   mainSlider   MainSlider?
   department   Department  @relation(fields: [departmentId], references: [id])
   departmentId String
@@ -53,6 +55,7 @@ model Document {
   oldId      Int?     @unique
   title      String   @db.VarChar(200)
   content    String   @db.LongText /// ckeditor
+  isDeleted  Boolean  @default(false)
   menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
   menuItemId String   @unique
   preview    File?    @relation(fields: [fileId], references: [id])
@@ -69,16 +72,18 @@ model Affiche {
   eventPlace String
   phone      String?  @db.VarChar(22)
   slug       String   @unique @db.VarChar(250)
+  isDeleted  Boolean  @default(false)
   entry      Entry?   @relation(fields: [entryId], references: [id])
   entryId    String?  @unique
 }
 
 model Rubric {
-  id      String  @id @default(uuid())
-  oldId   Int?    @unique
-  title   String  @unique @db.VarChar(500)
-  slug    String  @unique @db.VarChar(250)
-  entries Entry[]
+  id        String  @id @default(uuid())
+  oldId     Int?    @unique
+  title     String  @unique @db.VarChar(500)
+  slug      String  @unique @db.VarChar(250)
+  isDeleted Boolean @default(false)
+  entries   Entry[]
 }
 
 enum MenuType {
@@ -86,13 +91,13 @@ enum MenuType {
   ABOUT
   COLLEAGUES
   DOCUMENTS
-  DELETED
 }
 
 model Menu {
   id        String     @id @default(uuid())
   oldId     Int?       @unique
   title     String     @unique
+  isDeleted Boolean    @default(false)
   menuType  MenuType
   menuItems MenuItem[]
 }
@@ -108,8 +113,9 @@ model MenuItem {
   title        String       @unique
   menu         Menu         @relation(fields: [menuId], references: [id])
   menuId       String
-  menuItemType MenuItemType
   slug         String       @unique @db.VarChar(250)
+  isDeleted    Boolean      @default(false)
+  menuItemType MenuItemType
   document     Document?
   link         String?
 }
@@ -120,6 +126,7 @@ model MainSlider {
   title     String
   desc      String   @db.VarChar(200) /// ckeditor
   createdAt DateTime @default(now())
+  isDeleted Boolean  @default(false)
   entry     Entry    @relation(fields: [entryId], references: [id])
   entryId   String   @unique
   image     File?    @relation(fields: [fileId], references: [id])
