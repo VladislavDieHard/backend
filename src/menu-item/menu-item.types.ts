@@ -1,6 +1,6 @@
-export type MenuItemOptions = {
+export type ServiceArgs = {
   searchByField: string;
   include: string | undefined;
   page: number;
-  pageSize: number
+  pageSize: number;
 };
