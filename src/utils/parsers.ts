@@ -20,7 +20,7 @@ export function parseSearch(fields: string[], searchString: string) {
   if (fields && searchString) {
     return {
       OR: fields.map((field) => {
-        return { [field]: { equals: searchString } };
+        return { [field]: { contains: searchString } };
       }),
     };
   } else {

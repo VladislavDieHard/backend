@@ -14,7 +14,7 @@ export class GetService {
   include: {
     [key: string]: boolean;
   };
-  search: { OR: Array<{ [key: string]: { equals: string } }> } | undefined;
+  search: { OR: Array<{ [key: string]: { contains: string } }> } | undefined;
   orderBy: object | undefined;
   pagination: any;
   searchRangeObj: {
