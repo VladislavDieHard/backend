@@ -229,6 +229,7 @@ export class GetService {
     };
     this.include = undefined;
     this.search = undefined;
+    this.orderBy = undefined;
     this.searchByFieldObj = undefined;
     this.searchRangeObj = undefined;
   }
