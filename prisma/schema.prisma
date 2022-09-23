@@ -20,61 +20,72 @@ model User {
 model Department {
   id        String  @id @default(uuid())
   oldId     Int?    @unique
-  preview   File?   @relation(fields: [fileId], references: [id])
   fileId    String?
   title     String  @unique @db.VarChar(200)
   slug      String  @unique @db.VarChar(250)
   isDeleted Boolean @default(false)
+  preview   File?   @relation(fields: [fileId], references: [id])
   entries   Entry[]
+
+  @@index([fileId], map: "Department_fileId_fkey")
 }
 
 model Entry {
   id           String      @id @default(uuid())
   oldId        Int?        @unique
-  preview      File?       @relation(fields: [fileId], references: [id])
   fileId       String?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   publishedAt  DateTime    @default(now())
   title        String      @db.VarChar(200)
   desc         String?     @db.LongText
-  content      String?     @db.LongText /// ckeditor
+  /// ckeditor
+  content      String?     @db.LongText
   slug         String      @unique @db.VarChar(250)
   published    Boolean     @default(false)
   isDeleted    Boolean     @default(false)
-  mainSlider   MainSlider?
-  department   Department  @relation(fields: [departmentId], references: [id])
   departmentId String
-  rubric       Rubric?     @relation(fields: [rubricId], references: [id])
   rubricId     String?
+  department   Department  @relation(fields: [departmentId], references: [id])
+  preview      File?       @relation(fields: [fileId], references: [id])
+  rubric       Rubric?     @relation(fields: [rubricId], references: [id])
   affiche      Affiche?
+  mainSlider   MainSlider?
+
+  @@index([departmentId], map: "Entry_departmentId_fkey")
+  @@index([fileId], map: "Entry_fileId_fkey")
+  @@index([rubricId], map: "Entry_rubricId_fkey")
 }
 
 model Document {
   id         String   @id @default(uuid())
   oldId      Int?     @unique
   title      String   @db.VarChar(200)
-  content    String   @db.LongText /// ckeditor
+  /// ckeditor
+  content    String   @db.LongText
   isDeleted  Boolean  @default(false)
-  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
   menuItemId String   @unique
-  preview    File?    @relation(fields: [fileId], references: [id])
   fileId     String?
+  preview    File?    @relation(fields: [fileId], references: [id])
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+
+  @@index([fileId], map: "Document_fileId_fkey")
 }
 
 model Affiche {
   id         String   @id @default(uuid())
   oldId      Int?     @unique
-  eventDate  DateTime @db.Date()
-  eventTime  DateTime @db.Time()
+  eventDate  DateTime @db.Date
+  eventTime  DateTime @db.Time(0)
   title      String   @db.VarChar(500)
-  desc       String   @db.LongText /// ckeditor
+  /// ckeditor
+  desc       String   @db.LongText
   eventPlace String
   phone      String?  @db.VarChar(22)
   slug       String   @unique @db.VarChar(250)
   isDeleted  Boolean  @default(false)
-  entry      Entry?   @relation(fields: [entryId], references: [id])
   entryId    String?  @unique
+  entry      Entry?   @relation(fields: [entryId], references: [id])
 }
 
 model Rubric {
@@ -86,13 +97,6 @@ model Rubric {
   entries   Entry[]
 }
 
-enum MenuType {
-  COMMON
-  ABOUT
-  COLLEAGUES
-  DOCUMENTS
-}
-
 model Menu {
   id        String     @id @default(uuid())
   oldId     Int?       @unique
@@ -102,42 +106,35 @@ model Menu {
   menuItems MenuItem[]
 }
 
-enum MenuItemType {
-  DOCUMENT
-  LINK
-}
-
 model MenuItem {
   id           String       @id @default(uuid())
   oldId        Int?         @unique
   title        String       @unique
-  menu         Menu         @relation(fields: [menuId], references: [id])
   menuId       String
   slug         String       @unique @db.VarChar(250)
   isDeleted    Boolean      @default(false)
   menuItemType MenuItemType
-  document     Document?
   link         String?
+  menu         Menu         @relation(fields: [menuId], references: [id])
+  document     Document?
+
+  @@index([menuId], map: "MenuItem_menuId_fkey")
 }
 
 model MainSlider {
   id        String   @id @default(uuid())
   oldId     Int?     @unique
   title     String
-  desc      String   @db.VarChar(200) /// ckeditor
+  /// ckeditor
+  desc      String   @db.VarChar(200)
   createdAt DateTime @default(now())
   isDeleted Boolean  @default(false)
-  entry     Entry    @relation(fields: [entryId], references: [id])
   entryId   String   @unique
-  image     File?    @relation(fields: [fileId], references: [id])
   fileId    String?
-}
+  entry     Entry    @relation(fields: [entryId], references: [id])
+  image     File?    @relation(fields: [fileId], references: [id])
 
-enum FileTypes {
-  IMAGE
-  DOCUMENT
-  ARCHIVE
-  EXHIBITION
+  @@index([fileId], map: "MainSlider_fileId_fkey")
 }
 
 model File {
@@ -147,9 +144,29 @@ model File {
   hash         String       @unique @db.VarChar(64)
   type         FileTypes
   path         String       @db.VarChar(400)
+  preview      String?      @db.VarChar(400)
   createdAt    DateTime     @default(now())
-  Entry        Entry[]
-  Document     Document[]
-  MainSlider   MainSlider[]
   Department   Department[]
+  Document     Document[]
+  Entry        Entry[]
+  MainSlider   MainSlider[]
+}
+
+enum MenuType {
+  COMMON
+  ABOUT
+  COLLEAGUES
+  DOCUMENTS
+}
+
+enum MenuItemType {
+  DOCUMENT
+  LINK
+}
+
+enum FileTypes {
+  IMAGE
+  DOCUMENT
+  ARCHIVE
+  EXHIBITION
 }

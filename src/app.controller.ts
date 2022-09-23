@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Query,
   Res,
@@ -13,13 +14,18 @@ import { ModelService } from './commonServices/modelService';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { ModelData, ModelKey } from './commonServices/types';
+import { CreateService } from './commonServices/createService';
 
 type CookieResponse = Response & { cookie(key, value, options): void };
 
 @ApiTags('Common')
 @Controller()
 export class AppController extends ModelService {
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private createService: CreateService,
+  ) {
     super();
   }
 
@@ -72,5 +78,14 @@ export class AppController extends ModelService {
     });
 
     return loginObj;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('bulk/create/:model')
+  async bulkCreate(
+    @Body() modelData: ModelData[],
+    @Param('model') model: ModelKey,
+  ) {
+    return this.createService.executeBulkCreate(model, modelData);
   }
 }

@@ -56,6 +56,7 @@ export class UploadService implements OnModuleInit {
           originalName: file.originalname,
           mimeType: 'text/html',
           type: 'EXHIBITION',
+          preview: `/${this.bucketName}/exhibition/${data.id}/${data.fileName}/cover.jpg`,
           path: `/${this.bucketName}/exhibition/${data.id}/${data.fileName}/index.html`,
           createdAt: new Date(),
           hash,
@@ -110,11 +111,13 @@ export class UploadService implements OnModuleInit {
 
     return this.uploadToMinio(file, path, metadata)
       .then(async () => {
+        console.log(path);
         return await this.saveToDb({
           id: id,
           originalName: file.originalname,
           mimeType: file.mimetype,
           path: `/${this.bucketName}/${path}`,
+          preview:  `/${this.bucketName}/${path}`,
           createdAt: customDate || new Date(),
           type: type,
           hash,
@@ -134,6 +137,7 @@ export class UploadService implements OnModuleInit {
         return data;
       })
       .catch((err) => {
+        console.log(err);
         throw new HttpException(err.meta, HttpStatus.INTERNAL_SERVER_ERROR);
       });
   }

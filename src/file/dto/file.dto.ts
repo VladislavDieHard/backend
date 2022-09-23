@@ -12,6 +12,8 @@ export class FileDto {
   @ApiProperty()
   path: string;
   @ApiProperty()
+  preview: string;
+  @ApiProperty()
   createdAt: Date;
   @ApiPropertyOptional()
   Entry: string | null;

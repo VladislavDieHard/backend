@@ -12,7 +12,9 @@ import {
 import { MainSliderService } from './main-slider.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { MainSlider } from '@prisma/client';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('MainSlider')
 @Controller('main-slider')
 export class MainSliderController {
   constructor(private mainSliderService: MainSliderService) {}
