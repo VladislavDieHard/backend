@@ -102,11 +102,7 @@ async function executeEntry(entry: OldEntry, departmentIds, rubricIds) {
           published: true,
           createdAt: new Date(entry.date_of_create),
           updatedAt: new Date(entry.date_of_edit),
-          publishedAt:
-            entry.date_of_public &&
-            String(entry.date_of_public) !== '0000-00-00'
-              ? new Date(entry.date_of_public)
-              : new Date(),
+          publishedAt: new Date(entry.date_of_create),
           departmentId: newDepartmentId.id,
           rubricId: newRubricId?.id,
           fileId: preview?.id,
