@@ -102,7 +102,7 @@ model Menu {
   oldId     Int?       @unique
   title     String     @unique
   isDeleted Boolean    @default(false)
-  menuType  MenuType
+  menuType  MenuType?
   menuItems MenuItem[]
 }
 
