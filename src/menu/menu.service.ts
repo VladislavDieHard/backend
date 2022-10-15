@@ -35,16 +35,39 @@ export class MenuService extends GetService {
   }
 
   async updateMenu(newMenu: Menu, id): Promise<Menu> {
-    try {
-      return await this.prismaService.menu.update({
-        where: {
-          id: id,
-        },
-        data: newMenu,
+    return this.prismaService.menu.update({
+      where: {
+        id: id,
+      },
+      data: newMenu,
+    })
+      .then(data => data)
+      .catch(err => {
+        return err;
       });
-    } catch {
-      throw new HttpException('Error with data', HttpStatus.BAD_REQUEST);
-    }
+  }
+
+  async updateMenuMenuItems(newMenuItems, id): Promise<Menu> {
+    const preparedMenuItems = newMenuItems.menuItems.map(item => {
+      return { id: item };
+    })
+
+    return this.prismaService.menu.update({
+      where: {
+        id: id,
+      },
+      data: {
+        menuItems: {
+          connect: [
+            ...preparedMenuItems,
+          ]
+        }
+      },
+    })
+      .then(data => data)
+      .catch(err => {
+        return err;
+      });
   }
 
   async deleteMenu(id): Promise<Menu> {

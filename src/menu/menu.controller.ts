@@ -122,6 +122,12 @@ export class MenuController {
     return this.menuService.updateMenu(newMenu, id);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Put('/menu-items/:id')
+  updateMenuMenuItems(@Param('id') id: number, @Body() newMenu: any) {
+    return this.menuService.updateMenuMenuItems(newMenu, id);
+  }
+
   @ApiResponse({
     status: 200,
     description: 'Удаляет запись модели Menu',
