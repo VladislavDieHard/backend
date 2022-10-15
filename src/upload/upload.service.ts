@@ -111,7 +111,6 @@ export class UploadService implements OnModuleInit {
 
     return this.uploadToMinio(file, path, metadata)
       .then(async () => {
-        console.log(path);
         return await this.saveToDb({
           id: id,
           originalName: file.originalname,
