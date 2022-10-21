@@ -11,15 +11,36 @@ const config = getConfig();
 export async function entry() {
   const entriesCount = await count('news_entry');
   const limit = 50;
-  const departments = await prismaService.department.findMany({});
+
+  const departments = await prismaService.department.findMany({
+    where: {
+      oldId: {
+        notIn: null,
+      },
+    },
+  });
   const departmentIds = departments.map((department) => {
     return { oldId: department.oldId, id: department.id };
   });
-  const rubrics = await prismaService.rubric.findMany({});
+
+  const rubrics = await prismaService.rubric.findMany({
+    where: {
+      oldId: {
+        notIn: null,
+      },
+    },
+  });
   const rubricIds = rubrics.map((rubric) => {
     return { oldId: rubric.oldId, id: rubric.id };
   });
-  const documents = await prismaService.document.findMany({});
+
+  const documents = await prismaService.document.findMany({
+    where: {
+      oldId: {
+        notIn: null,
+      },
+    },
+  });
   const documentIds = documents.map((doc) => doc.oldId);
 
   for (let i = 0; i <= entriesCount; ) {
@@ -90,6 +111,10 @@ async function executeEntry(entry: OldEntry, departmentIds, rubricIds) {
 
     const content = await parseHtml(entry.text, entry.date_of_create);
 
+    const publishedDate = entry.date_of_public
+      ? new Date(entry.date_of_public)
+      : new Date(entry.date_of_create);
+
     prismaService.entry
       .create({
         data: {
@@ -102,7 +127,7 @@ async function executeEntry(entry: OldEntry, departmentIds, rubricIds) {
           published: true,
           createdAt: new Date(entry.date_of_create),
           updatedAt: new Date(entry.date_of_edit),
-          publishedAt: new Date(entry.date_of_create),
+          publishedAt: publishedDate,
           departmentId: newDepartmentId.id,
           rubricId: newRubricId?.id,
           fileId: preview?.id,
