@@ -34,6 +34,12 @@ export async function entry() {
     return { oldId: rubric.oldId, id: rubric.id };
   });
 
+  const actualRubric = await prismaService.rubric.findFirst({
+    where: {
+      oldId: 20,
+    },
+  });
+
   const documents = await prismaService.document.findMany({
     where: {
       oldId: {
@@ -56,7 +62,7 @@ export async function entry() {
       });
 
       if (!existEntry) {
-        await executeEntry(entry, departmentIds, rubricIds);
+        await executeEntry(entry, departmentIds, rubricIds, actualRubric);
       }
     }
 
@@ -69,7 +75,12 @@ export async function entry() {
   }
 }
 
-async function executeEntry(entry: OldEntry, departmentIds, rubricIds) {
+async function executeEntry(
+  entry: OldEntry,
+  departmentIds,
+  rubricIds,
+  actualRubric,
+) {
   const departmentEntryId = await select(
     `SELECT * FROM news_entry_department WHERE entry_id = ${entry.id}`,
   );
@@ -79,12 +90,20 @@ async function executeEntry(entry: OldEntry, departmentIds, rubricIds) {
 
   let newRubricId;
   if (rubricEntryId.length > 0) {
-    const rubricOldId = rubricEntryId?.[0]?.['rubric_id'] as number;
+    const rubricOldId = rubricEntryId?.[0]?.['rubric_id'] as number | string;
+
     newRubricId = rubricIds.find((item) => {
       if (!rubricOldId) console.log(rubricOldId);
-      if (item.oldId === 4) return 20;
       return item.oldId === rubricOldId;
     });
+
+    if (rubricOldId === 4 || rubricOldId === '4') {
+      newRubricId = actualRubric;
+    }
+
+    if (Boolean(Number(entry.is_pinned))) {
+      newRubricId = actualRubric;
+    }
   } else {
     console.log(`Нет связи с rubric у новости с id: ${entry.id}`);
   }
@@ -112,9 +131,10 @@ async function executeEntry(entry: OldEntry, departmentIds, rubricIds) {
 
     const content = await parseHtml(entry.text, entry.date_of_create);
 
-    const publishedDate = entry.date_of_public
-      ? new Date(entry.date_of_public)
-      : new Date(entry.date_of_create);
+    const publishedDate =
+      entry.date_of_public && entry.date_of_public !== '0000-00-00'
+        ? new Date(entry.date_of_public)
+        : new Date(entry.date_of_create);
 
     prismaService.entry
       .create({
@@ -130,18 +150,23 @@ async function executeEntry(entry: OldEntry, departmentIds, rubricIds) {
           updatedAt: new Date(entry.date_of_edit),
           publishedAt: publishedDate,
           departmentId: newDepartmentId.id,
-          rubricId: newRubricId?.id,
+          rubricId: newRubricId ? newRubricId?.id : actualRubric.id,
           fileId: preview?.id,
         },
       })
       .then((res) => {
         // console.log(res);
       })
-      .catch((err) => {
-        // console.log(err);
-        // console.log(
-        //   `Что-то пошло не так с сохранением нвости с id: ${entry.id}`,
-        // );
+      .catch(() => {
+        console.log({
+          oldId: entry.id,
+          title: entry.title,
+          publishedAt: entry.date_of_public,
+          createdAt: entry.date_of_create,
+        });
+        console.log(
+          `Что-то пошло не так с сохранением нвости с id: ${entry.id}`,
+        );
       });
   }
 }
@@ -153,7 +178,8 @@ type OldEntry = {
   text: string;
   slug: string;
   preview: string;
+  is_pinned: number | string;
   date_of_create: Date;
   date_of_edit: Date;
-  date_of_public: Date;
+  date_of_public: Date | string;
 };
