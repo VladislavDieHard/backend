@@ -79,9 +79,10 @@ async function executeEntry(entry: OldEntry, departmentIds, rubricIds) {
 
   let newRubricId;
   if (rubricEntryId.length > 0) {
-    const rubricOldId = rubricEntryId?.[0]?.['rubric_id'];
+    const rubricOldId = rubricEntryId?.[0]?.['rubric_id'] as number;
     newRubricId = rubricIds.find((item) => {
       if (!rubricOldId) console.log(rubricOldId);
+      if (item.oldId === 4) return 20;
       return item.oldId === rubricOldId;
     });
   } else {
