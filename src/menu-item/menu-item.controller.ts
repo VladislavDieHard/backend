@@ -38,15 +38,17 @@ export class MenuItemController {
   @Get()
   async getMenuItems(
     @Query('searchByField') searchByField?: string,
+    @Query('isDeleted') isDeleted?: string,
     @Query('pageSize') pageSize?: number,
     @Query('page') page?: number,
     @Query('include') include?: string,
   ) {
     return this.menuItemService.getMenuItems({
-      searchByField: searchByField,
+      searchByField,
       include: include || undefined,
-      page: page,
-      pageSize: pageSize,
+      page,
+      pageSize,
+      isDeleted,
     });
   }
 
@@ -74,7 +76,7 @@ export class MenuItemController {
     name: 'Id or Slug',
     type: String,
   })
-  @Get(':idOrSlug')
+  @Get('/:idOrSlug')
   getMenuItem(
     @Param('idOrSlug') idOrSlug: string,
     @Query('include') include?: string,
@@ -109,7 +111,7 @@ export class MenuItemController {
     type: String,
   })
   @UseGuards(JwtAuthGuard)
-  @Put(':idOrSlug')
+  @Put('/:idOrSlug')
   updateMenuItem(
     @Param('idOrSlug') idOrSlug: number | string,
     @Body() newMenuItem: MenuItem,
@@ -133,87 +135,5 @@ export class MenuItemController {
   @Delete(':idOrSlug')
   deleteMenuItem(@Param('idOrSlug') idOrSlug: string) {
     return this.menuItemService.deleteMenuItem(idOrSlug);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('/document')
-  async getDocuments(
-    @Query('searchByField') searchByField?: string,
-    @Query('pageSize') pageSize?: number,
-    @Query('page') page?: number,
-    @Query('include') include?: string,
-  ) {
-    return this.menuItemService.getDocuments({
-      searchByField: searchByField,
-      include: include || undefined,
-      page: page,
-      pageSize: pageSize,
-    });
-  }
-
-  @ApiResponse({
-    status: 200,
-    description: 'Возвращает одну запись модели MenuItem',
-    type: MenuDto,
-  })
-  @ApiOperation({
-    summary: 'Возвращает одну запись модели MenuItem',
-  })
-  @ApiQuery({
-    name: 'type',
-    required: false,
-    description: 'Укажите тип меню, что-бы вернуть только данный тип',
-    enum: MenuType,
-  })
-  @ApiParam({
-    name: 'Id or Slug',
-    type: String,
-  })
-  @UseGuards(JwtAuthGuard)
-  @Get('/document/:idOrSlug')
-  getDocument(@Param('idOrSlug') idOrSlug: string) {
-    return this.menuItemService.getDocument(idOrSlug);
-  }
-
-  @ApiResponse({
-    status: 200,
-    description: 'Добавляет запись Document',
-  })
-  @ApiOperation({
-    summary: 'Добавляет запись Document',
-  })
-  @UseGuards(JwtAuthGuard)
-  @Post('/document')
-  createDocument(@Body() newDocument: any) {
-    return this.menuItemService.createDocument(newDocument);
-  }
-
-  @ApiResponse({
-    status: 200,
-    description: 'Обновляет запись Document',
-  })
-  @ApiOperation({
-    summary: 'Обновляет запись Document',
-  })
-  @UseGuards(JwtAuthGuard)
-  @Put('/document/:idOrSlug')
-  updateDocument(
-    @Body() newDocument: any,
-    @Param('idOrSlug') idOrSlug: string,
-  ) {
-    return this.menuItemService.updateDocument(idOrSlug, newDocument);
-  }
-
-  @ApiResponse({
-    status: 200,
-    description: 'Удаляет запись Document',
-  })
-  @ApiOperation({
-    summary: 'Удаляет запись Document',
-  })
-  @UseGuards(JwtAuthGuard)
-  @Delete('/document/:idOrSlug')
-  deleteDocument(@Param('idOrSlug') idOrSlug: string) {
-    return this.menuItemService.deleteDocument(idOrSlug);
   }
 }

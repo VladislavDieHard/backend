@@ -15,6 +15,7 @@ import { UsersModule } from './users/users.module';
 import { ConsoleModule } from '@squareboat/nest-console';
 import { CommandService } from './commander/commander.service';
 import { CreateService } from './commonServices/createService';
+import { DocumentModule } from './document/document.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { CreateService } from './commonServices/createService';
     AuthModule,
     UsersModule,
     ConsoleModule,
+    DocumentModule,
   ],
   providers: [PrismaService, CommandService, CreateService],
   controllers: [AppController],

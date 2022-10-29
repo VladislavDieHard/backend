@@ -56,6 +56,7 @@ export class EntryController extends EntryService {
   })
   @Get()
   getEntries(
+    @Query('isDeleted') isDeleted?: string,
     @Query('fromDate') fromDate?: Date,
     @Query('toDate') toDate?: Date,
     @Query('pageSize') pageSize?: number,
@@ -74,6 +75,7 @@ export class EntryController extends EntryService {
       page,
       include,
       searchByField,
+      isDeleted,
     });
   }
 

@@ -40,6 +40,7 @@ export async function mainSlider() {
           desc: mainSlider.description,
           entryId: entry.id,
           fileId: preview?.id,
+          createdAt: mainSlider.date_of_create,
         };
 
         await prismaService.mainSlider.create({

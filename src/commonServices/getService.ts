@@ -16,6 +16,7 @@ export class GetService {
   };
   search: { OR: Array<{ [key: string]: { contains: string } }> } | undefined;
   orderBy: object | undefined;
+  isDeleted: boolean | undefined;
   pagination: any;
   searchRangeObj: {
     field: string;
@@ -74,11 +75,13 @@ export class GetService {
         ...this.createWhereParams(),
       },
     });
+
     const pagination = createPagination({
       count: count,
       pageSize: this.pagination?.pageSize,
       page: this.pagination?.page,
     });
+
     const orderBy = this.orderBy;
     return new Promise((resolve, reject) => {
       this.prismaService[model]
@@ -172,6 +175,15 @@ export class GetService {
     return this;
   }
 
+  addIsDeleted(isDeleted: string) {
+    if (isDeleted === 'true') {
+      this.isDeleted = undefined;
+    } else {
+      this.isDeleted = false;
+    }
+    return this;
+  }
+
   addOrderBy(orderBy: string) {
     if (orderBy) {
       this.orderBy = createOrderBy(orderBy);
@@ -232,6 +244,7 @@ export class GetService {
     this.orderBy = undefined;
     this.searchByFieldObj = undefined;
     this.searchRangeObj = undefined;
+    this.isDeleted = undefined;
   }
 
   private createWhereParams() {
@@ -242,6 +255,7 @@ export class GetService {
         lte: this.searchRangeObj.toDate,
       };
     }
+    params['isDeleted'] = this.isDeleted;
     if (this.search) {
       params['OR'] = this.search?.OR ? this.search.OR : null;
     }

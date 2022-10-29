@@ -5,6 +5,7 @@ import { GetService } from '../../commonServices/getService';
 export class RubricGetService extends GetService {
   async getRubrics(options) {
     return this.addSearch(['title'], options.search)
+      .addIsDeleted(options.isDeleted)
       .addPagination(options.pageSize, options.page)
       .executeFindMany('Rubric');
   }

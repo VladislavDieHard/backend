@@ -3,12 +3,17 @@ import { GetService } from '../../commonServices/getService';
 
 @Injectable()
 export class DepartmentGetService extends GetService {
-  async getDepartments(options): Promise<any> {
-    const count = await this.prismaService.department.count();
-
-    return this.addPagination(count)
-      .addOrderBy(options.orderBy)
-      .includeFields(options.include)
+  async getDepartments({
+    page,
+    pageSize,
+    isDeleted,
+    orderBy,
+    include,
+  }): Promise<any> {
+    return this.addPagination(page, pageSize)
+      .addIsDeleted(isDeleted)
+      .addOrderBy(orderBy)
+      .includeFields(include)
       .executeFindMany('Department');
   }
 

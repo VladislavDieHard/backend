@@ -7,8 +7,9 @@ import {
   Post,
   Put,
   Query,
-  Req, UseGuards
-} from "@nestjs/common";
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { Department } from '@prisma/client';
 import {
@@ -20,10 +21,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { DepartmentDto, DepartmentEntriesDto } from './dto/department.dto';
-import { GetDepartmentEntriesResponse } from './department.types';
 import { ErrorDto } from '../common.dto';
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
-// import { ErrorDto } from '../common.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('Department')
 @Controller('department')
@@ -45,12 +44,14 @@ export class DepartmentController extends DepartmentService {
     @Query('orderBy') orderBy?: string,
     @Query('include') include?: string,
     @Query('page') page?: number,
+    @Query('isDeleted') isDeleted?: string,
   ) {
     return this.departmentGetService.getDepartments({
-      pageSize: pageSize,
-      orderBy: orderBy,
-      include: include,
-      page: page,
+      pageSize,
+      orderBy,
+      include,
+      page,
+      isDeleted,
     });
   }
 

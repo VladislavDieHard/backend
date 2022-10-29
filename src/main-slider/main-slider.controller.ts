@@ -22,15 +22,19 @@ export class MainSliderController {
   @Get()
   async getSlides(
     @Query('searchByField') searchByField?: string,
+    @Query('isDeleted') isDeleted?: string,
+    @Query('orderBy') orderBy?: string,
     @Query('pageSize') pageSize?: number,
     @Query('page') page?: number,
     @Query('include') include?: string,
   ) {
     return this.mainSliderService.getSlides({
-      searchByField: searchByField,
+      searchByField,
+      isDeleted,
+      orderBy,
       include: include || undefined,
-      page: page,
-      pageSize: pageSize,
+      page,
+      pageSize,
     });
   }
 
