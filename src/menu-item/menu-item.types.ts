@@ -3,4 +3,5 @@ export type ServiceArgs = {
   include: string | undefined;
   page: number;
   pageSize: number;
+  isDeleted?: string;
 };

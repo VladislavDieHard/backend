@@ -10,6 +10,7 @@ export class AfficheGetService extends GetService {
         fromDate: options.fromDate,
         toDate: options.toDate,
       })
+      .addIsDeleted(options.isDeleted)
       .addSearchByFieldValue(options.searchByField)
       .includeFields(options.include)
       .addPagination(options.pageSize, options.page)

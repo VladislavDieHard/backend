@@ -7,12 +7,12 @@ import {
   Post,
   Put,
   Query,
-  Req, UseGuards
-} from "@nestjs/common";
+  UseGuards,
+} from '@nestjs/common';
 import { AfficheService } from './affiche.service';
 import { Affiche } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('Affiche')
 @Controller('affiche')
@@ -27,6 +27,7 @@ export class AfficheController extends AfficheService {
     @Query('page') page?: number,
     @Query('include') include?: string,
     @Query('searchByField') searchByField?: string,
+    @Query('isDeleted') isDeleted?: string,
   ) {
     return this.afficheGetService.getAffiches({
       pageSize,
@@ -37,6 +38,7 @@ export class AfficheController extends AfficheService {
       page,
       include,
       searchByField,
+      isDeleted,
     });
   }
 

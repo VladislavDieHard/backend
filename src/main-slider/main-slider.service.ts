@@ -6,9 +6,18 @@ import { parseIdOrSlug } from '../utils';
 
 @Injectable()
 export class MainSliderService extends GetService {
-  getSlides({ searchByField, include, pageSize, page }): Promise<MainSlider> {
+  getSlides({
+    searchByField,
+    include,
+    pageSize,
+    page,
+    orderBy,
+    isDeleted,
+  }): Promise<MainSlider> {
     try {
       return this.includeFields(include)
+        .addIsDeleted(isDeleted)
+        .addOrderBy(orderBy)
         .addPagination(pageSize, page)
         .addSearchByFieldValue(searchByField)
         .executeFindMany('MainSlider');

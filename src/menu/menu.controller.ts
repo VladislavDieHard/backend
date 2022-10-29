@@ -54,10 +54,12 @@ export class MenuController {
     @Req() request: any,
     @Query('searchByField') searchByField?: string,
     @Query('include') include?: string,
+    @Query('isDeleted') isDeleted?: string,
   ) {
     return this.menuService.getMenus({
       include: include || undefined,
-      searchByField: searchByField,
+      searchByField,
+      isDeleted,
     });
   }
 

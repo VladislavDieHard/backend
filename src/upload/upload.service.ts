@@ -77,7 +77,6 @@ export class UploadService implements OnModuleInit {
     });
   }
 
-
   async upload(file, customDate?: Date) {
     const hash = sha256(file.buffer);
     const existFile = await this.prismaService.file.findFirst({
@@ -91,7 +90,6 @@ export class UploadService implements OnModuleInit {
     }
 
     const type = findFileType(file.mimetype);
-    console.log(file.mimetype)
     if (type === 'exclude') return null;
     if (type === FileTypes.UNSUPPORTED) {
       throw new HttpException(FileTypes.UNSUPPORTED, HttpStatus.BAD_REQUEST);
@@ -116,7 +114,7 @@ export class UploadService implements OnModuleInit {
           originalName: file.originalname,
           mimeType: file.mimetype,
           path: `/${this.bucketName}/${path}`,
-          preview:  `/${this.bucketName}/${path}`,
+          preview: `/${this.bucketName}/${path}`,
           createdAt: customDate || new Date(),
           type: type,
           hash,

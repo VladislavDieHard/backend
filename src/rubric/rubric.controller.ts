@@ -6,12 +6,13 @@ import {
   Param,
   Post,
   Put,
-  Query, UseGuards
-} from "@nestjs/common";
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { RubricService } from './rubric.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Rubric } from '@prisma/client';
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 @Controller('rubric')
 @ApiTags('Rubric')
 export class RubricController extends RubricService {
@@ -21,12 +22,14 @@ export class RubricController extends RubricService {
     @Query('orderBy') orderBy?: string,
     @Query('search') search?: string,
     @Query('page') page?: number,
+    @Query('isDeleted') isDeleted?: string,
   ) {
     return this.rubricGetService.getRubrics({
-      pageSize: pageSize,
-      orderBy: orderBy,
-      search: search,
-      page: page,
+      pageSize,
+      orderBy,
+      search,
+      page,
+      isDeleted,
     });
   }
 

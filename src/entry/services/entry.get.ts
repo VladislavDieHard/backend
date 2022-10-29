@@ -4,16 +4,27 @@ import { GetService } from '../../commonServices/getService';
 
 @Injectable()
 export class EntryGetService extends GetService {
-  async getEntries(options): Promise<GetEntriesType> {
-    return this.addSearch(['title'], options.search)
+  async getEntries({
+    search,
+    fromDate,
+    toDate,
+    searchByField,
+    include,
+    pageSize,
+    page,
+    orderBy,
+    isDeleted,
+  }): Promise<GetEntriesType> {
+    return this.addSearch(['title', 'content'], search)
       .addRangeDateSearch('publishedAt', {
-        fromDate: options.fromDate,
-        toDate: options.toDate,
+        fromDate,
+        toDate,
       })
-      .addSearchByFieldValue(options.searchByField)
-      .includeFields(options.include)
-      .addPagination(options.pageSize, options.page)
-      .addOrderBy(options.orderBy)
+      .addIsDeleted(isDeleted)
+      .addSearchByFieldValue(searchByField)
+      .includeFields(include)
+      .addPagination(pageSize, page)
+      .addOrderBy(orderBy)
       .executeFindMany('Entry');
   }
 

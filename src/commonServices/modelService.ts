@@ -66,14 +66,14 @@ export class ModelService {
       };
     }
 
-    if(field.kind === "enum" && field.type === "MenuItemType") {
+    if (field.kind === 'enum' && field.type === 'MenuItemType') {
       return {
-        type:"String",
+        type: 'String',
         name: field.name,
         fieldName: field.name,
         isRequired: field.isRequired,
         hasDefaultValue: field.hasDefaultValue,
-      }
+      };
     }
 
     if (field.type === 'DateTime' && field.kind === 'scalar') {
