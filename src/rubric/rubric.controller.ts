@@ -44,7 +44,7 @@ export class RubricController extends RubricService {
   @Get(':idOrSlug/entries')
   getRubricEntries(
     @Param('idOrSlug') idOrSlug: string,
-    @Param('model') model: string,
+    @Query('isDeleted') isDeleted: string,
     @Query('fromDate') fromDate?: Date,
     @Query('toDate') toDate?: Date,
     @Query('pageSize') pageSize?: number,
@@ -56,7 +56,6 @@ export class RubricController extends RubricService {
   ) {
     return this.rubricGetService.getEntriesByRubric({
       idOrSlug,
-      model,
       fromDate,
       toDate,
       pageSize,
@@ -65,6 +64,7 @@ export class RubricController extends RubricService {
       page,
       include,
       searchByField,
+      isDeleted,
     });
   }
 

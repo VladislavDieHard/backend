@@ -17,16 +17,30 @@ export class RubricGetService extends GetService {
     );
   }
 
-  async getEntriesByRubric(options) {
-    return this.addSearch(['title'], options.search)
-      .includeFields(options.include)
-      .addPagination(options.pageSize, options.page)
-      .addOrderBy(options.orderBy)
-      .addSearchByFieldValue(options.searchByField)
+  async getEntriesByRubric(
+    {
+      search,
+      isDeleted,
+      include,
+      pageSize,
+      page,
+      orderBy,
+      searchByField,
+      fromDate,
+      toDate,
+      idOrSlug
+  }
+  ) {
+    return this.addSearch(['title'], search)
+      .addIsDeleted(isDeleted)
+      .includeFields(include)
+      .addPagination(pageSize, page)
+      .addOrderBy(orderBy)
+      .addSearchByFieldValue(searchByField)
       .addRangeDateSearch('publishedAt', {
-        fromDate: options.fromDate,
-        toDate: options.toDate,
+        fromDate,
+        toDate,
       })
-      .executeFindModelByAnother('Entry', 'Rubric', options.idOrSlug);
+      .executeFindModelByAnother('Entry', 'Rubric', idOrSlug);
   }
 }
