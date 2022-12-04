@@ -16,6 +16,7 @@ import { ConsoleModule } from '@squareboat/nest-console';
 import { CommandService } from './commander/commander.service';
 import { CreateService } from './commonServices/createService';
 import { DocumentModule } from './document/document.module';
+import { ExhibitionModule } from './exhibition/exhibition.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { DocumentModule } from './document/document.module';
     UsersModule,
     ConsoleModule,
     DocumentModule,
+    ExhibitionModule,
   ],
   providers: [PrismaService, CommandService, CreateService],
   controllers: [AppController],

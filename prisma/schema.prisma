@@ -150,6 +150,37 @@ model File {
   Document     Document[]
   Entry        Entry[]
   MainSlider   MainSlider[]
+  Exhibition   Exhibition[]
+}
+
+model Exhibition {
+  id        String                         @id @default(uuid())
+  title     String                         @unique @db.VarChar(500)
+  desc      String                         @db.LongText
+  preview   File?                          @relation(fields: [fileId], references: [id])
+  fileId    String?
+  isDeleted Boolean                        @default(false)
+  types     ExhibitionsOnExhibitionTypes[]
+
+  @@index([fileId], map: "Exhibition_fileId_fkey")
+}
+
+model ExhibitionType {
+  id          String                         @id @default(uuid())
+  title       String                         @unique @db.VarChar(500)
+  desc        String                         @db.LongText
+  exhibitions ExhibitionsOnExhibitionTypes[]
+}
+
+model ExhibitionsOnExhibitionTypes {
+  exhibition       Exhibition     @relation(fields: [exhibitionId], references: [id])
+  exhibitionId     String
+  exhibitionType   ExhibitionType @relation(fields: [exhibitionTypeId], references: [id])
+  exhibitionTypeId String
+  assignedAt       DateTime       @default(now())
+  assignedBy       String
+
+  @@id([exhibitionId, exhibitionTypeId])
 }
 
 enum MenuType {
