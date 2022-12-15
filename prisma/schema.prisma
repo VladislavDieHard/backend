@@ -129,9 +129,10 @@ model MainSlider {
   desc      String   @db.VarChar(200)
   createdAt DateTime @default(now())
   isDeleted Boolean  @default(false)
-  entryId   String   @unique
+  url       String?
+  entryId   String?   @unique
   fileId    String?
-  entry     Entry    @relation(fields: [entryId], references: [id])
+  entry     Entry?    @relation(fields: [entryId], references: [id])
   image     File?    @relation(fields: [fileId], references: [id])
 
   @@index([fileId], map: "MainSlider_fileId_fkey")
