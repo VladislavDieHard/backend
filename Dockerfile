@@ -1,4 +1,4 @@
-FROM node:16-alpine3.16 AS builder
+FROM node:18.12.1-alpine3.16 AS builder
 
 # Create app directory
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY . .
 
 RUN npm run build
 
-FROM node:16-alpine
+FROM node:16-alpine3.16
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
