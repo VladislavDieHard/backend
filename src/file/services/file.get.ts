@@ -7,6 +7,7 @@ import { FileTypes } from "../../utils/findFileType";
 export class FileGetService extends GetService {
   async getFiles(options):Promise<FileTypes> {
     return this.addPagination(options.pageSize, options.page)
+      .addOrderBy(options.orderBy)
       .addSearchByFieldValue(options.searchByField)
       .executeFindMany('File')
   }
