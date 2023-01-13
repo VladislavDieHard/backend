@@ -58,16 +58,16 @@ model Entry {
 }
 
 model Document {
-  id         String   @id @default(uuid())
-  oldId      Int?     @unique
-  title      String   @db.VarChar(200)
+  id         String    @id @default(uuid())
+  oldId      Int?      @unique
+  title      String    @db.VarChar(200)
   /// ckeditor
-  content    String   @db.LongText
-  isDeleted  Boolean  @default(false)
-  menuItemId String   @unique
+  content    String    @db.LongText
+  isDeleted  Boolean   @default(false)
+  menuItemId String?   @unique
   fileId     String?
-  preview    File?    @relation(fields: [fileId], references: [id])
-  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  preview    File?     @relation(fields: [fileId], references: [id])
+  menuItem   MenuItem? @relation(fields: [menuItemId], references: [id])
 
   @@index([fileId], map: "Document_fileId_fkey")
 }
@@ -130,9 +130,9 @@ model MainSlider {
   createdAt DateTime @default(now())
   isDeleted Boolean  @default(false)
   url       String?
-  entryId   String?   @unique
+  entryId   String?  @unique
   fileId    String?
-  entry     Entry?    @relation(fields: [entryId], references: [id])
+  entry     Entry?   @relation(fields: [entryId], references: [id])
   image     File?    @relation(fields: [fileId], references: [id])
 
   @@index([fileId], map: "MainSlider_fileId_fkey")
