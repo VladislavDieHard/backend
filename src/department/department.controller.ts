@@ -92,7 +92,6 @@ export class DepartmentController extends DepartmentService {
     @Query('page') page?: number,
     @Query('include') include?: string,
     @Query('searchByField') searchByField?: string,
-
   ): Promise<any> {
     return this.departmentGetService.getDepartmentEntries({
       idOrSlug,
@@ -105,7 +104,7 @@ export class DepartmentController extends DepartmentService {
       page,
       include,
       searchByField,
-      isDeleted
+      isDeleted,
     });
   }
 
