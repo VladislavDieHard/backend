@@ -84,7 +84,7 @@ export class AppController extends ModelService {
   @Post('bulk/create/:model')
   async bulkCreate(
     @Body() modelData: ModelData[],
-    @Param('model') model: ModelKey,
+    @Param('model') model: string,
   ) {
     return this.createService.executeBulkCreate(model, modelData);
   }

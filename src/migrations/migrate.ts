@@ -8,12 +8,12 @@ import { entry } from './models/entry';
 import { menu } from './models/menu';
 
 export async function migrate() {
-  await department();
-  await affiche();
-  await rubric();
-  await menu();
-  await menuItem();
-  await document();
-  await entry();
-  await mainSlider();
+  // await department();
+  // await affiche();
+  // await rubric();
+  // await menu();
+  // await menuItem();
+  // await document();
+  // await entry();
+  // await mainSlider();
 }

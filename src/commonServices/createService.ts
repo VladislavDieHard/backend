@@ -1,5 +1,5 @@
 import { PrismaService } from '../prisma.service';
-import { ModelData, ModelKey } from './types';
+import { ModelData } from './types';
 import { createSlug } from '../utils';
 import { v4 } from 'uuid';
 import { HttpException, HttpStatus } from '@nestjs/common';
@@ -11,7 +11,7 @@ export class CreateService {
     this.prismaService = new PrismaService();
   }
 
-  async executeCreate(model: ModelKey, data: ModelData): Promise<ModelData> {
+  async executeCreate(model: string, data: ModelData): Promise<ModelData> {
     data.slug = createSlug(data.title, data.slug, false);
 
     return this.prismaService[model]
@@ -27,7 +27,7 @@ export class CreateService {
       });
   }
 
-  async executeBulkCreate(model: ModelKey, data: ModelData[]) {
+  async executeBulkCreate(model: string, data: ModelData[]) {
     data.forEach((item) => {
       item.id = v4();
 

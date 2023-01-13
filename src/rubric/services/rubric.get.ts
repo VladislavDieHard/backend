@@ -17,20 +17,18 @@ export class RubricGetService extends GetService {
     );
   }
 
-  async getEntriesByRubric(
-    {
-      search,
-      isDeleted,
-      include,
-      pageSize,
-      page,
-      orderBy,
-      searchByField,
-      fromDate,
-      toDate,
-      idOrSlug
-  }
-  ) {
+  async getEntriesByRubric({
+    search,
+    isDeleted,
+    include,
+    pageSize,
+    page,
+    orderBy,
+    searchByField,
+    fromDate,
+    toDate,
+    idOrSlug,
+  }) {
     return this.addSearch(['title'], search)
       .addIsDeleted(isDeleted)
       .includeFields(include)

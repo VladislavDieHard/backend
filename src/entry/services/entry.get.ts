@@ -14,7 +14,7 @@ export class EntryGetService extends GetService {
     page,
     orderBy,
     isDeleted,
-  }): Promise<GetEntriesType> {
+  }: any): Promise<GetEntriesType> {
     return this.addSearch(['title', 'content'], search)
       .addRangeDateSearch('publishedAt', {
         fromDate,

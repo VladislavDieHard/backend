@@ -3,10 +3,14 @@ import { Command, ConsoleIO } from '@squareboat/nest-console';
 import { UsersService } from '../users/users.service';
 import bcrypt from 'bcrypt';
 import { migrate } from '../migrations/migrate';
+import { SearchService } from '../search/search.service';
 
 @Injectable()
 export class CommandService {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private searchService: SearchService,
+  ) {}
 
   @Command('create:user', {
     desc: 'Create user',
@@ -41,6 +45,34 @@ export class CommandService {
     const confirm = await _cli.confirm('Do you want migrate data?');
     if (confirm) {
       await migrate();
+    }
+  }
+
+  @Command('index:entries', { desc: 'Index all entries' })
+  async indexEntries(_cli: ConsoleIO) {
+    const confirm = await _cli.confirm('Do you want index entries?');
+    if (confirm) {
+      const result = await this.searchService.indexEntries();
+
+      if (result instanceof Error) {
+        _cli.error(result.message);
+      } else {
+        _cli.success(result);
+      }
+    }
+  }
+
+  @Command('index:documents', { desc: 'Index all documents' })
+  async indexDocuments(_cli: ConsoleIO) {
+    const confirm = await _cli.confirm('Do you want index documents?');
+    if (confirm) {
+      const result = await this.searchService.indexDocuments();
+
+      if (result instanceof Error) {
+        _cli.error(result.message);
+      } else {
+        _cli.success(result);
+      }
     }
   }
 }

@@ -11,6 +11,6 @@ export const db = mysql.createConnection({
   database: config['OLD_DB_NAME'],
 });
 
-db.connect();
+// db.connect();
 
 export const database = db;

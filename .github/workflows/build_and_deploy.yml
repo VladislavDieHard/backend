@@ -1,20 +1,15 @@
 name: Build and Deploy
 
-on:
-  pull_request:
-    branches:
-      - master
-    types: [closed]
+on: [workflow_dispatch]
 
 jobs:
-
   build_and_publish:
     runs-on: [ubuntu-latest]
     env:
       LOGIN: ${{ secrets.DOCKER_LOGIN }}
     steps:
       - name: Login to docker.io
-        run:  echo ${{ secrets.DOCKER_PASS }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+        run: echo ${{ secrets.DOCKER_PASS }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
       - uses: actions/checkout@master
       - name: Files
         run: ls -la
