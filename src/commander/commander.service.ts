@@ -3,6 +3,7 @@ import { Command, ConsoleIO } from '@squareboat/nest-console';
 import { UsersService } from '../users/users.service';
 import bcrypt from 'bcrypt';
 import { migrate } from '../migrations/migrate';
+import { migrateEntriesRubrics } from 'src/migrations/migrateEntriesRubrics';
 
 @Injectable()
 export class CommandService {
@@ -42,5 +43,12 @@ export class CommandService {
     if (confirm) {
       await migrate();
     }
+  }
+
+  @Command('normalize:rubric-entries', { desc: 'normalize rubric-entries' })
+  async migrateRubricEntries(_cli: ConsoleIO) {
+    await migrateEntriesRubrics();
+
+    _cli.success('Data normalized');
   }
 }

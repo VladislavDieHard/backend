@@ -119,7 +119,7 @@ export class EntryController extends EntryService {
   })
   @UseGuards(JwtAuthGuard)
   @Post()
-  createEntry(@Body() newEntry: Entry) {
+  createEntry(@Body() newEntry: Entry & { rubrics: string[] }) {
     return this.entryCreateService.createEntry(newEntry);
   }
 
@@ -143,7 +143,7 @@ export class EntryController extends EntryService {
   @Put(':idOrSlug')
   updateEntry(
     @Param('idOrSlug') idOrSlug: number | string,
-    @Body() newEntry: Entry,
+    @Body() newEntry: Entry & { rubrics: string[] },
   ) {
     return this.entryUpdateService.updateEntry(newEntry, idOrSlug);
   }

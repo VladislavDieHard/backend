@@ -2,6 +2,7 @@ import { PrismaService } from '../../prisma.service';
 import { select } from '../select';
 import { v4 } from 'uuid';
 import { createSlug } from '../../utils';
+import { database } from '../db';
 
 const prismaService = new PrismaService();
 
@@ -12,6 +13,7 @@ const MenuItemTypes = {
 
 export async function menuItem() {
   const menuItems: MenuItemOld[] = await select(
+    database,
     `SELECT * FROM news_menuitem WHERE is_deleted != '1'`,
   );
   const existsMenuItems = await prismaService.menuItem.findMany({});

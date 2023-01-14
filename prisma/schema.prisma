@@ -45,16 +45,24 @@ model Entry {
   published    Boolean     @default(false)
   isDeleted    Boolean     @default(false)
   departmentId String
-  rubricId     String?
   department   Department  @relation(fields: [departmentId], references: [id])
   preview      File?       @relation(fields: [fileId], references: [id])
-  rubric       Rubric?     @relation(fields: [rubricId], references: [id])
+  rubrics      RubricsOnEntries[]
   affiche      Affiche?
   mainSlider   MainSlider?
 
   @@index([departmentId], map: "Entry_departmentId_fkey")
   @@index([fileId], map: "Entry_fileId_fkey")
-  @@index([rubricId], map: "Entry_rubricId_fkey")
+}
+
+model RubricsOnEntries {
+  entry Entry @relation(fields: [entryId], references: [id])
+  entryId String
+  rubric Rubric @relation(fields: [rubricId], references: [id])
+  rubricId String
+  assignedAt DateTime @default(now())
+
+  @@id([entryId, rubricId])
 }
 
 model Document {
@@ -94,7 +102,7 @@ model Rubric {
   title     String  @unique @db.VarChar(500)
   slug      String  @unique @db.VarChar(250)
   isDeleted Boolean @default(false)
-  entries   Entry[]
+  entries   RubricsOnEntries[]
 }
 
 model Menu {

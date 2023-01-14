@@ -4,12 +4,14 @@ import { select } from '../select';
 import { saveImage } from '../saveImage';
 import { parseHtml } from '../parseHtml';
 import { getConfig } from '../../utils/getConfig';
+import { database } from '../db';
 
 const prismaService = new PrismaService();
 const config = getConfig();
 
 export async function document() {
   const documents = await select(
+    database,
     `SELECT * FROM menuitem_documents WHERE e_is_deleted != 1 AND mi_is_deleted != 1`,
   );
   const existDocuments = await prismaService.document.findMany({});

@@ -2,11 +2,15 @@ import { PrismaService } from '../../prisma.service';
 import { select } from '../select';
 import { v4 } from 'uuid';
 import moment from 'moment';
+import { database } from '../db';
 
 const prismaService = new PrismaService();
 
 export async function affiche() {
-  const affiches: OldAffiche[] = await select(`SELECT * FROM news_affiche`);
+  const affiches: OldAffiche[] = await select(
+    database,
+    `SELECT * FROM news_affiche`,
+  );
   const existAffiche = await prismaService.affiche.findMany({});
   const departmentOldIds = existAffiche.map((affiche) => affiche.oldId);
 

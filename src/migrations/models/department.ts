@@ -3,12 +3,14 @@ import { select } from '../select';
 import { v4 } from 'uuid';
 import { saveImage } from '../saveImage';
 import { getConfig } from '../../utils/getConfig';
+import { database } from '../db';
 
 const prismaService = new PrismaService();
 const config = getConfig();
 
 export async function department() {
   const departments: OldDepartment[] = await select(
+    database,
     `SELECT * FROM news_department`,
   );
   const existDepartments = await prismaService.department.findMany({});

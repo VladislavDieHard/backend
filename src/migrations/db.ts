@@ -11,6 +11,23 @@ export const db = mysql.createConnection({
   database: config['OLD_DB_NAME'],
 });
 
-db.connect();
+export const normalize_db = mysql.createConnection({
+  host: 'localhost',
+  port: '3306',
+  user: 'root',
+  password: 'example',
+  database: 'db_noub_old',
+});
+
+export const new_db = mysql.createConnection({
+  host: 'localhost',
+  port: '3306',
+  user: 'root',
+  password: 'example',
+  database: 'db_noub',
+});
+
+normalize_db.connect();
+new_db.connect();
 
 export const database = db;
