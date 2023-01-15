@@ -12,10 +12,12 @@ const config = getConfig();
 @Module({
   imports: [
     UsersModule,
-    PassportModule,
+    PassportModule.register({
+      session: false,
+    }),
     JwtModule.register({
       secret: config['JWT_SECRET'],
-      signOptions: { expiresIn: '2h' },
+      signOptions: { expiresIn: 1000 * 60 * 60 * 24 * 2 },
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],

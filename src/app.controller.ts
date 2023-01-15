@@ -5,6 +5,7 @@ import {
   Param,
   Post,
   Query,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -18,6 +19,8 @@ import { ModelData, ModelKey } from './commonServices/types';
 import { CreateService } from './commonServices/createService';
 
 type CookieResponse = Response & { cookie(key, value, options): void };
+
+type CookieRequest = Request & { cookies: { [key: string]: string } };
 
 @ApiTags('Common')
 @Controller()
@@ -37,16 +40,19 @@ export class AppController extends ModelService {
     description: 'Возвращает метаданные всех моделей',
     type: MetadataDto,
   })
-  // @UseGuards(JwtAuthGuard)
   @Get('/meta')
   getMetadata() {
     return this.getModels();
   }
 
-  // @UseGuards(JwtAuthGuard)
   @Get('/meta/model')
   getModelMetadata(@Query('model') model: string) {
     return this.getModelMeta(model);
+  }
+
+  @Get('/whoami')
+  whoAmI(@Req() req: CookieRequest) {
+    return this.authService.whoAmI(req.cookies.token);
   }
 
   @ApiQuery({
@@ -67,17 +73,14 @@ export class AppController extends ModelService {
   ) {
     const loginObj = await this.authService.login(user);
 
-    response.cookie('token', loginObj.access_token, {
-      maxAge: 1000 * 60 * 60 * 2,
+    response.cookie('token', loginObj.token, {
+      maxAge: 1000 * 60 * 60 * 24 * 2,
       httpOnly: true,
     });
 
-    response.cookie('username', loginObj.username, {
-      maxAge: 1000 * 60 * 60 * 2,
-      httpOnly: true,
-    });
-
-    return loginObj;
+    return {
+      username: loginObj.username,
+    };
   }
 
   @UseGuards(JwtAuthGuard)

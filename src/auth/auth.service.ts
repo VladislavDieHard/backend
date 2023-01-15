@@ -19,10 +19,18 @@ export class AuthService {
     return null;
   }
 
+  async whoAmI(token: string) {
+    const decodedToken = this.jwtService.decode(token) as any;
+    const user = await this.userService.getUserByName(decodedToken.username);
+    return {
+      username: user.username,
+    };
+  }
+
   async login(user: { username: string; id: string }) {
     const payload = { username: user.username, sub: user.id };
     return {
-      access_token: this.jwtService.sign(payload),
+      token: this.jwtService.sign(payload),
       username: user.username,
     };
   }
