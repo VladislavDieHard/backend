@@ -26,6 +26,7 @@ export class DepartmentGetService extends GetService {
 
   async getDepartmentEntries(options) {
     return this.addSearch(['title'], options.search)
+      .addIsDeleted(options.isDeleted)
       .includeFields(options.include)
       .addPagination(options.pageSize, options.page)
       .addOrderBy(options.orderBy)
