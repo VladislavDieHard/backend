@@ -166,6 +166,8 @@ export class GetService {
     return this;
   }
 
+  // excludeFieldsByValue();
+
   addSearch(fields: string[], searchString: string) {
     if (fields && searchString) {
       this.search = parseSearch(fields, searchString);
