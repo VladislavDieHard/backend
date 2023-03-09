@@ -4,10 +4,10 @@ import {
   createPagination,
   parseIdOrSlug,
   parseIncludeArrString,
-  parseValue,
 } from '../utils';
 import { parseSearch } from '../utils/parsers';
 import moment from 'moment';
+import { searchByFieldValue } from '../utils/searchByField';
 
 export class GetService {
   readonly prismaService: PrismaService;
@@ -178,11 +178,7 @@ export class GetService {
   }
 
   addIsDeleted(isDeleted: string) {
-    if (isDeleted === 'true') {
-      this.isDeleted = undefined;
-    } else {
-      this.isDeleted = false;
-    }
+    this.isDeleted = isDeleted === 'true' ? undefined : false;
     return this;
   }
 
@@ -204,19 +200,7 @@ export class GetService {
   }
 
   addSearchByFieldValue(searchByField: string) {
-    if (searchByField) {
-      const [key, value] = searchByField.split('=');
-      if (key && value) {
-        this.searchByFieldObj = {
-          field: key,
-          query: parseValue(value),
-        };
-      } else {
-        this.searchByFieldObj = undefined;
-      }
-    } else {
-      this.searchByFieldObj = undefined;
-    }
+    this.searchByFieldObj = searchByFieldValue(searchByField);
     return this;
   }
 

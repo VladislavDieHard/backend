@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { GetService } from '../../commonServices/getService';
+import {
+  createOrderBy,
+  createPagination,
+  parseIncludeArrString,
+} from '../../utils';
+import { searchByFieldValue } from '../../utils/searchByField';
 
 @Injectable()
 export class RubricGetService extends GetService {
@@ -29,16 +35,53 @@ export class RubricGetService extends GetService {
     toDate,
     idOrSlug,
   }) {
-    return this.addSearch(['title'], search)
-      .addIsDeleted(isDeleted)
-      .includeFields(include)
-      .addPagination(pageSize, page)
-      .addOrderBy(orderBy)
-      .addSearchByFieldValue(searchByField)
-      .addRangeDateSearch('publishedAt', {
-        fromDate,
-        toDate,
-      })
-      .executeFindModelByAnother('Entry', 'Rubric', idOrSlug);
+    const searchParams = {
+      where: {
+        rubrics: {
+          some: {
+            rubric: {
+              id: idOrSlug,
+            },
+          },
+        },
+        publishedAt: {
+          gte: fromDate,
+          lte: toDate,
+        },
+        ...searchByFieldValue(searchByField),
+        isDeleted: isDeleted === 'true' ? undefined : false,
+        title: search,
+      },
+    };
+
+    return new Promise(async (res, rej) => {
+      const count = await this.prismaService.entry.count({ ...searchParams });
+
+      const pagination = createPagination({
+        count: count,
+        pageSize: pageSize,
+        page: page,
+      });
+
+      this.prismaService.entry
+        .findMany({
+          ...searchParams,
+          orderBy: createOrderBy(orderBy),
+          include: parseIncludeArrString(include),
+          take: pagination?.pageSize || undefined,
+          skip: (pagination?.page - 1) * pagination?.pageSize || 0,
+        })
+        .then((data) =>
+          res({
+            data: data,
+            meta: {
+              page: pagination.page,
+              pages: pagination.pages,
+              pageSize: pagination.pageSize || 10,
+            },
+          }),
+        )
+        .catch((err) => rej(err));
+    });
   }
 }
