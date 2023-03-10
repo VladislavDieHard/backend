@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GetService } from '../../commonServices/getService';
 import {
   createOrderBy,
-  createPagination,
+  createPagination, parseIdOrSlug,
   parseIncludeArrString,
 } from '../../utils';
 import { searchByFieldValue } from '../../utils/searchByField';
@@ -40,7 +40,7 @@ export class RubricGetService extends GetService {
         rubrics: {
           some: {
             rubric: {
-              id: idOrSlug,
+              ...parseIdOrSlug(idOrSlug),
             },
           },
         },
