@@ -8,5 +8,6 @@ export enum MenuType {
 export type GetMenusOptions = {
   include: string | undefined;
   searchByField: string;
+  pageSize:number;
   isDeleted?: string;
 };

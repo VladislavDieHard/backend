@@ -20,6 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { EntryDto } from './dto/entry.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { log } from "prisma-class-generator/dist/util";
 
 @ApiTags('Entry')
 @Controller('entry')

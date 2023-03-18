@@ -9,7 +9,7 @@ export class MenuService extends GetService {
   async getMenus(options: GetMenusOptions): Promise<Menu[]> {
     try {
       return this.includeFields(options.include)
-        .addPagination()
+        .addPagination(options.pageSize)
         .addIsDeleted(options.isDeleted)
         .addSearchByFieldValue(options.searchByField)
         .executeFindMany('Menu');

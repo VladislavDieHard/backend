@@ -12,19 +12,19 @@ export const db = mysql.createConnection({
 });
 
 export const normalize_db = mysql.createConnection({
-  host: 'localhost',
+  host: '192.168.0.17',
   port: '3306',
-  user: 'root',
-  password: 'example',
-  database: 'db_noub_old',
+  user: 'vuedb',
+  password: '_v__ue2DBm',
+  database: 'db_noub',
 });
 
 export const new_db = mysql.createConnection({
-  host: 'localhost',
+  host: '192.168.0.17',
   port: '3306',
-  user: 'root',
-  password: 'example',
-  database: 'db_noub',
+  user: 'vuedb',
+  password: '_v__ue2DBm',
+  database: 'db_noub_new',
 });
 
 normalize_db.connect();

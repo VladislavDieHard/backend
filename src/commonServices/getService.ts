@@ -8,6 +8,7 @@ import {
 import { parseSearch } from '../utils/parsers';
 import moment from 'moment';
 import { searchByFieldValue } from '../utils/searchByField';
+import { log } from "prisma-class-generator/dist/util";
 
 export class GetService {
   readonly prismaService: PrismaService;
@@ -40,11 +41,15 @@ export class GetService {
         .findFirst({
           where: {
             ...this.createWhereParams(),
+            isDeleted: undefined,
           },
           include: this.include,
         })
         .then((entry) => resolve(entry))
-        .catch((error) => reject(error));
+        .catch((error) => reject(error))
+        .finally(() => {
+          this.clearObject();
+        });
     });
   }
 
@@ -55,6 +60,7 @@ export class GetService {
           where: {
             ...parseIdOrSlug(idOrSlug),
             ...this.createWhereParams(),
+            isDeleted: undefined,
           },
           include: this.include,
         })
@@ -65,6 +71,9 @@ export class GetService {
         .catch((error) => {
           this.clearObject();
           reject(error);
+        })
+        .finally(() => {
+          this.clearObject();
         });
     });
   }
@@ -108,6 +117,9 @@ export class GetService {
         .catch((error) => {
           this.clearObject();
           reject(error);
+        })
+        .finally(() => {
+          this.clearObject();
         });
     });
   }
@@ -151,6 +163,9 @@ export class GetService {
         .catch((error) => {
           this.clearObject();
           reject(error);
+        })
+        .finally(() => {
+          this.clearObject();
         });
     });
   }
@@ -178,7 +193,13 @@ export class GetService {
   }
 
   addIsDeleted(isDeleted: string) {
-    this.isDeleted = isDeleted === 'true' ? undefined : false;
+    if ( isDeleted === 'true') {
+      this.isDeleted = undefined
+    } else if( isDeleted === undefined ) {
+      this.isDeleted = false
+    } else {
+      this.isDeleted = false
+    }
     return this;
   }
 
