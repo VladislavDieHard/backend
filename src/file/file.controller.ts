@@ -10,11 +10,13 @@ export class FileController extends FileService {
     @Query('pageSize') pageSize: number,
     @Query('page') page: number,
     @Query('searchByField') searchByField?: string,
+    @Query('orderBy') orderBy?: string,
   ) {
     return this.fileGetService.getFiles({
       pageSize,
       page,
       searchByField,
+      orderBy
     });
   }
 
