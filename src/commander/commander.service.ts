@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Command, ConsoleIO } from '@squareboat/nest-console';
 import { UsersService } from '../users/users.service';
 import bcrypt from 'bcrypt';
-import { migrate } from '../migrations/migrate';
-import { migrateEntriesRubrics } from 'src/migrations/migrateEntriesRubrics';
 
 @Injectable()
 export class CommandService {
@@ -35,20 +33,5 @@ export class CommandService {
       _cli.error(`User with name: ${user.username}, already exists!`);
     }
     return;
-  }
-
-  @Command('migrate', { desc: 'migration' })
-  async makeMigrations(_cli: ConsoleIO) {
-    const confirm = await _cli.confirm('Do you want migrate data?');
-    if (confirm) {
-      await migrate();
-    }
-  }
-
-  @Command('normalize:rubric-entries', { desc: 'normalize rubric-entries' })
-  async migrateRubricEntries(_cli: ConsoleIO) {
-    await migrateEntriesRubrics();
-
-    _cli.success('Data normalized');
   }
 }
