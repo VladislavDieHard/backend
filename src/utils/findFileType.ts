@@ -45,6 +45,15 @@ const objectTypes: ObjectTypesType = {
   [FileTypes.ARCHIVE]: archiveTypes,
 };
 
+export const officeType: { [key: string]: string } = {
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+    'application/docx',
+  'application/msword': 'application/doc',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+    'application/xlsx',
+};
+
+
 export function findFileType(mimeType: string) {
   if (mimeType === 'application/octet-stream') return 'exclude';
   const mime: string = mimeType.split('/').pop();

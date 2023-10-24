@@ -10,13 +10,14 @@ import moment from 'moment';
 import { v4 } from 'uuid';
 import { Client } from 'minio';
 import { findFileType } from '../utils';
-import { FileTypes } from '../utils/findFileType';
+import { FileTypes, officeType } from '../utils/findFileType';
 import { PrismaService } from '../prisma.service';
 import { File } from '@prisma/client';
 import { getConfig } from '../utils/getConfig';
 import { rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { Worker } from 'worker_threads';
+import slugify from 'slugify';
 
 @Injectable()
 export class UploadService implements OnModuleInit {
@@ -89,6 +90,8 @@ export class UploadService implements OnModuleInit {
       return existFile;
     }
 
+    file.mimetype = officeType[file.mimetype] || file.mimetype;
+
     const type = findFileType(file.mimetype);
     if (type === 'exclude') return null;
     if (type === FileTypes.UNSUPPORTED) {
@@ -104,7 +107,14 @@ export class UploadService implements OnModuleInit {
     );
     const metadata = {
       'Content-Type': file.mimetype || '',
-      'Original-Name': file.originalname,
+      'Original-Name': slugify(file.originalname, {
+        replacement: '-',
+        remove: /\.,?!\+=\*:;/g,
+        lower: true,
+        strict: false,
+        locale: 'ru',
+        trim: true,
+      }),
     };
 
     return this.uploadToMinio(file, path, metadata)
