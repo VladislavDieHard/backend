@@ -21,7 +21,7 @@ import slugify from 'slugify';
 
 @Injectable()
 export class UploadService implements OnModuleInit {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
   private config = getConfig();
   private minioClient: Client = new Client({
     endPoint: this.config['MINIO_ENDPOINT'],
@@ -78,7 +78,7 @@ export class UploadService implements OnModuleInit {
     });
   }
 
-  async upload(file, customDate?: Date) {
+  async upload(file, fileName?: any) {
     const hash = sha256(file.buffer);
     const existFile = await this.prismaService.file.findFirst({
       where: {
@@ -103,11 +103,11 @@ export class UploadService implements OnModuleInit {
       type,
       id,
       file.mimetype,
-      customDate || new Date(),
+      new Date(),
     );
     const metadata = {
       'Content-Type': file.mimetype || '',
-      'Original-Name': slugify(file.originalname, {
+      'Original-Name': fileName.body.filename || slugify(file.originalname, {
         replacement: '-',
         remove: /\.,?!\+=\*:;/g,
         lower: true,
@@ -121,11 +121,11 @@ export class UploadService implements OnModuleInit {
       .then(async () => {
         return await this.saveToDb({
           id: id,
-          originalName: file.originalname,
+          originalName: fileName.body.filename || file.originalname,
           mimeType: file.mimetype,
           path: `/${this.bucketName}/${path}`,
           preview: `/${this.bucketName}/${path}`,
-          createdAt: customDate || new Date(),
+          createdAt: new Date(),
           type: type,
           hash,
         });
