@@ -15,7 +15,7 @@ export class DepartmentUpdateService {
     return this.prismaService.department
       .update({
         where: {
-          ...parsedIdOrSlug,
+          ...(parsedIdOrSlug as undefined as any),
         },
         data: newDepartment,
       })

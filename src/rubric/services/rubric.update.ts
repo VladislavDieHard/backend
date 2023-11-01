@@ -12,7 +12,7 @@ export class RubricUpdateService {
 
     return this.prismaService.rubric
       .update({
-        where: parsedIdOrSlug,
+        where: parsedIdOrSlug as undefined as any,
         data: newRubric,
       })
       .then((rubric) => rubric)

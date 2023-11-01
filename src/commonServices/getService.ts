@@ -8,7 +8,6 @@ import {
 import { parseSearch } from '../utils/parsers';
 import moment from 'moment';
 import { searchByFieldValue } from '../utils/searchByField';
-import { log } from "prisma-class-generator/dist/util";
 
 export class GetService {
   readonly prismaService: PrismaService;
@@ -37,7 +36,7 @@ export class GetService {
 
   executeFindFirst(model) {
     return new Promise((resolve, reject) => {
-      this.prismaService[model]
+      (this.prismaService[model] as undefined as any)
         .findFirst({
           where: {
             ...this.createWhereParams(),
@@ -53,12 +52,12 @@ export class GetService {
     });
   }
 
-  async executeFindUnique(model, idOrSlug: string): Promise<any> {
+  async executeFindUnique(model, idOrSlug: string, isId?:boolean): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.prismaService[model]
+      (this.prismaService[model] as undefined as any)
         .findUnique({
           where: {
-            ...parseIdOrSlug(idOrSlug),
+            ...parseIdOrSlug(idOrSlug, isId),
             ...this.createWhereParams(),
             isDeleted: undefined,
           },
@@ -79,7 +78,7 @@ export class GetService {
   }
 
   async executeFindMany(model): Promise<any> {
-    const count = await this.prismaService[model].count({
+    const count = await (this.prismaService as undefined as any)[model].count({
       where: {
         ...this.createWhereParams(),
       },
@@ -93,7 +92,7 @@ export class GetService {
 
     const orderBy = this.orderBy;
     return new Promise((resolve, reject) => {
-      this.prismaService[model]
+      (this.prismaService[model] as undefined as any)
         .findMany({
           where: {
             ...this.createWhereParams(),
@@ -125,7 +124,7 @@ export class GetService {
   }
 
   async executeFindModelByAnother(modelOne, modelTwo, idOrSlug) {
-    const count = await this.prismaService[modelOne].count({
+    const count = await (this.prismaService as undefined as any)[modelOne].count({
       where: {
         ...this.createWhereParams(),
         [modelTwo.toLowerCase()]: parseIdOrSlug(idOrSlug),
@@ -138,7 +137,7 @@ export class GetService {
     });
     const orderBy = this.orderBy;
     return new Promise((resolve, reject) => {
-      this.prismaService[modelOne]
+      (this.prismaService[modelOne] as undefined as any)
         .findMany({
           where: {
             ...this.createWhereParams(),
@@ -193,12 +192,12 @@ export class GetService {
   }
 
   addIsDeleted(isDeleted: string) {
-    if ( isDeleted === 'true') {
-      this.isDeleted = undefined
-    } else if( isDeleted === undefined ) {
-      this.isDeleted = false
+    if (isDeleted === 'true') {
+      this.isDeleted = undefined;
+    } else if (isDeleted === undefined) {
+      this.isDeleted = false;
     } else {
-      this.isDeleted = false
+      this.isDeleted = false;
     }
     return this;
   }

@@ -15,7 +15,7 @@ export class EntryUpdateService {
 
     const entry = await this.prismaService.entry.findUnique({
       where: {
-        ...parsedIdOrSlug,
+        ...(parsedIdOrSlug as undefined as any),
       },
       include: {
         rubrics: true,
@@ -44,7 +44,7 @@ export class EntryUpdateService {
     return this.prismaService.entry
       .update({
         where: {
-          ...parsedIdOrSlug,
+          ...(parsedIdOrSlug as undefined as any),
         },
         data: {
           ...(newEntry as Entry),

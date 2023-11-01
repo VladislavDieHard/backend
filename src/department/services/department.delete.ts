@@ -12,7 +12,7 @@ export class DepartmentDeleteService {
     return this.prismaService.department
       .delete({
         where: {
-          ...parsedIdOrSlug,
+          ...(parsedIdOrSlug as undefined as any),
         },
       })
       .then((department) => {

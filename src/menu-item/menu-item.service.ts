@@ -50,7 +50,7 @@ export class MenuItemService extends GetService {
     try {
       return await this.prismaService.menuItem.update({
         where: {
-          ...parsedIdOrSlug,
+          ...(parsedIdOrSlug as undefined as any),
         },
         data: newMenuItem,
       });
@@ -64,7 +64,7 @@ export class MenuItemService extends GetService {
     try {
       return await this.prismaService.menuItem.delete({
         where: {
-          ...parsedIdOrSlug,
+          ...(parsedIdOrSlug as undefined as any),
         },
       });
     } catch (e) {

@@ -12,7 +12,7 @@ export class EntryDeleteService {
     return this.prismaService.entry
       .delete({
         where: {
-          ...parsedIdOrSlug,
+          ...(parsedIdOrSlug as undefined as any),
         },
       })
       .then((entry) => entry)

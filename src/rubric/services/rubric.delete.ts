@@ -11,7 +11,7 @@ export class RubricDeleteService {
 
     return this.prismaService.rubric
       .delete({
-        where: parsedIdOrSlug,
+        where: parsedIdOrSlug as undefined as any,
       })
       .then((rubric) => rubric)
       .catch((err) => {
