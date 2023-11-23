@@ -163,7 +163,6 @@ model File {
   MainSlider   MainSlider[]
 }
 
-
 view Games {
   id                String  @unique @db.VarChar(20)
   name              String? @db.VarChar(256)
@@ -181,6 +180,12 @@ view Games {
   place             String? @db.VarChar(512)
   comment           String? @db.VarChar(1024)
   status_desc       String  @db.VarChar(64)
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view Genre {
+  tag  String  @unique @default("") @db.VarChar(20)
+  desc String? @db.VarChar(32)
 }
 
 enum MenuType {

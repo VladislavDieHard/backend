@@ -9,8 +9,10 @@ export class GamesController {
   getGames(
     @Query('genres') genres?: string[],
     @Query('search') search?: string,
+    @Query('page') page?: number,
+    @Query('pageSize') pageSize?: number,
   ) {
-    return this.gameService.getGames(genres, search);
+    return this.gameService.getGames(genres, search, { page, pageSize });
   }
 
   @Get('/:id')
