@@ -40,6 +40,10 @@ export class GamesService {
     });
   }
 
+  async getRandomGames() {
+    return await this.prismaService.gamesRandom.findMany();
+  }
+
   private createParams(genres?: string[], search?: string) {
     return {
       name: {

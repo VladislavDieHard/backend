@@ -188,6 +188,13 @@ view Genre {
   desc String? @db.VarChar(32)
 }
 
+view GamesRandom {
+  my_order   Float   @default(0)
+  id         String  @unique @db.VarChar(20)
+  name       String? @db.VarChar(256)
+  cover_file String? @db.VarChar(32)
+}
+
 enum MenuType {
   COMMON
   ABOUT

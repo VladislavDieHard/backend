@@ -15,6 +15,11 @@ export class GamesController {
     return this.gameService.getGames(genres, search, { page, pageSize });
   }
 
+  @Get('/random')
+  getGamesRandom() {
+    return this.gameService.getRandomGames();
+  }
+
   @Get('/:id')
   getGame(@Param('id') id: string) {
     return this.gameService.getGame(id);
