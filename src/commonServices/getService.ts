@@ -52,7 +52,11 @@ export class GetService {
     });
   }
 
-  async executeFindUnique(model, idOrSlug: string, isId?:boolean): Promise<any> {
+  async executeFindUnique(
+    model,
+    idOrSlug: string,
+    isId?: boolean,
+  ): Promise<any> {
     return new Promise((resolve, reject) => {
       (this.prismaService[model] as undefined as any)
         .findUnique({
@@ -124,7 +128,9 @@ export class GetService {
   }
 
   async executeFindModelByAnother(modelOne, modelTwo, idOrSlug) {
-    const count = await (this.prismaService as undefined as any)[modelOne].count({
+    const count = await (this.prismaService as undefined as any)[
+      modelOne
+    ].count({
       where: {
         ...this.createWhereParams(),
         [modelTwo.toLowerCase()]: parseIdOrSlug(idOrSlug),

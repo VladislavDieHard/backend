@@ -2,18 +2,31 @@ import { validate } from 'uuid';
 
 export function parseIncludeArrString(arrString) {
   if (arrString == undefined) return undefined;
+  if (arrString === 'menuItems') {
+    const result = {};
+    arrString.split(',').forEach((item) => {
+      result[item] = {
+        orderBy: [{ position: 'asc' }],
+      };
+    });
+    return result;
+  }
   const result = {};
   arrString.split(',').forEach((item) => {
     result[item] = true;
   });
+  console.log(result);
   return result;
 }
 
-export function parseIdOrSlug(idOrSlug: string, isId?: boolean): { [key: string]: string } {
+export function parseIdOrSlug(
+  idOrSlug: string,
+  isId?: boolean,
+): { [key: string]: string } {
   if (isId || validate(idOrSlug)) {
-    return {id: idOrSlug}
+    return { id: idOrSlug };
   } else {
-    return { slug:  idOrSlug}
+    return { slug: idOrSlug };
   }
 }
 

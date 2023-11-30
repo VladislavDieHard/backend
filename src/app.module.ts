@@ -18,6 +18,7 @@ import { CreateService } from './commonServices/createService';
 import { DocumentModule } from './document/document.module';
 import { GamesModule } from './games/games.module';
 import { GenreModule } from './genre/genre.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { GenreModule } from './genre/genre.module';
     DocumentModule,
     GamesModule,
     GenreModule,
+    NotificationModule,
   ],
   providers: [PrismaService, CommandService, CreateService],
   controllers: [AppController],

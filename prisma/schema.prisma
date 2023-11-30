@@ -67,6 +67,14 @@ model RubricsOnEntries {
   @@index([rubricId], map: "RubricsOnEntries_rubricId_fkey")
 }
 
+model Notification {
+  id        String   @id @default(uuid())
+  type      String
+  desc      String
+  startTime DateTime 
+  endTime   DateTime
+}
+
 model Document {
   id         String    @id @default(uuid())
   oldId      Int?      @unique
@@ -127,6 +135,7 @@ model MenuItem {
   link         String?
   document     Document?
   menu         Menu         @relation(fields: [menuId], references: [id], onDelete: NoAction)
+  position     Int?
 
   @@index([menuId], map: "MenuItem_menuId_fkey")
 }
