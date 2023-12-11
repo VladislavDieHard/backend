@@ -15,7 +15,6 @@ export function parseIncludeArrString(arrString) {
   arrString.split(',').forEach((item) => {
     result[item] = true;
   });
-  console.log(result);
   return result;
 }
 

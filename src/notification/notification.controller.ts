@@ -22,7 +22,6 @@ export class NotificationController {
 
   @Get('/all')
   getNotifications() {
-    console.log(123);
     return this.notificationService.getNotifications();
   }
 

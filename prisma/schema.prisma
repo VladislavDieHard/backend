@@ -71,7 +71,7 @@ model Notification {
   id        String   @id @default(uuid())
   type      String
   desc      String
-  startTime DateTime 
+  startTime DateTime
   endTime   DateTime
 }
 
@@ -110,6 +110,7 @@ model Rubric {
   id        String             @id @default(uuid())
   oldId     Int?               @unique
   title     String             @unique @db.VarChar(500)
+  desc      String?            @db.LongText
   slug      String             @unique @db.VarChar(250)
   isDeleted Boolean            @default(false)
   entries   RubricsOnEntries[]
@@ -151,6 +152,7 @@ model MainSlider {
   entryId   String?  @unique
   fileId    String?
   url       String?
+  position  Int?
   entry     Entry?   @relation(fields: [entryId], references: [id])
   image     File?    @relation(fields: [fileId], references: [id])
 
