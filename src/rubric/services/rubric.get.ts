@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { GetService } from '../../commonServices/getService';
 import {
   createOrderBy,
-  createPagination, parseIdOrSlug,
+  createPagination,
+  parseIdOrSlug,
   parseIncludeArrString,
 } from '../../utils';
 import { searchByFieldValue } from '../../utils/searchByField';
@@ -37,6 +38,7 @@ export class RubricGetService extends GetService {
   }) {
     const searchParams = {
       where: {
+        pinned: false,
         rubrics: {
           some: {
             rubric: {

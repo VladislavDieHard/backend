@@ -14,6 +14,7 @@ export class GetService {
   include: {
     [key: string]: boolean;
   };
+  pinned: object;
   search: { OR: Array<{ [key: string]: { contains: string } }> } | undefined;
   orderBy: object | undefined;
   isDeleted: boolean | undefined;
@@ -49,6 +50,16 @@ export class GetService {
         .finally(() => {
           this.clearObject();
         });
+    });
+  }
+
+  async executeFindPinned(): Promise<any> {
+    return this.prismaService.entry.findFirst({
+      where: { pinned: true },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: { preview: true },
     });
   }
 
@@ -183,6 +194,11 @@ export class GetService {
     } else {
       this.include = undefined;
     }
+    return this;
+  }
+
+  addNotPinned() {
+    this.pinned = { where: { pinned: false } };
     return this;
   }
 

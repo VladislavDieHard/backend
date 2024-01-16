@@ -25,6 +25,7 @@ export class EntryGetService extends GetService {
       .includeFields(include)
       .addPagination(pageSize, page)
       .addOrderBy(orderBy)
+      .addNotPinned()
       .executeFindMany('Entry');
   }
 
@@ -33,6 +34,10 @@ export class EntryGetService extends GetService {
       'Entry',
       idOrSlug,
     );
+  }
+
+  async getPinnedEntry(): Promise<Entry> {
+    return this.executeFindPinned()
   }
 }
 

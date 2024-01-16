@@ -3,7 +3,7 @@ version: '3.8'
 services:
   web:
     build: .
-    image: vladdamage/infomania_backend:v2
+    image: nixel666/infomania_backend:v2
     container_name: web
     restart: always
     ports:

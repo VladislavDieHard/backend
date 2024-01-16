@@ -20,7 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { EntryDto } from './dto/entry.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { log } from "prisma-class-generator/dist/util";
+import { log } from 'prisma-class-generator/dist/util';
 
 @ApiTags('Entry')
 @Controller('entry')
@@ -99,6 +99,11 @@ export class EntryController extends EntryService {
     description: 'Укажите модели для включения полей в ответ',
     example: 'department,rubric',
   })
+  @Get('/pinned')
+  getPinnedEntry() {
+    return this.entryGetService.getPinnedEntry();
+  }
+
   @Get(':idOrSlug')
   getEntry(
     @Param('idOrSlug') idOrSlug: number | string,

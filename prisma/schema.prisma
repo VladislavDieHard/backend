@@ -46,11 +46,13 @@ model Entry {
   published    Boolean            @default(false)
   isDeleted    Boolean            @default(false)
   departmentId String
+  pinned       Boolean            @default(false)
   affiche      Affiche?
   department   Department         @relation(fields: [departmentId], references: [id], onDelete: NoAction)
   preview      File?              @relation(fields: [fileId], references: [id])
   mainSlider   MainSlider?
   rubrics      RubricsOnEntries[]
+  Notification Notification[]
 
   @@index([departmentId], map: "Entry_departmentId_fkey")
   @@index([fileId], map: "Entry_fileId_fkey")
@@ -73,6 +75,8 @@ model Notification {
   desc      String
   startTime DateTime
   endTime   DateTime
+  entryId   String?
+  entry     Entry?   @relation(fields: [entryId], references: [id])
 }
 
 model Document {
