@@ -15,7 +15,7 @@ const config = getConfig();
     PassportModule,
     JwtModule.register({
       secret: config['JWT_SECRET'],
-      signOptions: { expiresIn: '2h' },
+      signOptions: { expiresIn: '12h' },
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],

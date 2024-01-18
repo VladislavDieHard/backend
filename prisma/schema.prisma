@@ -176,6 +176,17 @@ model File {
   Document     Document[]
   Entry        Entry[]
   MainSlider   MainSlider[]
+  Book         Book[]
+}
+
+model Book {
+  id      String  @id @default(uuid())
+  title   String
+  desc    String
+  content String
+  fileId  String
+  createdAt    DateTime     @default(now())
+  preview File   @relation(fields: [fileId], references: [id])
 }
 
 view Games {

@@ -19,6 +19,7 @@ import { DocumentModule } from './document/document.module';
 import { GamesModule } from './games/games.module';
 import { GenreModule } from './genre/genre.module';
 import { NotificationModule } from './notification/notification.module';
+import { BookModule } from './book/book.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { NotificationModule } from './notification/notification.module';
     GamesModule,
     GenreModule,
     NotificationModule,
+    BookModule,
   ],
   providers: [PrismaService, CommandService, CreateService],
   controllers: [AppController],

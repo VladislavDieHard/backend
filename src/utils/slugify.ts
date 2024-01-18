@@ -13,7 +13,7 @@ export function createSlug(
   } else {
     resultedSlug = slugify(title, {
       replacement: '-',
-      remove: /\.,?!\+=\*:;/g,
+      remove: /[^\w\s]/gi,
       lower: true,
       strict: false,
       locale: 'ru',

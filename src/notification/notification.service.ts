@@ -22,7 +22,7 @@ export class NotificationService {
   async getNotificationById(id: string) {
     const data = await this.prismaService.notification.findFirst({
       where: {
-        id: id,
+        id: id, 
       },
     });
     return data;
