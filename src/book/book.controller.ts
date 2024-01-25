@@ -1,37 +1,40 @@
-import { Book } from '@prisma/client';
+import { BookQuery } from './query.type';
+import { ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { BookService } from './book.service';
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { CreateBookDto } from './dto/create-book.dto';
+import { UpdateBookDto } from './dto/update-book.dto';
 
+@ApiTags('Book')
 @Controller('book')
 export class BookController {
   constructor(private readonly bookService: BookService) {}
 
-  @Get()
-  getBooks(
-    @Query('pageSize') pageSize?: number,
-    @Query('orderBy') orderBy?: string,
-    @Query('page') page?: number,
-    @Query('include') include?: string,
-  ) {
-    return this.bookService.getBooks({
-      pageSize,
-      orderBy,
-      page,
-      include,
-    });
-  }
-  @Get(':id')
-  getBookById(@Param('id') id: string) {
-    return this.bookService.getOneBook(id);
-  }
-
   @Post()
-  createBook(@Body() newBook: Book) {
-    return this.bookService.createBook(newBook);
+  create(@Body() createBookDto: CreateBookDto) {
+    return this.bookService.create(createBookDto);
   }
 
-  @Put(':id')
-  updateBook(@Param('id') id: string, @Body() newBook: Book) {
-    return this.bookService.updateBook(newBook, id);
+  @Get()
+  findAll(@Query() query: BookQuery) {
+    return this.bookService.findAll(query);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.bookService.findOne(id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
+    return this.bookService.update(id, updateBookDto);
   }
 }

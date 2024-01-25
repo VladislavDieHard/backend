@@ -1,30 +1,18 @@
-import { GetBookOptions } from './book.type';
-import { GetService } from './../commonServices/getService';
+import { BookQuery } from './query.type';
 import { v4 } from 'uuid';
-import { BookCreateDto } from './dto/book-create.dto';
-import { PrismaService } from 'src/prisma.service';
+import { GetService } from './../commonServices/getService';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { Book } from '@prisma/client';
+import { CreateBookDto } from './dto/create-book.dto';
+import { UpdateBookDto } from './dto/update-book.dto';
 
 @Injectable()
 export class BookService extends GetService {
-  async getBooks(options: GetBookOptions): Promise<Book[]> {
-    return this.addPagination(options.pageSize, options.page)
-      .includeFields(options.include)
-      .addOrderBy(options.orderBy)
-      .executeFindMany('Book');
-  }
-
-  async getOneBook(id: string): Promise<Book> {
-    return this.executeFindUnique('Book', id);
-  }
-
-  async createBook(newBook: any) {
+  create(createBookDto: CreateBookDto) {
     try {
       return this.prismaService.book.create({
         data: {
-          ...newBook,
           id: v4(),
+          ...createBookDto,
         },
       });
     } catch {
@@ -32,13 +20,31 @@ export class BookService extends GetService {
     }
   }
 
-  async updateBook(book: Book, id: string) {
+  findAll(options: BookQuery) {
+    return this.includeFields(options.include)
+      .addPagination(options.pageSize, options.page)
+      .addOrderBy(options.orderBy)
+      .executeFindMany('Book');
+  }
+
+  findOne(id: string) {
+    return this.prismaService.book.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        preview: true,
+      },
+    });
+  }
+
+  update(id: string, updateBookDto: UpdateBookDto) {
     return this.prismaService.book.update({
       where: {
         id: id,
       },
       data: {
-        ...book,
+        ...updateBookDto,
       },
     });
   }
