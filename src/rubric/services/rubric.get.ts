@@ -36,6 +36,8 @@ export class RubricGetService extends GetService {
     toDate,
     idOrSlug,
   }) {
+    if (!toDate) toDate = new Date();
+
     const searchParams = {
       where: {
         pinned: false,

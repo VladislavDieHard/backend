@@ -15,6 +15,7 @@ export class EntryGetService extends GetService {
     orderBy,
     isDeleted,
   }): Promise<GetEntriesType> {
+    if (!toDate) toDate = new Date();
     return this.addSearch(['title', 'content'], search)
       .addRangeDateSearch('publishedAt', {
         fromDate,
@@ -37,7 +38,7 @@ export class EntryGetService extends GetService {
   }
 
   async getPinnedEntry(): Promise<Entry> {
-    return this.executeFindPinned()
+    return this.executeFindPinned();
   }
 }
 
