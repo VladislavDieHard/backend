@@ -12,7 +12,7 @@ export class AfficheDeleteService {
     return this.prismaService.affiche
       .delete({
         where: {
-          ...parsedIdOrSlug,
+          ...(parsedIdOrSlug as undefined as any),
         },
       })
       .then((affiche) => affiche)

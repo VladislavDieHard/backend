@@ -58,7 +58,7 @@ export class MainSliderService extends GetService {
     try {
       return await this.prismaService.mainSlider.update({
         where: {
-          ...parsedIdOrSlug,
+          ...(parsedIdOrSlug as undefined as any),
         },
         data: mainSlider,
       });
@@ -72,7 +72,7 @@ export class MainSliderService extends GetService {
     try {
       return await this.prismaService.mainSlider.delete({
         where: {
-          ...parsedIdOrSlug,
+          ...(parsedIdOrSlug as undefined as any),
         },
       });
     } catch (e) {

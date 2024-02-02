@@ -1,18 +1,15 @@
-export function createPagination(options) {
-  const page = options.page ? parseInt(options.page) : 1;
-  const pageSize = options.pageSize ? parseInt(options.pageSize) : 10;
-  const prevPageSize = Math.floor(options.count / pageSize);
-
-  let pages;
-  if (options.count % pageSize) {
-    pages = options.count > pageSize ? prevPageSize + 1 : 1;
-  } else {
-    pages = options.count > pageSize ? prevPageSize : 1;
-  }
+export function createPagination(
+  count: number,
+  page?: number,
+  pageSize?: number,
+) {
+  const result = {};
+  result[page] = page ? page : 1;
+  result[pageSize] = pageSize ? pageSize : 10;
 
   return {
-    pageSize: pageSize,
-    pages: pages,
     page: page,
+    total: count,
+    pageSize: pageSize,
   };
 }

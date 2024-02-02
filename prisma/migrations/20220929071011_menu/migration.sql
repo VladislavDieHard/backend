@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Menu` MODIFY `menuType` ENUM('COMMON', 'ABOUT', 'COLLEAGUES', 'DOCUMENTS') NULL;

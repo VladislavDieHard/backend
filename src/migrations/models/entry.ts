@@ -4,12 +4,13 @@ import { count, select } from '../select';
 import { saveImage } from '../saveImage';
 import { parseHtml } from '../parseHtml';
 import { getConfig } from '../../utils/getConfig';
+import { database } from '../db';
 
 const prismaService = new PrismaService();
 const config = getConfig();
 
 export async function entry() {
-  const entriesCount = await count('news_entry');
+  const entriesCount = await count(database, 'news_entry');
   const limit = 50;
 
   const departments = await prismaService.department.findMany({
@@ -51,6 +52,7 @@ export async function entry() {
 
   for (let i = 0; i <= entriesCount; ) {
     const entries: OldEntry[] = await select(
+      database,
       `SELECT * FROM news_entry WHERE id NOT IN (${documentIds}) LIMIT ${limit} OFFSET ${i}`,
     );
 
@@ -82,9 +84,11 @@ async function executeEntry(
   actualRubric,
 ) {
   const departmentEntryId = await select(
+    database,
     `SELECT * FROM news_entry_department WHERE entry_id = ${entry.id}`,
   );
   const rubricEntryId = await select(
+    database,
     `SELECT * FROM news_entry_rubric WHERE entry_id = ${entry.id}`,
   );
 
@@ -150,7 +154,7 @@ async function executeEntry(
           updatedAt: new Date(entry.date_of_edit),
           publishedAt: publishedDate,
           departmentId: newDepartmentId.id,
-          rubricId: newRubricId ? newRubricId?.id : actualRubric.id,
+          rubrics: newRubricId ? newRubricId : actualRubric,
           fileId: preview?.id,
         },
       })

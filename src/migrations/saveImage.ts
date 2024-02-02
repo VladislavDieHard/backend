@@ -25,7 +25,6 @@ export async function saveImage(
         buffer,
         originalname: 'noname',
       },
-      customDate,
     );
   } else {
     const url = encodeURI(imageUrl);
@@ -43,7 +42,6 @@ export async function saveImage(
             buffer,
             originalname: createSlug(imageUrl, undefined, false),
           },
-          customDate,
         );
       })
       .catch((err) => {

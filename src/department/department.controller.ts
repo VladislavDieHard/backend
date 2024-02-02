@@ -82,6 +82,7 @@ export class DepartmentController extends DepartmentService {
   @Get(':idOrSlug/entries')
   getDepartmentEntries(
     @Param('idOrSlug') idOrSlug: string,
+    @Query('isDeleted') isDeleted: string,
     @Param('model') model: string,
     @Query('fromDate') fromDate?: Date,
     @Query('toDate') toDate?: Date,
@@ -103,6 +104,7 @@ export class DepartmentController extends DepartmentService {
       page,
       include,
       searchByField,
+      isDeleted,
     });
   }
 

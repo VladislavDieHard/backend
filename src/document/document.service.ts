@@ -59,7 +59,7 @@ export class DocumentService extends GetService {
     const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
     try {
       return await this.prismaService.document.update({
-        where: parsedIdOrSlug,
+        where: parsedIdOrSlug as undefined as any,
         data: newDocument,
       });
     } catch {
@@ -71,7 +71,7 @@ export class DocumentService extends GetService {
     const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
     try {
       return await this.prismaService.document.delete({
-        where: parsedIdOrSlug,
+        where: parsedIdOrSlug as undefined as any,
       });
     } catch {
       throw new HttpException('Error with data', HttpStatus.BAD_REQUEST);

@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["views"]
 }
 
 generator prismaClassGenerator {
@@ -31,43 +32,64 @@ model Department {
 }
 
 model Entry {
-  id           String      @id @default(uuid())
-  oldId        Int?        @unique
+  id           String             @id @default(uuid())
+  oldId        Int?               @unique
   fileId       String?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  publishedAt  DateTime    @default(now())
-  title        String      @db.VarChar(200)
-  desc         String?     @db.LongText
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  publishedAt  DateTime           @default(now())
+  title        String             @db.VarChar(200)
+  desc         String?            @db.LongText
   /// ckeditor
-  content      String?     @db.LongText
-  slug         String      @unique @db.VarChar(250)
-  published    Boolean     @default(false)
-  isDeleted    Boolean     @default(false)
+  content      String?            @db.LongText
+  slug         String             @unique @db.VarChar(250)
+  published    Boolean            @default(false)
+  isDeleted    Boolean            @default(false)
   departmentId String
-  rubricId     String?
-  department   Department  @relation(fields: [departmentId], references: [id])
-  preview      File?       @relation(fields: [fileId], references: [id])
-  rubric       Rubric?     @relation(fields: [rubricId], references: [id])
+  pinned       Boolean            @default(false)
   affiche      Affiche?
+  department   Department         @relation(fields: [departmentId], references: [id], onDelete: NoAction)
+  preview      File?              @relation(fields: [fileId], references: [id])
   mainSlider   MainSlider?
+  rubrics      RubricsOnEntries[]
+  Notification Notification[]
 
   @@index([departmentId], map: "Entry_departmentId_fkey")
   @@index([fileId], map: "Entry_fileId_fkey")
-  @@index([rubricId], map: "Entry_rubricId_fkey")
+}
+
+model RubricsOnEntries {
+  entryId    String
+  rubricId   String
+  assignedAt DateTime @default(now())
+  entry      Entry    @relation(fields: [entryId], references: [id], onDelete: NoAction)
+  rubric     Rubric   @relation(fields: [rubricId], references: [id], onDelete: NoAction)
+
+  @@id([entryId, rubricId])
+  @@index([rubricId], map: "RubricsOnEntries_rubricId_fkey")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  type      String
+  desc      String
+  startTime DateTime
+  endTime   DateTime
+  entryId   String?
+  entry     Entry?   @relation(fields: [entryId], references: [id])
 }
 
 model Document {
-  id         String   @id @default(uuid())
-  oldId      Int?     @unique
-  title      String   @db.VarChar(200)
+  id         String    @id @default(uuid())
+  oldId      Int?      @unique
+  title      String    @db.VarChar(200)
   /// ckeditor
-  content    String   @db.LongText
-  isDeleted  Boolean  @default(false)
-  menuItemId String   @unique
+  content    String    @db.LongText
+  isDeleted  Boolean   @default(false)
+  menuItemId String?   @unique
   fileId     String?
-  preview    File?    @relation(fields: [fileId], references: [id])
-  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  preview    File?     @relation(fields: [fileId], references: [id])
+  menuItem   MenuItem? @relation(fields: [menuItemId], references: [id])
 
   @@index([fileId], map: "Document_fileId_fkey")
 }
@@ -89,12 +111,13 @@ model Affiche {
 }
 
 model Rubric {
-  id        String  @id @default(uuid())
-  oldId     Int?    @unique
-  title     String  @unique @db.VarChar(500)
-  slug      String  @unique @db.VarChar(250)
-  isDeleted Boolean @default(false)
-  entries   Entry[]
+  id        String             @id @default(uuid())
+  oldId     Int?               @unique
+  title     String             @unique @db.VarChar(500)
+  desc      String?            @db.LongText
+  slug      String             @unique @db.VarChar(250)
+  isDeleted Boolean            @default(false)
+  entries   RubricsOnEntries[]
 }
 
 model Menu {
@@ -115,8 +138,9 @@ model MenuItem {
   isDeleted    Boolean      @default(false)
   menuItemType MenuItemType
   link         String?
-  menu         Menu         @relation(fields: [menuId], references: [id])
   document     Document?
+  menu         Menu         @relation(fields: [menuId], references: [id], onDelete: NoAction)
+  position     Int?
 
   @@index([menuId], map: "MenuItem_menuId_fkey")
 }
@@ -129,9 +153,11 @@ model MainSlider {
   desc      String   @db.VarChar(200)
   createdAt DateTime @default(now())
   isDeleted Boolean  @default(false)
-  entryId   String   @unique
+  entryId   String?  @unique
   fileId    String?
-  entry     Entry    @relation(fields: [entryId], references: [id])
+  url       String?
+  position  Int?
+  entry     Entry?   @relation(fields: [entryId], references: [id])
   image     File?    @relation(fields: [fileId], references: [id])
 
   @@index([fileId], map: "MainSlider_fileId_fkey")
@@ -150,6 +176,49 @@ model File {
   Document     Document[]
   Entry        Entry[]
   MainSlider   MainSlider[]
+  Book         Book[]
+}
+
+model Book {
+  id      String  @id @default(uuid())
+  title   String
+  desc    String
+  content String
+  fileId  String
+  createdAt    DateTime     @default(now())
+  preview File   @relation(fields: [fileId], references: [id])
+}
+
+view Games {
+  id                String  @unique @db.VarChar(20)
+  name              String? @db.VarChar(256)
+  player_min        Int?
+  player_max        Int?
+  player_age        Int?
+  short_description String? @db.VarChar(512)
+  full_description  String? @db.VarChar(4192)
+  cover_file        String? @db.VarChar(32)
+  rules_file        String? @db.VarChar(32)
+  genres            String? @db.VarChar(128)
+  game_duration     String? @db.VarChar(64)
+  game_year         String? @db.VarChar(32)
+  status            Int?    @default(0)
+  place             String? @db.VarChar(512)
+  comment           String? @db.VarChar(1024)
+  status_desc       String  @db.VarChar(64)
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view Genre {
+  tag  String  @unique @default("") @db.VarChar(20)
+  desc String? @db.VarChar(32)
+}
+
+view GamesRandom {
+  my_order   Float   @default(0)
+  id         String  @unique @db.VarChar(20)
+  name       String? @db.VarChar(256)
+  cover_file String? @db.VarChar(32)
 }
 
 enum MenuType {

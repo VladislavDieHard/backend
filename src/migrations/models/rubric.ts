@@ -1,11 +1,15 @@
 import { PrismaService } from '../../prisma.service';
 import { select } from '../select';
 import { v4 } from 'uuid';
+import { database } from '../db';
 
 const prismaService = new PrismaService();
 
 export async function rubric() {
-  const rubrics: RubricOld[] = await select(`SELECT * FROM \`news_rubric\``);
+  const rubrics: RubricOld[] = await select(
+    database,
+    `SELECT * FROM \`news_rubric\``,
+  );
   const existRubrics = await prismaService.rubric.findMany({});
   const rubricIds = existRubrics.map((rubric) => rubric.oldId);
 

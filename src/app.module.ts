@@ -16,6 +16,10 @@ import { ConsoleModule } from '@squareboat/nest-console';
 import { CommandService } from './commander/commander.service';
 import { CreateService } from './commonServices/createService';
 import { DocumentModule } from './document/document.module';
+import { GamesModule } from './games/games.module';
+import { GenreModule } from './genre/genre.module';
+import { NotificationModule } from './notification/notification.module';
+import { BookModule } from './book/book.module';
 
 @Module({
   imports: [
@@ -32,6 +36,10 @@ import { DocumentModule } from './document/document.module';
     UsersModule,
     ConsoleModule,
     DocumentModule,
+    GamesModule,
+    GenreModule,
+    NotificationModule,
+    BookModule,
   ],
   providers: [PrismaService, CommandService, CreateService],
   controllers: [AppController],

@@ -2,6 +2,15 @@ import { validate } from 'uuid';
 
 export function parseIncludeArrString(arrString) {
   if (arrString == undefined) return undefined;
+  if (arrString === 'menuItems') {
+    const result = {};
+    arrString.split(',').forEach((item) => {
+      result[item] = {
+        orderBy: [{ position: 'asc' }],
+      };
+    });
+    return result;
+  }
   const result = {};
   arrString.split(',').forEach((item) => {
     result[item] = true;
@@ -9,11 +18,15 @@ export function parseIncludeArrString(arrString) {
   return result;
 }
 
-export function parseIdOrSlug(idOrSlug: string): { [key: string]: string } {
-  return {
-    id: validate(idOrSlug) ? idOrSlug : undefined,
-    slug: !validate(idOrSlug) ? idOrSlug : undefined,
-  };
+export function parseIdOrSlug(
+  idOrSlug: string,
+  isId?: boolean,
+): { [key: string]: string } {
+  if (isId || validate(idOrSlug)) {
+    return { id: idOrSlug };
+  } else {
+    return { slug: idOrSlug };
+  }
 }
 
 export function parseSearch(fields: string[], searchString: string) {

@@ -1,5 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { GetService } from '../../commonServices/getService';
+import {
+  createOrderBy,
+  createPagination,
+  parseIdOrSlug,
+  parseIncludeArrString,
+} from '../../utils';
+import { searchByFieldValue } from '../../utils/searchByField';
 
 @Injectable()
 export class RubricGetService extends GetService {
@@ -17,16 +24,68 @@ export class RubricGetService extends GetService {
     );
   }
 
-  async getEntriesByRubric(options) {
-    return this.addSearch(['title'], options.search)
-      .includeFields(options.include)
-      .addPagination(options.pageSize, options.page)
-      .addOrderBy(options.orderBy)
-      .addSearchByFieldValue(options.searchByField)
-      .addRangeDateSearch('publishedAt', {
-        fromDate: options.fromDate,
-        toDate: options.toDate,
-      })
-      .executeFindModelByAnother('Entry', 'Rubric', options.idOrSlug);
+  async getEntriesByRubric({
+    search,
+    isDeleted,
+    include,
+    pageSize,
+    page,
+    orderBy,
+    searchByField,
+    fromDate,
+    toDate,
+    idOrSlug,
+  }) {
+    if (!toDate) toDate = new Date();
+
+    const searchParams = {
+      where: {
+        pinned: false,
+        rubrics: {
+          some: {
+            rubric: {
+              ...parseIdOrSlug(idOrSlug),
+            },
+          },
+        },
+        publishedAt: {
+          gte: fromDate,
+          lte: toDate,
+        },
+        ...searchByFieldValue(searchByField),
+        isDeleted: isDeleted === 'true' ? undefined : false,
+        title: search,
+      },
+    };
+
+    return new Promise(async (res, rej) => {
+      const count = await this.prismaService.entry.count({ ...searchParams });
+
+      const pagination = createPagination(
+        count,
+        this.pagination?.page,
+        this.pagination?.pageSize,
+      );
+
+      this.prismaService.entry
+        .findMany({
+          ...searchParams,
+          orderBy: createOrderBy(orderBy),
+          include: parseIncludeArrString(include),
+          take: pagination?.pageSize || undefined,
+          skip: (pagination?.page - 1) * pagination?.pageSize || 0,
+        })
+        .then((data) =>
+          res({
+            data: data,
+            meta: {
+              page: pagination.page,
+              total: pagination.total,
+              pageSize: pagination.pageSize || 10,
+            },
+          }),
+        )
+        .catch((err) => rej(err));
+    });
   }
 }

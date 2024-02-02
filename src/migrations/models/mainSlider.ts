@@ -3,12 +3,14 @@ import { select } from '../select';
 import { v4 } from 'uuid';
 import { saveImage } from '../saveImage';
 import { getConfig } from '../../utils/getConfig';
+import { database } from '../db';
 
 const prismaService = new PrismaService();
 const config = getConfig();
 
 export async function mainSlider() {
   const mainSliders = await select(
+    database,
     `SELECT * FROM main_slider WHERE is_deleted != '1'`,
   );
   const existMainSlider = await prismaService.mainSlider.findMany({});

@@ -17,10 +17,8 @@ export const imageTypes = [
 ];
 
 const docTypes = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'rtf'];
-
 const archiveTypes = ['rar', 'zip', '7z'];
 
-const browserTypes = ['js', 'html', 'css'];
 
 enum FileTypesType {
   IMAGE = 'IMAGE',
@@ -43,6 +41,12 @@ const objectTypes: ObjectTypesType = {
   [FileTypes.IMAGE]: imageTypes,
   [FileTypes.DOCUMENT]: docTypes,
   [FileTypes.ARCHIVE]: archiveTypes,
+};
+
+export const officeType: { [key: string]: string } = {
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'application/docx',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'application/xlsx',
+  'application/msword': 'application/doc',
 };
 
 export function findFileType(mimeType: string) {

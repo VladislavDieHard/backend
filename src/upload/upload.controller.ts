@@ -1,9 +1,11 @@
+import { log } from 'prisma-class-generator/dist/util';
 import {
   Controller,
   HttpException,
   HttpStatus,
   Post,
   Query,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -16,13 +18,13 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('Upload')
 @Controller('upload')
 export class UploadController {
-  constructor(private uploadService: UploadService) {}
+  constructor(private uploadService: UploadService) { }
 
   @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
-    return this.uploadService.upload(file);
+  uploadFile(@Req() request: Request, @UploadedFile() file: Express.Multer.File) {
+    return this.uploadService.upload(file, request);
   }
 
   @UseGuards(JwtAuthGuard)

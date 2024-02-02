@@ -30,10 +30,12 @@ export class DepartmentGetService extends GetService {
       .addPagination(options.pageSize, options.page)
       .addOrderBy(options.orderBy)
       .addSearchByFieldValue(options.searchByField)
+      .addIsDeleted(options.isDeleted)
       .addRangeDateSearch('publishedAt', {
         fromDate: options.fromDate,
         toDate: options.toDate,
       })
+
       .executeFindModelByAnother('Entry', 'Department', options.idOrSlug);
   }
 }

@@ -10,17 +10,18 @@ import moment from 'moment';
 import { v4 } from 'uuid';
 import { Client } from 'minio';
 import { findFileType } from '../utils';
-import { FileTypes } from '../utils/findFileType';
+import { FileTypes, officeType } from '../utils/findFileType';
 import { PrismaService } from '../prisma.service';
 import { File } from '@prisma/client';
 import { getConfig } from '../utils/getConfig';
 import { rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { Worker } from 'worker_threads';
+import slugify from 'slugify';
 
 @Injectable()
 export class UploadService implements OnModuleInit {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
   private config = getConfig();
   private minioClient: Client = new Client({
     endPoint: this.config['MINIO_ENDPOINT'],
@@ -77,7 +78,7 @@ export class UploadService implements OnModuleInit {
     });
   }
 
-  async upload(file, customDate?: Date) {
+  async upload(file, fileName?: any) {
     const hash = sha256(file.buffer);
     const existFile = await this.prismaService.file.findFirst({
       where: {
@@ -88,6 +89,8 @@ export class UploadService implements OnModuleInit {
     if (existFile) {
       return existFile;
     }
+
+    file.mimetype = officeType[file.mimetype] || file.mimetype;
 
     const type = findFileType(file.mimetype);
     if (type === 'exclude') return null;
@@ -100,22 +103,29 @@ export class UploadService implements OnModuleInit {
       type,
       id,
       file.mimetype,
-      customDate || new Date(),
+      new Date(),
     );
     const metadata = {
       'Content-Type': file.mimetype || '',
-      'Original-Name': file.originalname,
+      'Original-Name': fileName.body.filename || slugify(file.originalname, {
+        replacement: '-',
+        remove: /\.,?!\+=\*:;/g,
+        lower: true,
+        strict: false,
+        locale: 'ru',
+        trim: true,
+      }),
     };
 
     return this.uploadToMinio(file, path, metadata)
       .then(async () => {
         return await this.saveToDb({
           id: id,
-          originalName: file.originalname,
+          originalName: fileName.body.filename || file.originalname,
           mimeType: file.mimetype,
           path: `/${this.bucketName}/${path}`,
           preview: `/${this.bucketName}/${path}`,
-          createdAt: customDate || new Date(),
+          createdAt: new Date(),
           type: type,
           hash,
         });

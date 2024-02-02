@@ -12,7 +12,7 @@ export class AfficheUpdateService {
     return this.prismaService.affiche
       .update({
         where: {
-          ...parsedIdOrSlug,
+          ...parsedIdOrSlug as undefined as any,
         },
         data: newAffiche,
       })

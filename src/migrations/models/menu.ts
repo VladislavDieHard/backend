@@ -1,6 +1,7 @@
 import { PrismaService } from '../../prisma.service';
 import { select } from '../select';
 import { v4 } from 'uuid';
+import { database } from '../db';
 
 const prismaService = new PrismaService();
 
@@ -29,6 +30,7 @@ const documentsMenus = [
 export async function menu() {
   const excludeIds = [1, 2, 3, 4, 5];
   const menus = await select(
+    database,
     `SELECT * FROM news_menu WHERE id NOT IN (${excludeIds})`,
   );
   const existedMenus = await prismaService.menu.findMany({});
