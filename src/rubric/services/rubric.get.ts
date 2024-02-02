@@ -61,11 +61,11 @@ export class RubricGetService extends GetService {
     return new Promise(async (res, rej) => {
       const count = await this.prismaService.entry.count({ ...searchParams });
 
-      const pagination = createPagination({
-        count: count,
-        pageSize: pageSize,
-        page: page,
-      });
+      const pagination = createPagination(
+        count,
+        this.pagination?.page,
+        this.pagination?.pageSize,
+      );
 
       this.prismaService.entry
         .findMany({
@@ -80,7 +80,7 @@ export class RubricGetService extends GetService {
             data: data,
             meta: {
               page: pagination.page,
-              pages: pagination.pages,
+              total: pagination.total,
               pageSize: pagination.pageSize || 10,
             },
           }),
@@ -89,4 +89,3 @@ export class RubricGetService extends GetService {
     });
   }
 }
-      

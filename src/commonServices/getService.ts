@@ -11,23 +11,15 @@ import { searchByFieldValue } from '../utils/searchByField';
 
 export class GetService {
   readonly prismaService: PrismaService;
-  include: {
-    [key: string]: boolean;
-  };
+
+  include: { [key: string]: boolean };
   pinned: object;
   search: { OR: Array<{ [key: string]: { contains: string } }> } | undefined;
   orderBy: object | undefined;
   isDeleted: boolean | undefined;
   pagination: any;
-  searchRangeObj: {
-    field: string;
-    fromDate: Date;
-    toDate: Date;
-  };
-  searchByFieldObj: {
-    field: string;
-    query: string;
-  };
+  searchRangeObj: { field: string; fromDate: Date; toDate: Date };
+  searchByFieldObj: { field: string; query: string };
 
   constructor() {
     this.prismaService = new PrismaService();
@@ -35,9 +27,9 @@ export class GetService {
 
   /* Execute functions */
 
-  executeFindFirst(model) {
+  executeFindFirst(model: string) {
     return new Promise((resolve, reject) => {
-      (this.prismaService[model] as undefined as any)
+      this.prismaService[model]
         .findFirst({
           where: {
             ...this.createWhereParams(),
@@ -64,12 +56,12 @@ export class GetService {
   }
 
   async executeFindUnique(
-    model,
+    model: string,
     idOrSlug: string,
     isId?: boolean,
   ): Promise<any> {
     return new Promise((resolve, reject) => {
-      (this.prismaService[model] as undefined as any)
+      this.prismaService[model]
         .findUnique({
           where: {
             ...parseIdOrSlug(idOrSlug, isId),
@@ -92,44 +84,37 @@ export class GetService {
     });
   }
 
-  async executeFindMany(model): Promise<any> {
-    const count = await (this.prismaService as undefined as any)[model].count({
+  async executeFindMany(model: string): Promise<any> {
+    const count = await this.prismaService[model].count({
       where: {
         ...this.createWhereParams(),
       },
     });
 
-    const pagination = createPagination({
-      count: count,
-      pageSize: this.pagination?.pageSize,
-      page: this.pagination?.page,
-    });
+    console.log(this.orderBy);
 
-    const orderBy = this.orderBy;
+    const pagination = createPagination(
+      count,
+      this.pagination?.page,
+      this.pagination?.pageSize,
+    );
+
     return new Promise((resolve, reject) => {
-      (this.prismaService[model] as undefined as any)
+      this.prismaService[model]
         .findMany({
-          where: {
-            ...this.createWhereParams(),
-          },
-          include: this.include,
-          orderBy: orderBy ? orderBy : undefined,
-          take: pagination?.pageSize || undefined,
-          skip: (pagination?.page - 1) * pagination?.pageSize || 0,
+          ...this.createParamSearch(pagination),
         })
         .then((entry) => {
-          this.clearObject();
           if (this.pagination) {
             resolve({
               data: entry,
-              meta: GetService.createMeta(pagination),
+              meta: pagination,
             });
           } else {
             resolve({ data: entry });
           }
         })
         .catch((error) => {
-          this.clearObject();
           reject(error);
         })
         .finally(() => {
@@ -138,23 +123,25 @@ export class GetService {
     });
   }
 
-  async executeFindModelByAnother(modelOne, modelTwo, idOrSlug) {
-    const count = await (this.prismaService as undefined as any)[
-      modelOne
-    ].count({
+  async executeFindModelByAnother(
+    modelOne: string,
+    modelTwo: string,
+    idOrSlug,
+  ) {
+    const count = await this.prismaService[modelOne].count({
       where: {
         ...this.createWhereParams(),
         [modelTwo.toLowerCase()]: parseIdOrSlug(idOrSlug),
       },
     });
-    const pagination = createPagination({
-      count: count,
-      pageSize: this.pagination.pageSize,
-      page: this.pagination.page,
-    });
+    const pagination = createPagination(
+      count,
+      this.pagination?.page,
+      this.pagination?.pageSize,
+    );
     const orderBy = this.orderBy;
     return new Promise((resolve, reject) => {
-      (this.prismaService[modelOne] as undefined as any)
+      this.prismaService[modelOne]
         .findMany({
           where: {
             ...this.createWhereParams(),
@@ -170,7 +157,7 @@ export class GetService {
           if (this.pagination) {
             resolve({
               data: entry,
-              meta: GetService.createMeta(pagination),
+              meta: pagination,
             });
           } else {
             resolve({ data: entry });
@@ -187,6 +174,24 @@ export class GetService {
   }
 
   /* Utility functions */
+
+  createParamSearch(pagination) {
+    return {
+      where: this.createWhereParams(),
+      include: this.include,
+      orderBy: this.orderBy,
+      take: pagination?.pageSize,
+      skip: (pagination.page - 1) * pagination.pageSize || 0,
+    };
+  }
+
+  addPagination(pageSize = 10, page = 1) {
+    this.pagination = {
+      pageSize: parseInt(String(pageSize)),
+      page: page,
+    };
+    return this;
+  }
 
   includeFields(fields: string) {
     if (fields) {
@@ -225,19 +230,7 @@ export class GetService {
   }
 
   addOrderBy(orderBy: string) {
-    if (orderBy) {
-      this.orderBy = createOrderBy(orderBy);
-    } else {
-      this.orderBy = {};
-    }
-    return this;
-  }
-
-  addPagination(pageSize = 10, page = 1) {
-    this.pagination = {
-      pageSize: parseInt(String(pageSize)),
-      page: page,
-    };
+    this.orderBy = orderBy ? createOrderBy(orderBy) : {};
     return this;
   }
 
@@ -296,7 +289,7 @@ export class GetService {
   private static createMeta(pagination) {
     return {
       page: pagination.page,
-      pages: pagination.pages,
+      total: pagination.pages,
       pageSize: pagination.pageSize || 10,
     };
   }
