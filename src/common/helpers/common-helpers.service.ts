@@ -33,6 +33,11 @@ export class CommonHelpers {
     }
   }
 
+  createIsDelete(isDelete: string) {
+    if (isDelete) return {}
+    else return { isDelete: false };
+  }
+
   createRangeDate(field: string, fromDate: string, toDate: string) {
     return {
       [field]: {
