@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class DepartmentQueryDto {
-  @ApiProperty({ required: false })
-  pageSize: number;
+export class QueryMenuItemDto {
   @ApiProperty({ required: false })
   page: number;
   @ApiProperty({ required: false })
-  include: string;
-  @ApiProperty({ required: false })
-  orderBy: string;
+  pageSize: number;
   @ApiProperty({ required: false })
   isDeleted: string;
+  @ApiProperty({ required: false })
+  menuId: string;
+  @ApiProperty({ required: false })
+  include: string;
 }

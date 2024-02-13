@@ -7,6 +7,7 @@ import { EntryAllQueryDto, EntryOneQueryDto } from './dto/entry-query.dto';
 import { PrismaService } from './../prisma.service';
 import { Injectable, Scope } from '@nestjs/common';
 import { rubric } from 'src/migrations/models/rubric';
+import { department } from 'src/migrations/models/department';
 
 @Injectable({ scope: Scope.REQUEST })
 export class EntryService {
@@ -48,6 +49,16 @@ export class EntryService {
 
   async findAll(param?: EntryAllQueryDto): Promise<any> {
     const whereParams = {
+      department: {
+        ...this.commonHelpers.parseSlug(param.department),
+      },
+      rubrics: {
+        some: {
+          rubric: {
+            ...this.commonHelpers.parseSlug(param.rubric),
+          },
+        },
+      },
       isDeleted: param.isDeleted ? true : false,
       ...this.commonHelpers.createRangeDate(
         'publishedAt',

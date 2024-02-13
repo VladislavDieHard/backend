@@ -20,6 +20,7 @@ import { GamesModule } from './games/games.module';
 import { GenreModule } from './genre/genre.module';
 import { NotificationModule } from './notification/notification.module';
 import { BookModule } from './book/book.module';
+import { SlidesModule } from './slides/slides.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { BookModule } from './book/book.module';
     GenreModule,
     NotificationModule,
     BookModule,
+    SlidesModule,
   ],
   providers: [PrismaService, CommandService, CreateService],
   controllers: [AppController],

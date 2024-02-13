@@ -40,7 +40,6 @@ model Entry {
   publishedAt  DateTime           @default(now())
   title        String             @db.VarChar(200)
   desc         String?            @db.LongText
-  /// ckeditor
   content      String?            @db.LongText
   slug         String             @unique @db.VarChar(250)
   published    Boolean            @default(false)
@@ -83,7 +82,6 @@ model Document {
   id         String    @id @default(uuid())
   oldId      Int?      @unique
   title      String    @db.VarChar(200)
-  /// ckeditor
   content    String    @db.LongText
   isDeleted  Boolean   @default(false)
   menuItemId String?   @unique
@@ -100,7 +98,6 @@ model Affiche {
   eventDate  DateTime @db.Date
   eventTime  DateTime @db.Time(0)
   title      String   @db.VarChar(500)
-  /// ckeditor
   desc       String   @db.LongText
   eventPlace String
   phone      String?  @db.VarChar(22)
@@ -149,7 +146,6 @@ model MainSlider {
   id        String   @id @default(uuid())
   oldId     Int?     @unique
   title     String
-  /// ckeditor
   desc      String   @db.VarChar(200)
   createdAt DateTime @default(now())
   isDeleted Boolean  @default(false)

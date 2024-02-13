@@ -28,14 +28,19 @@ export class DepartmentService {
   }
 
   async findAll(query: DepartmentQueryDto) {
-    return await this.prismaService.department.findMany({
-      where: {
-        isDeleted: query.isDeleted ? undefined : false,
-      },
+    const total = await this.prismaService.department.count({
+      where: { isDeleted: query.isDeleted ? undefined : false },
+    });
+    const departments = await this.prismaService.department.findMany({
+      where: { isDeleted: query.isDeleted ? undefined : false },
       include: this.commonHelpers.parseInclude(query.include),
       orderBy: this.commonHelpers.parseOrderBy(query.orderBy),
       ...this.commonHelpers.createPagination(query.page, query.pageSize),
     });
+    return {
+      data: departments,
+      meta: this.commonHelpers.createMeta(query.page, query.pageSize, total),
+    };
   }
 
   async findOne(id: string, include: string) {
@@ -48,7 +53,7 @@ export class DepartmentService {
   async update(id: string, newDepartment: DepartmentUpdateDto) {
     return await this.prismaService.department.update({
       where: { id: id },
-      data: newDepartment
+      data: newDepartment,
     });
   }
 }

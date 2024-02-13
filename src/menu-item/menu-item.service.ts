@@ -1,3 +1,7 @@
+import { CreateMenuItemDto } from './dto/create-menu-item.dto';
+import { QueryMenuItemDto } from './dto/query-menu-item.dto';
+import { CommonHelpers } from './../common/helpers/common-helpers.service';
+import { PrismaService } from './../prisma.service';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { createSlug, parseIdOrSlug } from '../utils';
 import { ServiceArgs } from './menu-item.types';
@@ -5,73 +9,66 @@ import { MenuItem } from '@prisma/client';
 import { MultiResponse } from '../commonServices/types';
 import { GetService } from '../commonServices/getService';
 import { v4 } from 'uuid';
+import { count } from 'console';
 
 @Injectable()
-export class MenuItemService extends GetService {
-  async getMenuItems(options: ServiceArgs): Promise<MultiResponse<MenuItem[]>> {
-    try {
-      return this.includeFields(options.include)
-        .addPagination(options.pageSize, options.page)
-        .addIsDeleted(options.isDeleted)
-        .addSearchByFieldValue(options.searchByField)
-        .executeFindMany('MenuItem');
-    } catch (e) {
-      throw new HttpException('Error with query', HttpStatus.BAD_REQUEST);
-    }
+export class MenuItemService {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly commonHelpers: CommonHelpers,
+  ) {}
+
+  create(createMenuItemDto: CreateMenuItemDto) {
+    return this.prismaService.menuItem.create({
+      data: {
+        id: v4(),
+        ...createMenuItemDto,
+      },
+    });
   }
 
-  async getMenuItem(idOrSlug, includeString): Promise<MenuItem> {
-    try {
-      return this.includeFields(includeString).executeFindUnique(
-        'MenuItem',
-        idOrSlug,
-      );
-    } catch (e) {
-      throw new HttpException('Error with query', HttpStatus.BAD_REQUEST);
-    }
+  async findAll(query: QueryMenuItemDto) {
+    const total = await this.prismaService.menuItem.count({
+      where: {
+        menuId: query.menuId,
+        ...this.commonHelpers.createIsDelete(query.isDeleted),
+      },
+    });
+
+    const menuItem = await this.prismaService.menuItem.findMany({
+      where: {
+        menuId: query.menuId,
+        ...this.commonHelpers.createIsDelete(query.isDeleted),
+      },
+      include: this.commonHelpers.parseInclude(query.include),
+      ...this.commonHelpers.createPagination(query.page, query.pageSize),
+    });
+
+    return {
+      data: menuItem,
+      meta: this.commonHelpers.createMeta(query.page, query.pageSize, total),
+    };
   }
 
-  async createMenuItem(newMenuItem: MenuItem): Promise<MenuItem> {
-    newMenuItem.slug = createSlug(newMenuItem.title, newMenuItem.slug);
-    try {
-      return await this.prismaService.menuItem.create({
-        data: {
-          id: v4(),
-          ...newMenuItem,
-        },
-      });
-    } catch (e) {
-      throw new HttpException('Error with data', HttpStatus.BAD_REQUEST);
-    }
+  findOne(idOrSlug: string, include) {
+    return this.prismaService.menuItem.findUnique({
+      where: {
+        ...this.commonHelpers.parseSlug(idOrSlug),
+      },
+      include: this.commonHelpers.parseInclude(include),
+    });
   }
 
-  async updateMenuItem(newMenuItem: MenuItem, idOrSlug): Promise<MenuItem> {
-    const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
-    try {
-      return await this.prismaService.menuItem.update({
-        where: {
-          ...(parsedIdOrSlug as undefined as any),
-        },
-        data: newMenuItem,
-      });
-    } catch {
-      throw new HttpException('Error with data', HttpStatus.BAD_REQUEST);
-    }
+  update(id: string, updateMenuItemDto: CreateMenuItemDto) {
+    return this.prismaService.menuItem.update({
+      where: { ...this.commonHelpers.parseSlug(id) },
+      data: updateMenuItemDto,
+    });
   }
 
-  async deleteMenuItem(idOrSlug): Promise<MenuItem> {
-    const parsedIdOrSlug = parseIdOrSlug(idOrSlug);
-    try {
-      return await this.prismaService.menuItem.delete({
-        where: {
-          ...(parsedIdOrSlug as undefined as any),
-        },
-      });
-    } catch (e) {
-      throw new HttpException(
-        e.meta.cause || 'Bad request',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+  delete(id: string) {
+    return this.prismaService.menuItem.delete({
+      where: { ...this.commonHelpers.parseSlug(id) },
+    });
   }
 }

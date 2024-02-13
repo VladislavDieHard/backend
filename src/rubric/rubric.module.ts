@@ -1,3 +1,4 @@
+import { CommonHelpers } from './../common/helpers/common-helpers.service';
 import { Module } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { RubricService } from './rubric.service';
@@ -11,6 +12,7 @@ import { RubricDeleteService } from './services/rubric.delete';
   providers: [
     RubricService,
     PrismaService,
+    CommonHelpers,
     RubricGetService,
     RubricCreateService,
     RubricUpdateService,

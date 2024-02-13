@@ -1,3 +1,4 @@
+import { ApiTags } from '@nestjs/swagger';
 import { Notification } from '@prisma/client';
 import { NotificationService } from './notification.service';
 import {
@@ -11,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
+@ApiTags('Notification')
 @Controller('notification')
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}

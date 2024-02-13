@@ -3,8 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 export class EntryAllQueryDto {
   @ApiProperty({ required: false })
   fromDate: string;
+
   @ApiProperty({ required: false })
   toDate: string;
+  
   @ApiProperty({ required: false })
   searchByField: string;
   @ApiProperty({ required: false })
@@ -19,9 +21,13 @@ export class EntryAllQueryDto {
   search: string;
   @ApiProperty({ required: false })
   page: number;
+  @ApiProperty({ required: false })
+  rubric: string;
+  @ApiProperty({ required: false })
+  department: string;
 }
 
-export class EntryOneQueryDto { 
+export class EntryOneQueryDto {
   @ApiProperty({ required: false })
   include: string;
 }

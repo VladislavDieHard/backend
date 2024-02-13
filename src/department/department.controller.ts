@@ -6,8 +6,8 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
-  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -38,7 +38,7 @@ export class DepartmentController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put(':id')
+  @Patch(':id')
   update(@Param('id') id: string, @Body() newDepartment: DepartmentUpdateDto) {
     return this.departmentService.update(id, newDepartment);
   }

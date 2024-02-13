@@ -33,9 +33,9 @@ export class CommonHelpers {
     }
   }
 
-  createIsDelete(isDelete: string) {
-    if (isDelete) return {}
-    else return { isDelete: false };
+  createIsDelete(isDeleted: string) {
+    if (isDeleted) return {};
+    else return { isDeleted: false };
   }
 
   createRangeDate(field: string, fromDate: string, toDate: string) {

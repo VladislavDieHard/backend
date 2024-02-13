@@ -1,9 +1,11 @@
+import { CreateMenuDto } from './dto/create-menu.dto';
 import {
   Body,
   Controller,
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -22,131 +24,32 @@ import {
 } from '@nestjs/swagger';
 import { MenuDto } from './dto/menu.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { QueryMenuDto } from './dto/query-menu.dto';
 
 @ApiTags('Menu')
 @Controller('menu')
 export class MenuController {
   constructor(private menuService: MenuService) {}
 
-  @ApiResponse({
-    status: 200,
-    description: 'Возвращает массив записей модели Menu',
-    type: MenuDto,
-    isArray: true,
-  })
-  @ApiOperation({
-    summary: 'Возвращает массив записей модели Menu',
-  })
-  @ApiQuery({
-    name: 'type',
-    required: false,
-    description: 'Укажите тип меню, что-бы вернуть только данный тип',
-    enum: MenuType,
-  })
-  @ApiQuery({
-    name: 'include',
-    required: false,
-    description: 'Укажите модели для включения полей в ответ',
-    example: 'menuItems',
-  })
-  @Get()
-  getMenus(
-    @Req() request: any,
-    @Query('searchByField') searchByField?: string,
-    @Query('include') include?: string,
-    @Query('pageSize') pageSize?: number,
-    @Query('isDeleted') isDeleted?: string,
-  ) {
-    return this.menuService.getMenus({
-      include: include || undefined,
-      searchByField,
-      pageSize,
-      isDeleted
-    });
-  }
-
-  @ApiResponse({
-    status: 200,
-    description: 'Возвращает одну запись модели Menu',
-    type: MenuDto,
-  })
-  @ApiOperation({
-    summary: 'Возвращает одну запись модели Menu',
-  })
-  @ApiQuery({
-    name: 'type',
-    required: false,
-    description: 'Укажите тип меню, что-бы вернуть только данный тип',
-    enum: MenuType,
-  })
-  @ApiQuery({
-    name: 'include',
-    required: false,
-    description: 'Укажите модели для включения полей в ответ',
-    example: 'menuItems',
-  })
-  @ApiParam({
-    name: 'id',
-    type: Number,
-  })
-  @Get(':id')
-  getMenu(@Param('id') id: number, @Query('include') include?: string) {
-    return this.menuService.getMenu(id, include);
-  }
-
-  @ApiResponse({
-    status: 200,
-    description: 'Создаёт запись модели Menu',
-    type: MenuDto,
-  })
-  @ApiOperation({
-    summary: 'Создаёт запись модели Menu',
-  })
   @UseGuards(JwtAuthGuard)
   @Post()
-  createMenu(@Body() newEntry: Menu) {
-    return this.menuService.createMenu(newEntry);
+  create(@Body() createMenuDto: CreateMenuDto) {
+    return this.menuService.create(createMenuDto);
   }
 
-  @ApiResponse({
-    status: 200,
-    description: 'Обновляет запись модели Menu',
-    type: MenuDto,
-  })
-  @ApiOperation({
-    summary: 'Обновляет запись модели Menu',
-  })
-  @ApiParam({
-    name: 'id',
-    type: Number,
-  })
-  @UseGuards(JwtAuthGuard)
-  @Put(':id')
-  updateMenu(@Param('id') id: number, @Body() newMenu: Menu) {
-    return this.menuService.updateMenu(newMenu, id);
+  @Get()
+  findAll(@Query() query: QueryMenuDto) {
+    return this.menuService.findAll(query);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string, @Query('include') include: string) {
+    return this.menuService.findOne(id, include);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put('/menu-items/:id')
-  updateMenuMenuItems(@Param('id') id: number, @Body() newMenu: any) {
-    return this.menuService.updateMenuMenuItems(newMenu, id);
-  }
-
-  @ApiResponse({
-    status: 200,
-    description: 'Удаляет запись модели Menu',
-    type: MenuDto,
-  })
-  @ApiOperation({
-    summary: 'Удаляет запись модели Menu',
-  })
-  @ApiParam({
-    name: 'id',
-    type: Number,
-  })
-  @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  deleteMenu(@Param('id') id: number) {
-    return this.menuService.deleteMenu(id);
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateMenuDto: CreateMenuDto) {
+    return this.menuService.update(id, updateMenuDto);
   }
 }

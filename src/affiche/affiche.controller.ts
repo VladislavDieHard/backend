@@ -1,70 +1,54 @@
+import { UpdateAfficheDto } from './dto/update-affiche.dto';
+import { CreateAfficheDto } from './dto/create-affiche.dto';
+import { QueryAfficheDto } from './dto/query-affiche.dto';
 import {
   Body,
   Controller,
   Delete,
   Get,
   Param,
+  Patch,
   Post,
-  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import { AfficheService } from './affiche.service';
-import { Affiche } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('Affiche')
 @Controller('affiche')
-export class AfficheController extends AfficheService {
-  @Get()
-  getAffiches(
-    @Query('fromDate') fromDate?: Date,
-    @Query('toDate') toDate?: Date,
-    @Query('pageSize') pageSize?: number,
-    @Query('orderBy') orderBy?: string,
-    @Query('search') search?: string,
-    @Query('page') page?: number,
-    @Query('include') include?: string,
-    @Query('searchByField') searchByField?: string,
-    @Query('isDeleted') isDeleted?: string,
-  ) {
-    return this.afficheGetService.getAffiches({
-      pageSize,
-      fromDate,
-      toDate,
-      orderBy,
-      search,
-      page,
-      include,
-      searchByField,
-      isDeleted,
-    });
-  }
-
-  @Get(':idOrSlug')
-  getAffiche(@Param('idOrSlug') idOrSlug: string) {
-    return this.afficheGetService.getAffiche(idOrSlug);
-  }
+export class AfficheController {
+  constructor(private readonly afficheService: AfficheService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  createAffiche(@Body() newAffiche: Affiche) {
-    return this.afficheCreateService.createAffiche(newAffiche);
+  create(@Body() createAfficheDto: CreateAfficheDto) {
+    return this.afficheService.create(createAfficheDto);
+  }
+
+  @Get()
+  findAll(@Query() query: QueryAfficheDto) {
+    return this.afficheService.findAll(query);
+  }
+
+  @Get(':idOrSlug')
+  findOne(@Param('idOrSlug') idOrSlug: string) {
+    return this.afficheService.findOne(idOrSlug);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put(':idOrSlug')
-  updateAffiche(
+  @Patch(':idOrSlug')
+  update(
     @Param('idOrSlug') idOrSlug: string,
-    @Body() newAffiche: Affiche,
+    @Body() updateAfficheDto: UpdateAfficheDto,
   ) {
-    return this.afficheUpdateService.updateAffiche(idOrSlug, newAffiche);
+    return this.afficheService.update(idOrSlug, updateAfficheDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':idOrSlug')
-  deleteAffiche(@Param('idOrSlug') idOrSlug: string) {
-    return this.afficheDeleteService.deleteAffiche(idOrSlug);
+  delete(@Param('idOrSlug') idOrSlug: string) {
+    return this.afficheService.delete(idOrSlug);
   }
 }
