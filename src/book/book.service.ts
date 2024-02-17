@@ -26,12 +26,22 @@ export class BookService {
     }
   }
 
-  findAll(options: BookQuery) {
-    return this.prismaService.book.findMany({
+  async findAll(options: BookQuery) {
+    const total = await this.prismaService.book.count();
+    const book = await this.prismaService.book.findMany({
       ...this.commonHelpers.createPagination(options.page, options.pageSize),
       orderBy: this.commonHelpers.parseOrderBy(options.orderBy),
       include: this.commonHelpers.parseInclude(options.include),
+      ...this.commonHelpers.createPagination(options.page, options.pageSize),
     });
+    return {
+      data: book,
+      meta: this.commonHelpers.createMeta(
+        options.page,
+        options.pageSize,
+        total,
+      ),
+    };
   }
 
   findOne(id: string) {

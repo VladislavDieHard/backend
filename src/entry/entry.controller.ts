@@ -6,8 +6,8 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
-  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -42,7 +42,7 @@ export class EntryController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put(':id')
+  @Patch(':id')
   update(@Param('id') id: string, @Body() newEntry: EntryUpdateDto) {
     return this.entryService.update(id, newEntry);
   }

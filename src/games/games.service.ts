@@ -22,6 +22,7 @@ export class GamesService {
       where: {
         ...(this.createParams(genres, search) as undefined as any),
       },
+
       take: pagination?.pageSize || undefined,
       skip: (pagination?.page - 1) * pagination?.pageSize || 0,
     });

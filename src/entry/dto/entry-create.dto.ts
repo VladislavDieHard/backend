@@ -8,13 +8,13 @@ export class EntryCreateDto {
   @ApiProperty()
   content: string;
   @ApiProperty()
-  slug: string;
+  slug?: string;
   @ApiProperty()
   isDeleted: boolean;
   @ApiProperty()
   rubrics: string[];
   @ApiProperty()
-  fileId: string;
+  fileId?: string;
   @ApiProperty()
   publishedAt: Date;
   @ApiProperty()

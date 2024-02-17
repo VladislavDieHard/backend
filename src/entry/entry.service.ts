@@ -24,6 +24,10 @@ export class EntryService {
       newEntry.title,
       newEntry.slug,
     );
+    newEntry.fileId = newEntry.fileId
+      ? newEntry.fileId
+      : 'dd94879f-f091-40cb-9da4-118ca01f402a';
+      
     const entry = await this.prismaService.entry.create({
       data: {
         id: v4(),
@@ -59,7 +63,7 @@ export class EntryService {
           },
         },
       },
-      isDeleted: param.isDeleted ? true : false,
+      ...this.commonHelpers.createIsDelete(param.isDeleted),
       ...this.commonHelpers.createRangeDate(
         'publishedAt',
         param.fromDate,
@@ -105,33 +109,35 @@ export class EntryService {
   }
 
   async update(id: string, newEntry: EntryUpdateDto) {
-    const entry = await this.findOne(id, { include: 'rubrics' });
+    try {
+      const entry = await this.findOne(id, { include: 'rubrics' });
 
-    if (newEntry.rubrics) {
-      entry.rubrics.forEach(async ({ rubricId, entryId }) => {
-        await this.prismaService.rubricsOnEntries.delete({
-          where: { entryId_rubricId: { rubricId: rubricId, entryId: entryId } },
-        });
-      });
+      if (newEntry.rubrics) {
+        for (const { rubricId, entryId } of entry.rubrics) {
+          await this.prismaService.rubricsOnEntries.delete({
+            where: { entryId_rubricId: { rubricId, entryId } },
+          });
+        }
 
-      newEntry.rubrics.forEach(async (rubricId) => {
-        await this.prismaService.rubricsOnEntries.create({
-          data: {
-            rubricId: rubricId,
-            entryId: entry.id,
-          },
-        });
+        for (const rubric of newEntry.rubrics) {
+          await this.prismaService.rubricsOnEntries.create({
+            data: { rubricId: rubric, entryId: entry.id },
+          });
+        }
+
+        delete newEntry.rubrics;
+      }
+
+      return this.prismaService.entry.update({
+        where: {
+          ...this.commonHelpers.parseSlug(id),
+        },
+        data: {
+          ...(newEntry as any),
+        },
       });
-      delete newEntry.rubrics;
+    } catch (e) {
+      return e;
     }
-
-    return this.prismaService.entry.update({
-      where: {
-        ...this.commonHelpers.parseSlug(id),
-      },
-      data: {
-        ...(newEntry as any),
-      },
-    });
   }
 }

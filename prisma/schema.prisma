@@ -34,7 +34,7 @@ model Department {
 model Entry {
   id           String             @id @default(uuid())
   oldId        Int?               @unique
-  fileId       String?
+  fileId       String?            @default("")
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
   publishedAt  DateTime           @default(now())
