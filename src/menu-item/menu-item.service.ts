@@ -22,6 +22,10 @@ export class MenuItemService {
     return this.prismaService.menuItem.create({
       data: {
         id: v4(),
+        slug: this.commonHelpers.createSlug(
+          createMenuItemDto.title,
+          createMenuItemDto.slug,
+        ),
         ...createMenuItemDto,
       },
     });

@@ -48,7 +48,14 @@ export class MenuService {
   findOne(id: string, include: string) {
     return this.prismaService.menu.findUnique({
       where: { id: id },
-      include: this.commonHelpers.parseInclude(include),
+      include: {
+        menuItems: {
+          orderBy: {
+            position: 'asc',
+          },
+        },
+        // ...this.commonHelpers.parseInclude(include),
+      },
     });
   }
 
