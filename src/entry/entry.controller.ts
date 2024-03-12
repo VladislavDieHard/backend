@@ -19,7 +19,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 @Controller('entry')
 export class EntryController {
   constructor(private entryService: EntryService) {}
-
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() newEntry: EntryCreateDto) {
     return this.entryService.create(newEntry);
@@ -35,7 +35,6 @@ export class EntryController {
     return this.entryService.findPinned();
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string, @Query() query?: EntryAllQueryDto) {
     return this.entryService.findOne(id, query);

@@ -14,10 +14,11 @@ export class CommonHelpers {
     }
   }
 
-  parseInclude(include: string) {
+  parseInclude(include: string, orderBy?: string) {
     if (!include) return {};
 
     const result = {};
+
     include.split(',').forEach((item) => {
       result[item] = true;
     });

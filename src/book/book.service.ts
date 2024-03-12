@@ -47,6 +47,9 @@ export class BookService {
   findOne(id: string) {
     return this.prismaService.book.findUnique({
       where: { id: id },
+      include: {
+        preview: true,
+      },
     });
   }
 

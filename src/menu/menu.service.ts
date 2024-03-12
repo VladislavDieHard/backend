@@ -35,7 +35,13 @@ export class MenuService {
       where: {
         menuType: query.type as any,
       },
-      include: this.commonHelpers.parseInclude(query.include),
+      include: {
+        menuItems: {
+          orderBy: {
+            position: 'asc',
+          },
+        },
+      },
       ...this.commonHelpers.createPagination(query.page, query.pageSize),
     });
 

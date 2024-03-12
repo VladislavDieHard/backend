@@ -8,6 +8,8 @@ import { PrismaService } from './../prisma.service';
 import { Injectable, Scope } from '@nestjs/common';
 import { rubric } from 'src/migrations/models/rubric';
 import { department } from 'src/migrations/models/department';
+import { query } from 'express';
+import { title } from 'process';
 
 @Injectable({ scope: Scope.REQUEST })
 export class EntryService {
@@ -27,7 +29,7 @@ export class EntryService {
     newEntry.fileId = newEntry.fileId
       ? newEntry.fileId
       : 'dd94879f-f091-40cb-9da4-118ca01f402a';
-      
+
     const entry = await this.prismaService.entry.create({
       data: {
         id: v4(),
@@ -53,6 +55,12 @@ export class EntryService {
 
   async findAll(param?: EntryAllQueryDto): Promise<any> {
     const whereParams = {
+      title: {
+        search: param.search,
+      },
+      content: {
+        search: param.search,
+      },
       department: {
         ...this.commonHelpers.parseSlug(param.department),
       },
@@ -76,7 +84,9 @@ export class EntryService {
     });
 
     const entries = await this.prismaService.entry.findMany({
-      where: whereParams,
+      where: {
+        ...whereParams,
+      },
       orderBy: this.commonHelpers.parseOrderBy(param.orderBy),
       include: this.commonHelpers.parseInclude(param.include),
       ...this.commonHelpers.createPagination(param.page, param.pageSize),

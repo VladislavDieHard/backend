@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["views"]
+  previewFeatures = ["views", "fullTextSearch", "fullTextIndex"]
 }
 
 generator prismaClassGenerator {
@@ -55,6 +55,7 @@ model Entry {
 
   @@index([departmentId], map: "Entry_departmentId_fkey")
   @@index([fileId], map: "Entry_fileId_fkey")
+  @@fulltext([title, content])
 }
 
 model RubricsOnEntries {
@@ -176,13 +177,13 @@ model File {
 }
 
 model Book {
-  id      String  @id @default(uuid())
-  title   String
-  desc    String
-  content String
-  fileId  String
-  createdAt    DateTime     @default(now())
-  preview File   @relation(fields: [fileId], references: [id])
+  id        String   @id @default(uuid())
+  title     String
+  desc      String
+  content   String
+  fileId    String
+  createdAt DateTime @default(now())
+  preview   File     @relation(fields: [fileId], references: [id])
 }
 
 view Games {
