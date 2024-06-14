@@ -21,6 +21,7 @@ import { GenreModule } from './genre/genre.module';
 import { NotificationModule } from './notification/notification.module';
 import { BookModule } from './book/book.module';
 import { SlidesModule } from './slides/slides.module';
+import { CollectionModule } from './collection/collection.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { SlidesModule } from './slides/slides.module';
     NotificationModule,
     BookModule,
     SlidesModule,
+    CollectionModule,
   ],
   providers: [PrismaService, CommandService, CreateService],
   controllers: [AppController],

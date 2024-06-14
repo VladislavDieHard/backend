@@ -12,4 +12,7 @@ export class BookQuery {
 
   @ApiProperty({ required: false, default: '10' })
   pageSize: number;
+
+  @ApiProperty({ required: false, default: '' })
+  isDeleted: string;
 }

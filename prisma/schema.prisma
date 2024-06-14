@@ -174,16 +174,46 @@ model File {
   Entry        Entry[]
   MainSlider   MainSlider[]
   Book         Book[]
+  Collection   Collection[]
 }
 
 model Book {
-  id        String   @id @default(uuid())
-  title     String
-  desc      String
-  content   String
-  fileId    String
-  createdAt DateTime @default(now())
-  preview   File     @relation(fields: [fileId], references: [id])
+  id            String               @id @default(uuid())
+  oldId         Int                  @unique @default(autoincrement())
+  title         String               @db.VarChar(256)
+  desc          String               @db.VarChar(512)
+  content       String               @db.VarChar(2048)
+  link          String?              @db.VarChar(512)
+  category      String?              @db.VarChar(128)
+  storagePlace  DateTime?
+  dateOfReceipt String?              @db.VarChar(128)
+  fileId        String
+  isDeleted     Boolean              @default(false)
+  createdAt     DateTime             @default(now())
+  preview       File                 @relation(fields: [fileId], references: [id])
+  collections   BooksOnCollections[]
+}
+
+model Collection {
+  id          String               @id @default(uuid())
+  name        String               @db.VarChar(256)
+  description String               @db.VarChar(2048)
+  createdAt   DateTime             @default(now())
+  isDeleted   Boolean              @default(false)
+  fileId      String?
+  preview     File?                @relation(fields: [fileId], references: [id])
+  books       BooksOnCollections[]
+}
+
+model BooksOnCollections {
+  bookId       String
+  collectionId String
+  assignedAt   DateTime   @default(now())
+  Book         Book       @relation(fields: [bookId], references: [id])
+  Collection   Collection @relation(fields: [collectionId], references: [id])
+
+  @@id([bookId, collectionId])
+  @@index([collectionId], map: "BooksOnCollections_collectionId_fkey")
 }
 
 view Games {

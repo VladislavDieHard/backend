@@ -29,8 +29,13 @@ export class BookService {
   async findAll(options: BookQuery) {
     const total = await this.prismaService.book.count();
     const book = await this.prismaService.book.findMany({
+      where: {
+        ...this.commonHelpers.createIsDelete(options.isDeleted),
+      },
       ...this.commonHelpers.createPagination(options.page, options.pageSize),
-      orderBy: this.commonHelpers.parseOrderBy(options.orderBy),
+      orderBy: {
+        createdAt: 'desc',
+      },
       include: this.commonHelpers.parseInclude(options.include),
       ...this.commonHelpers.createPagination(options.page, options.pageSize),
     });

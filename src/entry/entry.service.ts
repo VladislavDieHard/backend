@@ -6,10 +6,10 @@ import { CommonHelpers } from './../common/helpers/common-helpers.service';
 import { EntryAllQueryDto, EntryOneQueryDto } from './dto/entry-query.dto';
 import { PrismaService } from './../prisma.service';
 import { Injectable, Scope } from '@nestjs/common';
-import { rubric } from 'src/migrations/models/rubric';
-import { department } from 'src/migrations/models/department';
-import { query } from 'express';
-import { title } from 'process';
+// import { rubric } from 'src/migrations/models/rubric';
+// import { department } from 'src/migrations/models/department';
+// import { query } from 'express';
+// import { title } from 'process';
 
 @Injectable({ scope: Scope.REQUEST })
 export class EntryService {
@@ -37,8 +37,8 @@ export class EntryService {
       },
     });
 
-    rubrics.forEach(async (item) => {
-      await this.prismaService.rubricsOnEntries.create({
+    rubrics.forEach((item) => {
+      this.prismaService.rubricsOnEntries.create({
         data: {
           rubricId: item,
           entryId: entry.id,
