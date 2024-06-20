@@ -37,14 +37,14 @@ export class EntryService {
       },
     });
 
-    rubrics.forEach((item) => {
-      this.prismaService.rubricsOnEntries.create({
+    for (let item in rubrics) {
+      await this.prismaService.rubricsOnEntries.create({
         data: {
           rubricId: item,
           entryId: entry.id,
         },
       });
-    });
+    }
 
     return this.prismaService.entry.findUnique({
       where: {
