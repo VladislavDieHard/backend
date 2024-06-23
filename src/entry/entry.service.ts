@@ -37,7 +37,7 @@ export class EntryService {
       },
     });
 
-    for (let item in rubrics) {
+    for (let item of rubrics) {
       await this.prismaService.rubricsOnEntries.create({
         data: {
           rubricId: item,
