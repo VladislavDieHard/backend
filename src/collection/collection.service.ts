@@ -66,13 +66,13 @@ export class CollectionService {
     });
   }
 
-  findOne(id: string) {
+  findOne(id: string, params?: CollectionQueryDto) {
     try {
       return this.prismaService.collection.findUnique({
         where: {
           id: id,
         },
-        include: { books: true },
+        include: this.commonService.parseInclude(params.include),
       });
     } catch (e) {
       return e;

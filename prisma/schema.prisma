@@ -185,10 +185,11 @@ model Book {
   content       String               @db.VarChar(2048)
   link          String?              @db.VarChar(512)
   category      String?              @db.VarChar(128)
-  storagePlace  DateTime?
+  storagePlace  String?
   dateOfReceipt String?              @db.VarChar(128)
   fileId        String
   isDeleted     Boolean              @default(false)
+  isVideo       Boolean              @default(false)
   createdAt     DateTime             @default(now())
   preview       File                 @relation(fields: [fileId], references: [id])
   collections   BooksOnCollections[]

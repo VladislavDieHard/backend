@@ -2,14 +2,12 @@ import { Entry, RubricsOnEntries } from '@prisma/client';
 import { EntryUpdateDto } from './dto/entry-update.dto';
 import { v4 } from 'uuid';
 import { EntryCreateDto } from './dto/entry-create.dto';
-import { CommonHelpers } from './../common/helpers/common-helpers.service';
+
 import { EntryAllQueryDto, EntryOneQueryDto } from './dto/entry-query.dto';
-import { PrismaService } from './../prisma.service';
+
 import { Injectable, Scope } from '@nestjs/common';
-// import { rubric } from 'src/migrations/models/rubric';
-// import { department } from 'src/migrations/models/department';
-// import { query } from 'express';
-// import { title } from 'process';
+import { PrismaService } from '../prisma.service';
+import { CommonHelpers } from '../common/helpers/common-helpers.service';
 
 @Injectable({ scope: Scope.REQUEST })
 export class EntryService {
@@ -37,7 +35,7 @@ export class EntryService {
       },
     });
 
-    for (let item in rubrics) {
+    for (let item of rubrics) {
       await this.prismaService.rubricsOnEntries.create({
         data: {
           rubricId: item,

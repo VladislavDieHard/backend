@@ -1,10 +1,10 @@
-import { CommonHelpers } from './../common/helpers/common-helpers.service';
-import { PrismaService } from './../prisma.service';
 import { BookQuery } from './query.type';
 import { v4 } from 'uuid';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { PrismaService } from '../prisma.service';
+import { CommonHelpers } from '../common/helpers/common-helpers.service';
 
 @Injectable()
 export class BookService {
@@ -30,6 +30,7 @@ export class BookService {
     const total = await this.prismaService.book.count();
     const book = await this.prismaService.book.findMany({
       where: {
+        isVideo: options.isVideo ? true : undefined,
         ...this.commonHelpers.createIsDelete(options.isDeleted),
       },
       ...this.commonHelpers.createPagination(options.page, options.pageSize),

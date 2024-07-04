@@ -15,4 +15,7 @@ export class BookQuery {
 
   @ApiProperty({ required: false, default: '' })
   isDeleted: string;
+
+  @ApiProperty({ required: false, default: 'false' })
+  isVideo: string;
 }
