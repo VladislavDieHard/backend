@@ -217,6 +217,16 @@ model BooksOnCollections {
   @@index([collectionId], map: "BooksOnCollections_collectionId_fkey")
 }
 
+model Video {
+  id          String   @id @default(uuid())
+  title       String   @db.VarChar(256)
+  description String   @db.VarChar(2048)
+  url         String   @db.VarChar(256)
+  preview     String   @db.VarChar(256)
+  isDeleted   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
 view Games {
   id                String  @unique @db.VarChar(20)
   name              String? @db.VarChar(256)
