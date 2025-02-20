@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { getConfig } from './utils/getConfig';
 import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
 
 async function bootstrap() {
   const appConfig = getConfig();
@@ -17,7 +18,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   app.use(cookieParser());
-
+  app.use(bodyParser.json({ limit: '10mb' }));
   const config = new DocumentBuilder()
     .setTitle('Infomania backend')
     .setDescription('The infomania API description')

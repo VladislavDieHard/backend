@@ -100,7 +100,7 @@ export class EntryService {
     idOrSlug: string,
     param?: EntryOneQueryDto,
   ): Promise<Entry & { rubrics?: RubricsOnEntries[] }> {
-    return await this.prismaService.entry.findUnique({
+    return this.prismaService.entry.findUnique({
       where: {
         ...this.commonHelpers.parseSlug(idOrSlug),
       },

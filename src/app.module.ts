@@ -23,6 +23,7 @@ import { BookModule } from './book/book.module';
 import { SlidesModule } from './slides/slides.module';
 import { CollectionModule } from './collection/collection.module';
 import { VideoModule } from './video/video.module';
+import { EventWarModule } from './event-war/event-war.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { VideoModule } from './video/video.module';
     SlidesModule,
     CollectionModule,
     VideoModule,
+    EventWarModule,
   ],
   providers: [PrismaService, CommandService, CreateService],
   controllers: [AppController],

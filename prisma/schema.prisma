@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["views", "fullTextSearch", "fullTextIndex"]
+  previewFeatures = ["fullTextIndex", "fullTextSearch", "views"]
 }
 
 generator prismaClassGenerator {
@@ -50,8 +50,8 @@ model Entry {
   department   Department         @relation(fields: [departmentId], references: [id], onDelete: NoAction)
   preview      File?              @relation(fields: [fileId], references: [id])
   mainSlider   MainSlider?
-  rubrics      RubricsOnEntries[]
   Notification Notification[]
+  rubrics      RubricsOnEntries[]
 
   @@index([departmentId], map: "Entry_departmentId_fkey")
   @@index([fileId], map: "Entry_fileId_fkey")
@@ -77,6 +77,8 @@ model Notification {
   endTime   DateTime
   entryId   String?
   entry     Entry?   @relation(fields: [entryId], references: [id])
+
+  @@index([entryId], map: "Notification_entryId_fkey")
 }
 
 model Document {
@@ -112,9 +114,9 @@ model Rubric {
   id        String             @id @default(uuid())
   oldId     Int?               @unique
   title     String             @unique @db.VarChar(500)
-  desc      String?            @db.LongText
   slug      String             @unique @db.VarChar(250)
   isDeleted Boolean            @default(false)
+  desc      String?            @db.LongText
   entries   RubricsOnEntries[]
 }
 
@@ -136,9 +138,9 @@ model MenuItem {
   isDeleted    Boolean      @default(false)
   menuItemType MenuItemType
   link         String?
+  position     Int?
   document     Document?
   menu         Menu         @relation(fields: [menuId], references: [id], onDelete: NoAction)
-  position     Int?
 
   @@index([menuId], map: "MenuItem_menuId_fkey")
 }
@@ -169,12 +171,12 @@ model File {
   path         String       @db.VarChar(400)
   preview      String?      @db.VarChar(400)
   createdAt    DateTime     @default(now())
+  Book         Book[]
+  Collection   Collection[]
   Department   Department[]
   Document     Document[]
   Entry        Entry[]
   MainSlider   MainSlider[]
-  Book         Book[]
-  Collection   Collection[]
 }
 
 model Book {
@@ -182,17 +184,19 @@ model Book {
   oldId         Int                  @unique @default(autoincrement())
   title         String               @db.VarChar(256)
   desc          String               @db.VarChar(512)
-  content       String               @db.VarChar(2048)
-  link          String?              @db.VarChar(512)
-  category      String?              @db.VarChar(128)
-  storagePlace  String?
-  dateOfReceipt String?              @db.VarChar(128)
+  content       String               @db.LongText
   fileId        String
-  isDeleted     Boolean              @default(false)
-  isVideo       Boolean              @default(false)
   createdAt     DateTime             @default(now())
+  isDeleted     Boolean              @default(false)
+  category      String?              @db.VarChar(128)
+  dateOfReceipt String?              @db.VarChar(128)
+  link          String?              @db.VarChar(512)
+  storagePlace  String?
+  isVideo       Boolean              @default(false)
   preview       File                 @relation(fields: [fileId], references: [id])
   collections   BooksOnCollections[]
+
+  @@index([fileId], map: "Book_fileId_fkey")
 }
 
 model Collection {
@@ -202,8 +206,16 @@ model Collection {
   createdAt   DateTime             @default(now())
   isDeleted   Boolean              @default(false)
   fileId      String?
-  preview     File?                @relation(fields: [fileId], references: [id])
   books       BooksOnCollections[]
+  preview     File?                @relation(fields: [fileId], references: [id])
+
+  @@index([fileId], map: "Collection_fileId_fkey")
+}
+
+model eventWar {
+  id          String               @id @default(uuid())
+  message     String               @db.VarChar(512)
+  createdAt   DateTime             @default(now())
 }
 
 model BooksOnCollections {
@@ -222,9 +234,9 @@ model Video {
   title       String   @db.VarChar(256)
   description String   @db.VarChar(2048)
   url         String   @db.VarChar(256)
+  createdAt   DateTime @default(now())
   preview     String   @db.VarChar(256)
   isDeleted   Boolean  @default(false)
-  createdAt   DateTime @default(now())
 }
 
 view Games {
@@ -257,6 +269,19 @@ view GamesRandom {
   id         String  @unique @db.VarChar(20)
   name       String? @db.VarChar(256)
   cover_file String? @db.VarChar(32)
+}
+
+/// The underlying view does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+view BooksRandom {
+  id        String
+  title     String   @db.VarChar(256)
+  desc      String   @db.VarChar(512)
+  content   String   @db.VarChar(13310)
+  fileId    String
+  createdAt DateTime @default(now())
+  isDeleted Boolean  @default(false)
+
+  @@ignore
 }
 
 enum MenuType {
